@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using backend.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -27,6 +29,8 @@ namespace backend.Controllers
         public IEnumerable<WeatherForecast> Get()
         {
             var rng = new Random();
+            //string path = Path.Combine(Directory.GetCurrentDirectory(), "TestData/data1.txt");
+            //FileUtils.ReadTourLocationsFromGPXFile(path, 1, DateTime.Now);
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
                 Date = DateTime.Now.AddDays(index),
