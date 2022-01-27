@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using backend.Models;
+using backend.Utils;
 
 namespace backend.Controllers
 {
@@ -75,12 +76,28 @@ namespace backend.Controllers
         // POST: api/Sheep
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Sheep>> PostSheep(Sheep sheep)
-        {
-            _context.Sheep.Add(sheep);
-            await _context.SaveChangesAsync();
+        //public async Task<ActionResult<Sheep>> PostSheep(Sheep sheep)
+        //{
+        //    _context.Sheep.Add(sheep);
+        //    await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetSheep), new { id = sheep.Id }, sheep);
+        //    return CreatedAtAction(nameof(GetSheep), new { id = sheep.Id }, sheep);
+        //}
+
+        public async Task<ActionResult> PostSheep(Sheep sheep)
+        {
+            //_context.Sheep.Add(sheep);
+            var _files = Request.Form.Files;
+            var tourFile = _files.GetFile("Tour");
+            var tourLocationFile = _files.GetFile("TourLocations");
+            var sheepLocationFile = _files.GetFile("SheepPositions");
+            TourData tour = FileUtils.ReadTourDataFromFiles(tourFile, tourLocationFile, sheepLocationFile);
+            //if(tour != null)
+            //{
+            //    _context.Tours.Add(tour);
+            //    await _context.SaveChangesAsync();
+            //}
+            return Ok();
         }
 
         // DELETE: api/Sheep/5
