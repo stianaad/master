@@ -9,7 +9,7 @@ export function Home(){
       <Typography variant="h4">Framside</Typography>
       <Login />
       <br/>
-      <Button variant="contained" onClick={() => navigate("map")}>Map</Button>
+      <Button variant="contained" onClick={() => navigate("tur")}>Turer</Button>
     </div>
   )
 }

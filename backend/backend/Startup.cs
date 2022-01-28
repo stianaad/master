@@ -17,8 +17,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Http;
 
 namespace backend
 {
@@ -30,8 +28,7 @@ namespace backend
         }
 
         public IConfiguration Configuration { get; }
-        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
-
+        
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -43,7 +40,7 @@ namespace backend
                                       builder.WithOrigins("http://localhost:3000", "https://localhost:3000").AllowAnyHeader();
                                   });
             });*/
-            services.AddCors(c => { c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin()); });
+            services.AddCors(c => { c.AddPolicy("AllowOrigin", options => options.AllowCredentials().SetIsOriginAllowed(host => true)); });
             services.AddControllers();
             services.AddDbContext<AuthenticationContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddDbContext<SheepContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("SheepConnection")));
@@ -55,10 +52,15 @@ namespace backend
 
 
             // Adding Authentication  
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
 
             // Adding Jwt Bearer  
-            /*.AddJwtBearer(options =>
+            .AddJwtBearer(options =>
             {
                 options.SaveToken = true;
                 options.RequireHttpsMetadata = false;
@@ -70,7 +72,7 @@ namespace backend
                     ValidIssuer = Configuration["JWT:ValidIssuer"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Secret"]))
                 };
-            });*/
+            });
 
         }
 
@@ -82,18 +84,13 @@ namespace backend
                 app.UseDeveloperExceptionPage();
             }
             //app.UseCors(MyAllowSpecificOrigins);
-            app.UseCors(cors => cors.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+            app.UseCors(cors => cors.AllowAnyHeader().AllowAnyMethod().AllowCredentials().SetIsOriginAllowed(host => true));
 
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
             app.UseAuthentication();
-
-            app.UseCookiePolicy(new CookiePolicyOptions
-            {
-                MinimumSameSitePolicy = SameSiteMode.Strict,
-            });
 
             app.UseAuthorization();
 

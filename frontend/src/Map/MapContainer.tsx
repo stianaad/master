@@ -5,7 +5,7 @@ import { MapMarker } from "./MapMarker";
 export function MapContainer(){
   return(
     <div style={{ height: '100vh', width: '100%' }}>
-
+      <div>heheeh</div>
       <GoogleMapReact 
         bootstrapURLKeys={{key:"AIzaSyB-xQ9kta6HYHD5OtV9SF_ybPAD31Edc0w"}}
         defaultCenter={{lat: 63.446827, lng: 10.421906}}

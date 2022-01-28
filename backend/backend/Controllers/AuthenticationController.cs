@@ -5,8 +5,6 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using backend.authentication;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -50,20 +48,17 @@ namespace backend.Controllers
                     authClaims.Add(new Claim(ClaimTypes.Role, userRole));
                 }
 
-                var claimsIdentity = new ClaimsIdentity(
-                    authClaims, CookieAuthenticationDefaults.AuthenticationScheme);
-
                 var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
 
-                /*var token = new JwtSecurityToken(
+                var token = new JwtSecurityToken(
                     issuer: _configuration["JWT:ValidIssuer"],
                     audience: _configuration["JWT:ValidAudience"],
                     expires: DateTime.Now.AddHours(3),
                     claims: authClaims,
                     signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
-                    );*/
+                    );
 
-                var authProperties = new AuthenticationProperties
+                /*var authProperties = new AuthenticationProperties
                 {
                     //AllowRefresh = <bool>,
                     // Refreshing the authentication session should be allowed.
@@ -90,14 +85,14 @@ namespace backend.Controllers
                 await HttpContext.SignInAsync(
                     CookieAuthenticationDefaults.AuthenticationScheme,
                     new ClaimsPrincipal(claimsIdentity),
-                    authProperties);
+                    authProperties);*/
 
-                return Ok();
-                    /*Ok(new
+                return
+                    Ok(new
                 {
                     token = new JwtSecurityTokenHandler().WriteToken(token),
                     expiration = token.ValidTo
-                });*/
+                });
             }
             return Unauthorized();
         }

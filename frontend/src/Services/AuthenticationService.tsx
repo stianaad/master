@@ -6,8 +6,12 @@ class AuthenticationService {
     return service.post("api/authentication/login", user)
   }
 
-  test(){
-    return service.get("/weatherforecast")
+  test(token: string){
+    return service.get("/weatherforecast", {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
   }
 }
 
