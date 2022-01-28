@@ -1,4 +1,4 @@
-import { User } from '../Models/UserModel'
+import { User } from '../Types/UserModel'
 import service from './Service'
 
 class AuthenticationService {
@@ -12,6 +12,18 @@ class AuthenticationService {
         Authorization: `Bearer ${token}`
       }
     })
+  }
+
+  getTours() {
+    return service.get("/api/GetTours")
+  }
+
+  getTour(id: number | string) {
+    return service.get(`/api/GetTour/${id}`)
+  }
+
+  getTourLocations() {
+    return service.get(`/api/GetTourLocations`)
   }
 }
 

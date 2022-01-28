@@ -2,7 +2,7 @@ import { Button, Grid, TextField } from "@mui/material";
 import { makeStyles } from '@mui/styles';
 import { resolveNs } from "dns";
 import { useState } from "react";
-import { User } from "../../Models/UserModel";
+import { User } from "../../Types/UserModel";
 import { authenticationService } from "../../Services/AuthenticationService";
 
 const useStyles = makeStyles({

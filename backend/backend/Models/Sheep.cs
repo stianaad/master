@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace backend.Models
 {
@@ -18,6 +19,7 @@ namespace backend.Models
         public double Latitude { get; set; }
         public DateTime TimePosition { get; set; }
         public int IdTour { get; set; }
+        [JsonIgnore]
         public TourData Tour { get; set; }
     }
 
@@ -58,6 +60,7 @@ namespace backend.Models
         public int TieYellow { get; set; }
         public int TieBlue { get; set; }
         public int IdTour { get; set; }
+        [JsonIgnore]
         public TourData Tour { get; set; }
 
     }

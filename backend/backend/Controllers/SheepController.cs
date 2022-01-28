@@ -91,7 +91,7 @@ namespace backend.Controllers
             var tourFile = _files.GetFile("Tour");
             var tourLocationFile = _files.GetFile("TourLocations");
             var sheepLocationFile = _files.GetFile("SheepPositions");
-            TourData tour = FileUtils.ReadTourDataFromFiles(tourFile, tourLocationFile, sheepLocationFile);
+            TourData tour = FileUtils.ReadTourDataFromFiles(tourFile, tourLocationFile, sheepLocationFile, 5);
             //if(tour != null)
             //{
             //    _context.Tours.Add(tour);

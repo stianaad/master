@@ -34,7 +34,7 @@ namespace backend.Utils
             
         }
 
-        public static TourData ReadTourDataFromFiles(IFormFile tourFile, IFormFile tourLocationFile, IFormFile sheepPositionFile)
+        public static TourData ReadTourDataFromFiles(IFormFile tourFile, IFormFile tourLocationFile, IFormFile sheepPositionFile, double speed)
         {
             if (tourFile != null && tourFile.Length > 0 && tourLocationFile != null && tourLocationFile.Length > 0 && sheepPositionFile != null && sheepPositionFile.Length > 0)
             {
@@ -50,7 +50,7 @@ namespace backend.Utils
                         List<TourLocationData> tourLocations = null;
                         using (StreamReader sr = new StreamReader(tourLocationFile.OpenReadStream()))
                         {
-                            tourLocations = ReadTourLocations(sr, tourData.Start);
+                            tourLocations = ReadTourLocations(sr, tourData.Start, speed);
                         }
                         List<SheepPositionData> sheepPositions = null;
                         using (StreamReader sr = new StreamReader(sheepPositionFile.OpenReadStream()))
@@ -75,10 +75,12 @@ namespace backend.Utils
             return null;
         }
 
-        public static List<TourLocationData> ReadTourLocations(StreamReader sr, DateTime startTime)
+        public static List<TourLocationData> ReadTourLocations(StreamReader sr, DateTime startTime, double speed)
         {
             List<TourLocationData> tourLocations = new List<TourLocationData>();
             DateTime currentTime = startTime;
+            double lastLat = 0;
+            double lastLong = 0;
             TimeSpan minute = TimeSpan.FromMinutes(1);
             sr.ReadLine();
             string line;
@@ -89,8 +91,12 @@ namespace backend.Utils
                 string[] columns = line.Split('\t');
                 double longitude = columns[1].ToDouble();
                 double latitude = columns[2].ToDouble();
+                if (lastLat != 0 && lastLong != 0)
+                    currentTime = currentTime + TimeSpan.FromHours(MapUtils.GetTimeFromSpeed(lastLat, lastLong, latitude, longitude, speed));
                 tourLocations.Add(new TourLocationData() { Latitude = latitude, Longitude = longitude, TimePosition = currentTime });
-                currentTime = currentTime + minute;
+                lastLat = latitude;
+                lastLong = longitude;
+                //currentTime = currentTime + minute;
             }
             return tourLocations;
         }
