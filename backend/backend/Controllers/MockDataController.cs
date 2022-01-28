@@ -54,5 +54,24 @@ namespace backend.Controllers
         {
             return await _context.Tours.Include(t => t.SheepPositions).Include(t => t.Positions).ToListAsync();
         }
+
+        [HttpGet("api/GetTourLocations")]
+        public async Task<ActionResult<IEnumerable<TourLocationData>>> GetTourLocations()
+        {
+            //var _files = Request.Form.Files;
+            //var tourLocationFile = _files.GetFile("TourLocations");
+            //List<TourLocationData> tourLocations = new List<TourLocationData>();
+            //using (StreamReader sr = new StreamReader(tourLocationFile.OpenReadStream()))
+            //{
+            //    tourLocations = FileUtils.ReadTourLocations(sr, DateTime.MinValue, 5);
+            //}
+            List<TourLocationData> tourLocations = new List<TourLocationData>();
+            string path = Path.Combine(Directory.GetCurrentDirectory(), "TestData/TourLocation.txt");
+            using (var sr = new StreamReader(path))
+            {
+                tourLocations = FileUtils.ReadTourLocations(sr, DateTime.MinValue, 5);
+            }
+            return tourLocations;
+        }
     }
 }
