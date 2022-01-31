@@ -7,28 +7,28 @@ import { Tour } from "../Types/Tour";
 
 
 export function TourMap(props: { tour: Tour }) {
-  const path = props.tour.positions.map(pos => { return {lat: pos.latitude, lng: pos.longitude }})
-  console.log(path)
-  return(
-    <>
-      <Polyline 
+  //const path = props.tour.positions.map(pos => { return {lat: pos.latitude, lng: pos.longitude }})
+  console.log("HELLO", props.tour.sheepPositions)
+  {/*<Polyline 
         path={path} 
         options={{ 
         strokeColor: '#00ffff',
         strokeOpacity: 1,
         strokeWeight: 2,
         zIndex: 100,
-        }} />
-      {
+        }} />*/}
+  return(
+      <div>
+        {
         props.tour.sheepPositions.map((sheep) => (
           <MapMarker
             lat={sheep.latitude}
             lng={sheep.longitude}
-            text={`${sheep.timeOfObsevation}`}
-            key={sheep.id}
+            text={`${sheep.id}`}
+            //key={sheep.id}
           />
         ))
       }
-    </>
+      </div>
   )
 }

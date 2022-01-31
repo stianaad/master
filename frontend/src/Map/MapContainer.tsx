@@ -3,8 +3,9 @@ import Polyline from './Polyline'
 import { MapMarker } from "./MapMarker";
 import React, { useState, useEffect } from 'react';
 import { authenticationService } from "../Services/AuthenticationService";
-import { Tour, TourLocation } from "../Types/Tour";
+import { SheepPosition, Tour, TourLocation } from "../Types/Tour";
 import { TourMap } from "./TourMap";
+import { mapFlockOfSheep } from "./MapFlockOfSheep";
 
 
 export function MapContainer() {
@@ -17,6 +18,7 @@ export function MapContainer() {
     loaded: false
   })
   const [path, setPath] = useState<{lat: number, lng: number}[]>([]);
+
   useEffect(() => {
     fetchTours()
   }, [])
@@ -25,7 +27,10 @@ export function MapContainer() {
     const res = await authenticationService.getTours()
     if (res.status === 200) {
       const data: Tour[] = res.data;
-      setTours(data)
+      //console.log(data)
+      const flockTour: Tour[] = await mapFlockOfSheep(data)
+      setTours(flockTour)
+      console.log(flockTour)
       //setTours(res.data)
       // if (data.length > 1) {
       //   const _path = data.map((pos) => { return {lat: pos.latitude, lng: pos.longitude } })
@@ -85,12 +90,19 @@ export function MapContainer() {
         //     </div>
         //   ) : null
         }
-          
-          {
-            tours.map((tour: Tour) => (
-              <TourMap tour={tour} key={tour.idTour} />
-            ))
-          }
+        
+        { tours.length > 0 ? 
+          tours.map((tour:Tour) => (
+            tour.sheepPositions.map((sheep: SheepPosition) => (
+              <MapMarker lat={sheep.latitude} lng={sheep.longitude} text={sheep.flockId} />
+            )
+          ))) : null
+        }
+        {/*
+          tours.map((tour: Tour) => (
+            <TourMap tour={tour} key={tour.idTour} />
+          ))*/
+        }
       </GoogleMapReact>
     </div>
   )

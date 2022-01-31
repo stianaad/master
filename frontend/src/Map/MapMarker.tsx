@@ -28,7 +28,7 @@ const useStyles = makeStyles({
 export const MapMarker = ({text}: any) => {
   const classes = useStyles()
   return <div className={classes.marker}>
-    <Typography variant="h6" className={classes.text}>1</Typography>
+    <Typography variant="h6" className={classes.text}>{text}</Typography>
     {/*<img style={markerStyle} src={Marker} alt="pin" />*/}
   </div>
   };

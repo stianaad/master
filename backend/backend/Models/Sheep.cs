@@ -52,8 +52,10 @@ namespace backend.Models
         public DateTime TimeOfObsevation { get; set; }
         public int SmallBrownSheep { get; set; }
         public int SmallWhiteSheep { get; set; }
+        public int SmallBlackSheep { get; set; }
         public int BigBrownSheep { get; set; }
         public int BigWhiteSheep { get; set; }
+        public int BigBlackSheep { get; set; }
         public int TotalNumberOfSheep { get; set; }
         public int TieGreen { get; set; }
         public int TieRed { get; set; }
