@@ -33,18 +33,15 @@
 
 export function Polyline(props: {path: {lat: number, lng: number}[], map: any, maps: any}) {
   const { path, map, maps }: any = props
-  console.log("Path:", path)
-  console.log("Map:", map)
-  console.log("Maps:", maps)
   function renderPolylines () {
     let geodesicPolyline = new maps.Polyline({
       path: path,
       geodesic: true,
       strokeColor: '#ff0000',
       strokeOpacity: 1.0,
-      strokeWeight: 1
+      strokeWeight: 2
     })
-    console.log("created polyline:", geodesicPolyline)
+    //console.log("created polyline:", geodesicPolyline)
     geodesicPolyline.setMap(map)
   }
   return (

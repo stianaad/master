@@ -1,7 +1,7 @@
 import GoogleMapReact from "google-map-react";
 import { Polygon, Polyline } from "google-maps-react";
 import { MapMarker } from "./MapMarker";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import { authenticationService } from "../Services/AuthenticationService";
 import { Tour } from "../Types/Tour";
 
@@ -18,7 +18,7 @@ export function TourMap(props: { tour: Tour }) {
         zIndex: 100,
         }} />*/}
   return(
-      <div>
+      <>
         {
         props.tour.sheepPositions.map((sheep) => (
           <MapMarker
@@ -29,6 +29,6 @@ export function TourMap(props: { tour: Tour }) {
           />
         ))
       }
-      </div>
+      </>
   )
 }

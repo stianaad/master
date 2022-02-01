@@ -32,6 +32,6 @@ export interface TourLocation {
 }
 
 export interface LatLong {
-  latitude: number,
-  longitude: number
+  lat: number,
+  lng: number
 }

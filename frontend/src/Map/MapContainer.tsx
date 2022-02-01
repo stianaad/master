@@ -1,15 +1,16 @@
 import GoogleMapReact from "google-map-react";
-import Polyline from './Polyline'
+import { Polyline } from './Polyline'
 import { MapMarker } from "./MapMarker";
 import React, { useState, useEffect } from 'react';
 import { authenticationService } from "../Services/AuthenticationService";
-import { SheepPosition, Tour, TourLocation } from "../Types/Tour";
+import { LatLong, SheepPosition, Tour, TourLocation } from "../Types/Tour";
 import { TourMap } from "./TourMap";
 import { mapFlockOfSheep } from "./MapFlockOfSheep";
 
 
 export function MapContainer() {
   const [tours, setTours] = useState<Tour[]>([]);
+  const [sheepTourPositions, setSheepTourPositions] = useState<LatLong[][]>([])
   const [map, setMap] = useState()
   const [maps, setMaps] = useState()
   const [mapProps, setMapProps] = useState<{map: any |null, maps: any | null, loaded: boolean}>({
@@ -28,8 +29,9 @@ export function MapContainer() {
     if (res.status === 200) {
       const data: Tour[] = res.data;
       //console.log(data)
-      const flockTour: Tour[] = await mapFlockOfSheep(data)
-      setTours(flockTour)
+      const flockTour: {tours: Tour[], sheepTourPositions: LatLong[][] } = await mapFlockOfSheep(data)
+      setTours(flockTour.tours)
+      setSheepTourPositions(flockTour.sheepTourPositions)
       console.log(flockTour)
       //setTours(res.data)
       // if (data.length > 1) {
@@ -44,13 +46,13 @@ export function MapContainer() {
   }
 
   const path2 = [
-    {lat: 10.30509, lng: 63.426847},
-    {lat: 10.304835, lng: 63.426892},
-    {lat: 10.304678, lng: 63.426715},
-    {lat: 10.304814, lng: 63.426684},
-    {lat: 10.305027, lng: 63.426528},
-    {lat: 10.304994, lng: 63.426273},
-    {lat: 10.305177, lng: 63.425854},
+    {lng: 10.30509, lat: 63.426847},
+    {lng: 10.304835, lat: 63.426892},
+    {lng: 10.304678, lat: 63.426715},
+    {lng: 10.304814, lat: 63.426684},
+    {lng: 10.305027, lat: 63.426528},
+    {lng: 10.304994, lat: 63.426273},
+    {lng: 10.305177, lat: 63.425854},
   ]
 
   return(
@@ -81,25 +83,27 @@ export function MapContainer() {
         }}
         > 
         {
-        //   mapProps.loaded ? (
-        //     <div style={{display: 'none'}}>
-        //       <Polyline
-        //         map={mapProps.map}
-        //         maps={mapProps.maps}
-        //         path={path2} />
-        //     </div>
-        //   ) : null
+        mapProps.loaded ? (
+          sheepTourPositions.map((pos: LatLong[], index: number) => 
+          <Polyline
+            key={index}
+            map={mapProps.map}
+            maps={mapProps.maps}
+            path={pos} />
+          )
+           ) : null
         }
         
-        { tours.length > 0 ? 
+        { 
+        tours.length > 0 ? 
           tours.map((tour:Tour) => (
-            tour.sheepPositions.map((sheep: SheepPosition) => (
-              <MapMarker lat={sheep.latitude} lng={sheep.longitude} text={sheep.flockId} />
+            tour.sheepPositions.map((sheep: SheepPosition, index : number) => (
+              <MapMarker lat={sheep.latitude} lng={sheep.longitude} text={sheep.id.toString()} key={index} />
             )
           ))) : null
         }
-        {/*
-          tours.map((tour: Tour) => (
+        {
+          /*tours.map((tour: Tour) => (
             <TourMap tour={tour} key={tour.idTour} />
           ))*/
         }
