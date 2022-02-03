@@ -1,21 +1,38 @@
-import { Button, Grid, TextField } from "@mui/material";
+import { Button, Grid, TextField, Typography } from "@mui/material";
 import { makeStyles } from '@mui/styles';
 import { resolveNs } from "dns";
 import { useState } from "react";
 import { User } from "../../Types/UserModel";
 import { authenticationService } from "../../Services/AuthenticationService";
+import { useAppDispatch, useAppSelector } from "../../hooks";
+import { changeValue } from "../../redux/LoggedInSlice";
+import { useNavigate } from "react-router-dom";
 
 const useStyles = makeStyles({
   marginTop: {
-    marginTop: "3vh"
+    paddingTop: "3vh"
   },
+  registerHere: {
+    textDecoration: "underline",
+    cursor: "pointer"
+  },
+  registerDiv: {
+    paddingTop: "1vh",
+    paddingBottom: "2vh"
+  }
 });
 
+interface LoginProps {
+  setLoginAlternatives: (value: string) => void
+}
 
-export function Login(){
+
+export function Login(props: LoginProps){
+  const navigate = useNavigate()
   const classes = useStyles()
   const [user, setUser] = useState<User>({username: "", password: ""})
-  const [loggedIn, setLoggedIn] = useState<boolean>(false)
+  //const count = useAppSelector((state) => state.counter.value)
+  const dispatch = useAppDispatch()
 
   const onChangeUser = (event: React.ChangeEvent<HTMLInputElement>, key: "username" | "password") => {
     setUser({...user, [key]: event.target.value })
@@ -24,48 +41,30 @@ export function Login(){
   const sendUserInformationToBackend = async () => {
     try{
       const res = await authenticationService.login(user)
-      console.log(res)
       localStorage.setItem("token", res.data.token)
-      if(res.status === 200){
-        setLoggedIn(true)
-      } else {
-        setLoggedIn(false)
-      }
+      dispatch(changeValue(res.data.token))
+      navigate("tur")
     } catch{
       console.log("Error")
     }
   }
 
-  const getLoggedInContent = async () => {
-    try {
-      const token: string | null= localStorage.getItem("token")
-      console.log("token: ",token)
-      if (token) {
-        const res = await authenticationService.test(token)
-        console.log(res)
-      }
-    } catch {
-
-    }
-  }
-
   return(
     <div>
-      {!loggedIn ? 
       <Grid container>
         <Grid item xs={12}>
-          <TextField id="standard-basic" label="Brukernavn" variant="standard" onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChangeUser(e, "username")}/>
+          <TextField label="Brukernavn" variant="standard" onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChangeUser(e, "username")}/>
         </Grid>
         <Grid item xs={12}>
-          <TextField id="standard-basic" label="password" variant="standard" type="password" onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChangeUser(e, "password")} />
+          <TextField label="Passord" variant="standard" type="password" onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChangeUser(e, "password")} />
         </Grid>
         <Grid item xs={12} className={classes.marginTop}>
           <Button variant="contained" onClick={() => sendUserInformationToBackend()}>
             Logg inn
           </Button>
+          <Typography className={classes.registerDiv} variant="body2">Ikke bruker enda? <span onClick={() => props.setLoginAlternatives("register")} className={classes.registerHere}>Registrer her</span></Typography>
         </Grid>
       </Grid>
-      : <Button variant="contained" onClick={() => getLoggedInContent()}>Få hemmelig innhold</Button>}
     </div>
   )
 }

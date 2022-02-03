@@ -30,6 +30,7 @@ namespace backend.Models
         public List<TourLocationData> Positions { get; set; }
         public List<SheepPositionData> SheepPositions { get; set; }
         public DateTime Start { get; set; }
+        public string Email { get; set; }
     }
 
     public class MapAreaData

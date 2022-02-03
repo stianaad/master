@@ -6,6 +6,10 @@ class AuthenticationService {
     return service.post("api/authentication/login", user)
   }
 
+  register(user: User) {
+    return service.post("/api/authentication/register", user)
+  }
+
   test(token: string){
     return service.get("/weatherforecast", {
       headers: {

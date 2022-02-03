@@ -74,6 +74,8 @@ namespace backend
                 };
             });
 
+            //services.AddIdentity(options => options.ClaimsIdentity.UserIdClaimType = "UserId");
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

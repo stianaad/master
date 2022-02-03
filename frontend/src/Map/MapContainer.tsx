@@ -6,6 +6,8 @@ import { authenticationService } from "../Services/AuthenticationService";
 import { LatLong, SheepPosition, Tour, TourLocation } from "../Types/Tour";
 import { TourMap } from "./TourMap";
 import { mapFlockOfSheep } from "./MapFlockOfSheep";
+import { tourService } from "../Services/TourService";
+import { useAppSelector } from "../hooks";
 
 
 export function MapContainer() {
@@ -19,26 +21,29 @@ export function MapContainer() {
     loaded: false
   })
   const [path, setPath] = useState<{lat: number, lng: number}[]>([]);
+  const loggedIn = useAppSelector((state) => state.loggedIn.value)
 
   useEffect(() => {
     fetchTours()
   }, [])
 
   const fetchTours = async () => {
-    const res = await authenticationService.getTours()
-    if (res.status === 200) {
-      const data: Tour[] = res.data;
-      //console.log(data)
-      const flockTour: {tours: Tour[], sheepTourPositions: LatLong[][] } = await mapFlockOfSheep(data)
-      setTours(flockTour.tours)
-      setSheepTourPositions(flockTour.sheepTourPositions)
-      console.log(flockTour)
-      //setTours(res.data)
-      // if (data.length > 1) {
-      //   const _path = data.map((pos) => { return {lat: pos.latitude, lng: pos.longitude } })
-      //   console.log(_path)
-      //   setPath(_path)
-      // }
+    if (loggedIn.length > 0) {
+      const res = await tourService.getTours(loggedIn) //authenticationService.getTours()
+      if (res.status === 200) {
+        const data: Tour[] = res.data;
+        //console.log(data)
+        const flockTour: {tours: Tour[], sheepTourPositions: LatLong[][] } = await mapFlockOfSheep(data)
+        setTours(flockTour.tours)
+        setSheepTourPositions(flockTour.sheepTourPositions)
+        console.log(flockTour)
+        //setTours(res.data)
+        // if (data.length > 1) {
+        //   const _path = data.map((pos) => { return {lat: pos.latitude, lng: pos.longitude } })
+        //   console.log(_path)
+        //   setPath(_path)
+        // }
+      }
     }
   }
   const onMapLoaded = () => {
