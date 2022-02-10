@@ -1,29 +1,34 @@
 import GoogleMapReact from "google-map-react";
 import { Polyline } from "./Polyline"
 import { MapMarker } from "./MapMarker";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import { authenticationService } from "../Services/AuthenticationService";
 import { Tour } from "../Types/Tour";
 
 
-export function TourMap(props: { tour: Tour, map: any, maps: any }) {
-  const path = props.tour.positions.map(pos => { return {lat: pos.longitude, lng: pos.latitude }})
-  return(
-    <>
-      <Polyline 
+export function TourMap(props: { tour: Tour }) {
+  //const path = props.tour.positions.map(pos => { return {lat: pos.latitude, lng: pos.longitude }})
+  console.log("HELLO", props.tour.sheepPositions)
+  {/*<Polyline 
         path={path} 
-        map={props.map}
-        maps={props.maps} />
-      {
+        options={{ 
+        strokeColor: '#00ffff',
+        strokeOpacity: 1,
+        strokeWeight: 2,
+        zIndex: 100,
+        }} />*/}
+  return(
+      <>
+        {
         props.tour.sheepPositions.map((sheep) => (
           <MapMarker
             lat={sheep.latitude}
             lng={sheep.longitude}
-            text={`${sheep.timeOfObsevation}`}
-            key={sheep.id}
+            text={`${sheep.id}`}
+            //key={sheep.id}
           />
         ))
       }
-    </>
+      </>
   )
 }

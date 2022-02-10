@@ -39,8 +39,9 @@ export function Polyline(props: {path: {lat: number, lng: number}[], map: any, m
       geodesic: true,
       strokeColor: '#ff0000',
       strokeOpacity: 1.0,
-      strokeWeight: 1
+      strokeWeight: 2
     })
+    //console.log("created polyline:", geodesicPolyline)
     geodesicPolyline.setMap(map)
   }
   return (

@@ -50,7 +50,6 @@ namespace backend
                 .AddDefaultTokenProviders();
 
 
-
             // Adding Authentication  
             services.AddAuthentication(options =>
             {
@@ -73,6 +72,8 @@ namespace backend
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Secret"]))
                 };
             });
+
+            //services.AddIdentity(options => options.ClaimsIdentity.UserIdClaimType = "UserId");
 
         }
 

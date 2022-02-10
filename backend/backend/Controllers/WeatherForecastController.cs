@@ -2,12 +2,16 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using backend.authentication;
 using backend.Utils;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Identity;
 
 namespace backend.Controllers
 {
@@ -21,26 +25,19 @@ namespace backend.Controllers
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
         };
 
-        private readonly ILogger<WeatherForecastController> _logger;
+        private readonly UserManager<AuthenticationUser> _userManager;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public WeatherForecastController(UserManager<AuthenticationUser> userManager)
         {
-            _logger = logger;
+            _userManager = userManager;
         }
 
         [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
+        public async Task<AuthenticationUser> Get()
         {
-            var rng = new Random();
-            string path = Path.Combine(Directory.GetCurrentDirectory(), "TestData/data1.txt");
-            FileUtils.ReadTourLocationsFromGPXFile(path, 1, DateTime.Now);
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = rng.Next(-20, 55),
-                Summary = Summaries[rng.Next(Summaries.Length)]
-            })
-            .ToArray();
+            var user = await _userManager.GetUserAsync(User);
+            Console.WriteLine("user", user.Email);
+            return user;
         }
     }
 }

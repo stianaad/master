@@ -1,8 +1,19 @@
 export interface Tour {
-  idTour: number
-  start: Date
-  sheepPositions: SheepPosition[]
-  positions: TourLocation[]
+  idTour: number;
+  start: Date;
+  sheepPositions: SheepPosition[];
+  positions: TourLocation[];
+}
+
+export interface CombinedSheepTourPosition {
+  idTour: number,
+  combinedSheepPositions: CombinedSheepPosition[]
+}
+
+export interface CombinedSheepPosition {
+  totalNumberOfSheep: number,
+  flockId: number,
+  locations: LatLong[]
 }
 
 export interface ActivatableTour extends Tour {
@@ -23,6 +34,8 @@ export interface SheepPosition {
   tieYellow: number
   tieBlue: number
   idTour: number
+  totalNumberOfSheep: number
+  flockId?: number
 }
 
 export interface TourLocation {
@@ -31,4 +44,9 @@ export interface TourLocation {
   latitude: number
   timePosition: Date
   idTour: number
+}
+
+export interface LatLong {
+  latitude: number,
+  longitude: number
 }

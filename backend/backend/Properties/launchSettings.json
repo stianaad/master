@@ -11,11 +11,12 @@
   "profiles": {
     "IIS Express": {
       "commandName": "IISExpress",
+      "hotReloadEnabled": true,
       "launchBrowser": true,
       "launchUrl": "weatherforecast",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
     },
     "backend": {
       "commandName": "Project",
