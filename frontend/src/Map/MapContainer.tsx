@@ -8,22 +8,7 @@ import { TourMap } from "./TourMap";
 import { mapFlockOfSheep } from "./MapFlockOfSheep";
 import { tourService } from "../Services/TourService";
 import { useAppSelector } from "../hooks";
-import { makeStyles } from "@mui/styles";
 
-const useStyles = makeStyles({
-  root: {
-    textAlign: "center"
-  },
-  mainContainer: {
-    height:"100vh",
-    width: "100%",
-    display: "flex",
-    
-  },
-  mapContainer: {
-    flexGrow: "1"
-  }
-});
 
 export function MapContainer() {
   const [tours, setTours] = useState<Tour[]>([]);
@@ -41,6 +26,7 @@ export function MapContainer() {
 
   useEffect(() => {
     fetchTours()
+    fetchGeneratedTours()
   }, [])
 
   const fetchTours = async () => {
@@ -64,21 +50,15 @@ export function MapContainer() {
     }
   }
 
-  // function initPolylines(map: any, maps: any) {
-  //   let polylineMap : {[key: number]: any} = {}
-  //   for (const tour of tours) {
-  //     const geodesicPolyline = new maps.Polyline({
-  //       path: tour.positions.map((pos) => ({lat: pos.latitude, lng: pos.longitude})),
-  //       geodesic: false,
-  //       strokeColor: '#ff0000',
-  //       strokeOpacity: 1.0,
-  //       strokeWeight: 4
-  //     })
-  //     polylineMap[tour.idTour] = geodesicPolyline
-  //   }
-  //   //setPolylines(polylineMap)
-  //   polylines = polylineMap
-  // }
+  const fetchGeneratedTours = async () => {
+    const res = await authenticationService.getGeneratedTours()
+    console.log(res.data)
+  }
+
+
+  const onMapLoaded = () => {
+
+  }
 
   const path2 = [
     {lng: 10.30509, lat: 63.426847},
