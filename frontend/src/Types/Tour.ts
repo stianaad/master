@@ -5,6 +5,17 @@ export interface Tour {
   positions: TourLocation[];
 }
 
+export interface CombinedSheepTourPosition {
+  idTour: number,
+  combinedSheepPositions: CombinedSheepPosition[]
+}
+
+export interface CombinedSheepPosition {
+  totalNumberOfSheep: number,
+  flockId: number,
+  locations: LatLong[]
+}
+
 export interface SheepPosition {
   id: number
   longitude: number
@@ -32,6 +43,6 @@ export interface TourLocation {
 }
 
 export interface LatLong {
-  lat: number,
-  lng: number
+  latitude: number,
+  longitude: number
 }

@@ -34,5 +34,10 @@ namespace backend.Models
             Longitude = longitude;
             Latitude = latitude;
         }
+
+        public override string ToString()
+        {
+            return "Latitude " + Latitude + ", Longitude " + Longitude;
+        }
     }
 }

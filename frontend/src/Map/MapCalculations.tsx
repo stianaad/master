@@ -7,11 +7,11 @@ export const degToRad = (deg: number) => {
 export const distanceBetweenCoords = (coord1: LatLong, coord2: LatLong) => {
   const earthRadiusKm = 6371;
 
-  let dLat = degToRad(coord2.lat - coord1.lat);
-  let dLon = degToRad(coord2.lng - coord1.lng);
+  let dLat = degToRad(coord2.latitude - coord1.latitude);
+  let dLon = degToRad(coord2.longitude - coord1.longitude);
 
-  let lat1 = degToRad(coord1.lat);
-  let lat2 = degToRad(coord2.lat);
+  let lat1 = degToRad(coord1.latitude);
+  let lat2 = degToRad(coord2.latitude);
 
   const a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +

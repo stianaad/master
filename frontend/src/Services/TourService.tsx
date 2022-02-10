@@ -9,6 +9,10 @@ class TourService{
     })
   }
 
+  getCombinedSheepTourPositions(){
+    return Service.get("/api/tour/sheep/positions");
+  }
+
 }
 
 export const tourService: TourService = new TourService()

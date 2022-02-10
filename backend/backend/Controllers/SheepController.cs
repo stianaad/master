@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using backend.Models;
 using backend.Utils;
+using Microsoft.Extensions.Logging;
 
 namespace backend.Controllers
 {
@@ -20,6 +21,7 @@ namespace backend.Controllers
         {
             _context = context;
         }
+
 
         // GET: api/Sheep
         [HttpGet]

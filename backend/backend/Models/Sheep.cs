@@ -44,6 +44,56 @@ namespace backend.Models
         public DateTime TimePosition { get; set; }
     }
 
+    //Contains one tour with many big flocks
+    public class CombinedSheepTourPositionData
+    {
+        public int IdTour { get; set; }
+        public List<CombinedSheepPositionData> CombinedSheepPositions { get; set; }
+
+        public CombinedSheepTourPositionData(int IdTour, List<CombinedSheepPositionData> combinedSheepPositions)
+        {
+            this.IdTour = IdTour;
+            this.CombinedSheepPositions = combinedSheepPositions;
+        }
+
+        public override string ToString()
+        {
+            string text = "Tour Id " + IdTour+ "\n";
+            CombinedSheepPositions.ForEach((CombinedSheepPositionData combined) =>
+            {
+                text += combined.ToString() + "\n";
+            });
+            return text;
+
+        }
+    }
+
+    //Contains one big flock with multiple small flocks and locations
+    public class CombinedSheepPositionData
+    {
+        public int TotalNumberOfSheep { get; set; }
+        public int FlockId { get; set; }
+        public List<Location> locations { get; set; }
+
+        public CombinedSheepPositionData(int TotalNumberOfSheep, List<Location> locations, int FlockId)
+        {
+            this.TotalNumberOfSheep = TotalNumberOfSheep;
+            this.locations = locations;
+            this.FlockId = FlockId;
+        }
+
+        public override string ToString()
+        {
+            string text = "Total number " + TotalNumberOfSheep + " FlockID " +FlockId + "\n";
+            locations.ForEach((Location location) =>
+           {
+               text += location.ToString() + "\n";
+           });
+            return text;
+
+        }
+    }
+
     public class SheepPositionData
     {
         [Key]
@@ -66,5 +116,18 @@ namespace backend.Models
         [JsonIgnore]
         public TourData Tour { get; set; }
 
+        public override bool Equals(object obj)
+        {
+            if (obj == null) return false;
+            SheepPositionData objAsPart = obj as SheepPositionData;
+            if (objAsPart == null) return false;
+            else return Equals(objAsPart);
+        }
+
+        public bool Equals(SheepPositionData other)
+        {
+            if (other == null) return false;
+            return (this.Id ==other.Id);
+        }
     }
 }

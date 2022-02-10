@@ -3,7 +3,7 @@ import { Polyline } from './Polyline'
 import { MapMarker } from "./MapMarker";
 import React, { useState, useEffect } from 'react';
 import { authenticationService } from "../Services/AuthenticationService";
-import { LatLong, SheepPosition, Tour, TourLocation } from "../Types/Tour";
+import { CombinedSheepPosition, CombinedSheepTourPosition, LatLong, SheepPosition, Tour, TourLocation } from "../Types/Tour";
 import { TourMap } from "./TourMap";
 import { mapFlockOfSheep } from "./MapFlockOfSheep";
 import { tourService } from "../Services/TourService";
@@ -13,6 +13,7 @@ import { useAppSelector } from "../hooks";
 export function MapContainer() {
   const [tours, setTours] = useState<Tour[]>([]);
   const [sheepTourPositions, setSheepTourPositions] = useState<LatLong[][]>([])
+  const [combinedSheepTourPositions, setCombinedSheepTourPositions] = useState<CombinedSheepTourPosition[]>([])
   const [map, setMap] = useState()
   const [maps, setMaps] = useState()
   const [mapProps, setMapProps] = useState<{map: any |null, maps: any | null, loaded: boolean}>({
@@ -29,14 +30,15 @@ export function MapContainer() {
 
   const fetchTours = async () => {
     if (loggedIn.length > 0) {
-      const res = await tourService.getTours(loggedIn) //authenticationService.getTours()
+      const res = await tourService.getCombinedSheepTourPositions() //authenticationService.getTours()
+      console.log(res)
       if (res.status === 200) {
-        const data: Tour[] = res.data;
+        setCombinedSheepTourPositions(res.data)
         //console.log(data)
-        const flockTour: {tours: Tour[], sheepTourPositions: LatLong[][] } = await mapFlockOfSheep(data)
+        /*const flockTour: {tours: Tour[], sheepTourPositions: LatLong[][] } = await mapFlockOfSheep(data)
         setTours(flockTour.tours)
         setSheepTourPositions(flockTour.sheepTourPositions)
-        console.log(flockTour)
+        console.log(flockTour)*/
         //setTours(res.data)
         // if (data.length > 1) {
         //   const _path = data.map((pos) => { return {lat: pos.latitude, lng: pos.longitude } })
@@ -89,14 +91,34 @@ export function MapContainer() {
         > 
         {
         mapProps.loaded ? (
-          sheepTourPositions.map((pos: LatLong[], index: number) => 
+          combinedSheepTourPositions.map((combinedTour: CombinedSheepTourPosition) => (
+            combinedTour.combinedSheepPositions.map((combinedSheep: CombinedSheepPosition, index: number) => (
+              <Polyline
+                key={index}
+                map={mapProps.map}
+                maps={mapProps.maps}
+                path={combinedSheep.locations.map((l: LatLong) =>  {return {lat: l.latitude, lng: l.longitude}})} />
+            ))
+          ))
+          /*sheepTourPositions.map((pos: LatLong[], index: number) => 
           <Polyline
             key={index}
             map={mapProps.map}
             maps={mapProps.maps}
             path={pos} />
-          )
+          )*/
            ) : null
+        }
+
+        { combinedSheepTourPositions &&
+          combinedSheepTourPositions.length > 0 ?
+          combinedSheepTourPositions.map((combinedTour: CombinedSheepTourPosition) => (
+            combinedTour.combinedSheepPositions.map((combinedSheep: CombinedSheepPosition) => (
+              combinedSheep.locations.map((location: LatLong, index: number) => (
+                <MapMarker lat={location.latitude} lng={location.longitude} text={combinedSheep.flockId.toString()} key={index} />
+              ))
+            ))
+          )) : null
         }
         
         { 

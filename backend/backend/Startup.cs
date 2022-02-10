@@ -50,7 +50,6 @@ namespace backend
                 .AddDefaultTokenProviders();
 
 
-
             // Adding Authentication  
             services.AddAuthentication(options =>
             {
