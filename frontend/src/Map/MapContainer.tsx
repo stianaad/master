@@ -1,4 +1,4 @@
-import GoogleMapReact from "google-map-react";
+import GoogleMapReact, { Heatmap } from "google-map-react";
 import { Polyline } from './Polyline'
 import { MapMarker } from "./MapMarker";
 import React, { useState, useEffect } from 'react';
@@ -62,6 +62,22 @@ export function MapContainer() {
     {lng: 10.305177, lat: 63.425854},
   ]
 
+  const heatMapData: Heatmap = {
+    positions: [
+      {lng: 10.30509, lat: 63.426847, weight: 5},
+      {lng: 10.304835, lat: 63.426892, weight: 2},
+      {lng: 10.304678, lat: 63.426715},
+      {lng: 10.304814, lat: 63.426684},
+      {lng: 10.305027, lat: 63.426528},
+      {lng: 10.304994, lat: 63.426273},
+      {lng: 10.305177, lat: 63.425854},
+    ],
+    options: {
+      radius: 20,
+      opacity: 0.6
+    }
+  }
+
   return(
     <div style={{ height: '100vh', width: '100%' }}>
       <div>heheeh</div>
@@ -70,6 +86,8 @@ export function MapContainer() {
         defaultCenter={{lat: 63.446827, lng: 10.421906}}
         defaultZoom={11}
         yesIWantToUseGoogleMapApiInternals
+        heatmapLibrary={true}
+        heatmap={heatMapData}
         onGoogleApiLoaded={({map, maps}) => {
           setMap(map)
           setMaps(maps)
