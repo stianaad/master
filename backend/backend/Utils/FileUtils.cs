@@ -194,5 +194,104 @@ namespace backend.Utils
             catch (Exception ex) { }
             return DateTime.MinValue;
         }
+
+        public static List<TourData> GenerateTours()
+        {
+            List<TourData> tours = new List<TourData>();
+            DateTime start = new DateTime(2019, 5, 17);
+            (List<SheepPositionTestData> sheepPositions, SheepPositionTestData baseSheep) = ReadTestDataHerds();
+            int id = 0;
+            for (int year = 2019; year < 2023; year++)
+            {
+                GenerateYearlyTours(year, tours, sheepPositions, baseSheep, id);
+            }
+            return tours;
+        }
+
+        public static void GenerateYearlyTours(int year, List<TourData> tours, List<SheepPositionTestData> measPoints, SheepPositionTestData baseSheep, int id)
+        {
+            DateTime currentTime = new DateTime(year, 5, 17);
+            DateTime endTime = new DateTime(year, 9, 15);
+            GenerateDeparturePeriod(tours, currentTime);
+            while (currentTime < endTime.Subtract(TimeSpan.FromDays(14)))
+            {
+                Random random = new Random();
+                List<SheepPositionData> sheepPositions = new List<SheepPositionData>();
+                foreach(SheepPositionTestData sheep in measPoints)
+                {
+                    int degrees = random.Next(0, 360);
+                    int distance = random.Next(50, 500);
+                    (double lat, double lng) = MapUtils.CalculateNewPoint(sheep.Latitude, sheep.Longitude, distance, degrees);
+                    sheepPositions.Add(new SheepPositionData()
+                    {
+                        Latitude = lat,
+                        Longitude = lng,
+                        TotalNumberOfSheep = sheep.TotalNumberOfSheep,
+                        TimeOfObsevation = currentTime,
+                    });
+                }
+                tours.Add(new TourData()
+                {
+                    SheepPositions = sheepPositions,
+                    Positions = new List<TourLocationData>(),
+                    Start = currentTime,
+                    IdTour = id
+                });
+                currentTime = currentTime.AddDays(7);
+                id++;
+            }
+
+            GenerateArrivalePeriod(tours, currentTime);
+            
+        }
+
+        public static void GenerateDeparturePeriod(List<TourData> tours, DateTime currentTime)
+        {
+
+        }
+
+        public static void GenerateArrivalePeriod(List<TourData> tours, DateTime currentTime)
+        {
+
+        }
+
+        public static (List<SheepPositionTestData>, SheepPositionTestData) ReadTestDataHerds()
+        {
+            List<SheepPositionTestData> sheeps = new List<SheepPositionTestData>();
+            SheepPositionTestData baseSheeps = null; 
+            try
+            {
+                string[] lines = System.IO.File.ReadAllLines(Path.Combine(Directory.GetCurrentDirectory(), "TestData/Svein-olaf-tur.tsv"));
+                if (lines.Length > 2)
+                {
+                    string[] columns = lines[1].Split('\t');
+                    baseSheeps = new SheepPositionTestData()
+                    {
+                        Latitude = columns[1].ToDouble(),
+                        Longitude = columns[0].ToDouble(),
+                        TotalNumberOfSheep = columns[2].ToInt()
+                    };
+                    for (int i = 2; i < lines.Length; i++)
+                    {
+                        columns = lines[i].Split('\t');
+                        sheeps.Add(new SheepPositionTestData()
+                        {
+                            Latitude = columns[1].ToDouble(),
+                            Longitude = columns[0].ToDouble(),
+                            TotalNumberOfSheep = columns[2].ToInt(),
+                            FromAngle = columns[3].ToInt(),
+                            ToAngle = columns[4].ToInt(),
+                            Distance = columns[5].ToInt(),
+                        });
+
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return (sheeps, baseSheeps);
+        }
     }
 }

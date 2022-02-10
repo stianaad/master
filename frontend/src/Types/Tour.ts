@@ -5,6 +5,10 @@ export interface Tour {
   positions: TourLocation[]
 }
 
+export interface ActivatableTour extends Tour {
+  active: boolean
+}
+
 export interface SheepPosition {
   id: number
   longitude: number
