@@ -1,5 +1,5 @@
 import GoogleMapReact from "google-map-react";
-import { Polygon, Polyline } from "google-maps-react";
+import { Polyline } from "./Polyline"
 import { MapMarker } from "./MapMarker";
 import React, { useState, useEffect, Fragment } from 'react';
 import { authenticationService } from "../Services/AuthenticationService";

@@ -22,6 +22,10 @@ class AuthenticationService {
     return service.get("/api/GetTours")
   }
 
+  getGeneratedTours() {
+    return service.get("/api/GetTestData")
+  }
+
   getTour(id: number | string) {
     return service.get(`/api/GetTour/${id}`)
   }

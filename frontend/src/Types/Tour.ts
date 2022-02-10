@@ -16,6 +16,10 @@ export interface CombinedSheepPosition {
   locations: LatLong[]
 }
 
+export interface ActivatableTour extends Tour {
+  active: boolean
+}
+
 export interface SheepPosition {
   id: number
   longitude: number

@@ -130,4 +130,15 @@ namespace backend.Models
             return (this.Id ==other.Id);
         }
     }
+
+    public class SheepPositionTestData
+    {
+        public double Longitude { get; set; }
+        public double Latitude { get; set; }
+        public int TotalNumberOfSheep { get; set; }
+        public int FromAngle { get; set; }
+        public int ToAngle { get; set; }
+        public int Distance { get; set; }
+
+    }
 }

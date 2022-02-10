@@ -52,7 +52,7 @@ namespace backend.Controllers
         [HttpGet("api/GetTours")]
         public async Task<ActionResult<IEnumerable<TourData>>> GetTours()
         {
-            return await _context.Tours.Include(t => t.SheepPositions).Include(t => t.Positions).ToListAsync();
+            return await _context.Tours.Include(t => t.SheepPositions).Include(t => t.Positions.OrderBy(pos => pos.TimePosition)).ToListAsync();
         }
 
         [HttpGet("api/GetTourLocations")]
@@ -66,12 +66,25 @@ namespace backend.Controllers
             //    tourLocations = FileUtils.ReadTourLocations(sr, DateTime.MinValue, 5);
             //}
             List<TourLocationData> tourLocations = new List<TourLocationData>();
-            string path = Path.Combine(Directory.GetCurrentDirectory(), "TestData/TourLocation.txt");
+            string path = Path.Combine(Directory.GetCurrentDirectory(), "TestData/TourLocation2.txt");
             using (var sr = new StreamReader(path))
             {
                 tourLocations = FileUtils.ReadTourLocations(sr, DateTime.MinValue, 5);
             }
             return tourLocations;
+        }
+
+        [HttpGet("api/GetTestData")]
+        public async Task<ActionResult<IEnumerable<TourData>>> GetTestData()
+        {
+            //var _files = Request.Form.Files;
+            //var tourLocationFile = _files.GetFile("TourLocations");
+            //List<TourLocationData> tourLocations = new List<TourLocationData>();
+            //using (StreamReader sr = new StreamReader(tourLocationFile.OpenReadStream()))
+            //{
+            //    tourLocations = FileUtils.ReadTourLocations(sr, DateTime.MinValue, 5);
+            //}
+            return FileUtils.GenerateTours();
         }
     }
 }
