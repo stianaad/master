@@ -14,6 +14,7 @@ export function MapContainer() {
   const [tours, setTours] = useState<Tour[]>([]);
   const [sheepTourPositions, setSheepTourPositions] = useState<LatLong[][]>([])
   const [combinedSheepTourPositions, setCombinedSheepTourPositions] = useState<CombinedSheepTourPosition[]>([])
+  const [sheepHeatMap, setSheepHeatMap] = useState<any[]>([])
   const [map, setMap] = useState()
   const [maps, setMaps] = useState()
   const [mapProps, setMapProps] = useState<{map: any |null, maps: any | null, loaded: boolean}>({
@@ -53,6 +54,7 @@ export function MapContainer() {
   const fetchGeneratedTours = async () => {
     const res = await authenticationService.getGeneratedTours()
     console.log(res.data)
+    setTours(res.data)
   }
 
 
@@ -70,16 +72,23 @@ export function MapContainer() {
     {lng: 10.305177, lat: 63.425854},
   ]
 
+  useEffect(() => {
+    createHeatMap()
+  }, [tours])
+
+  const createHeatMap =  async () => {
+    let arr: any = []
+    tours.map((tour:Tour) => {
+      tour.sheepPositions.map((sheep: SheepPosition, index : number) => {
+        arr.push({lat: sheep.latitude, lng: sheep.longitude, weight: sheep.totalNumberOfSheep })
+      }
+    )})
+    console.log(arr)
+    setSheepHeatMap(arr)
+  }
+
   const heatMapData: Heatmap = {
-    positions: [
-      {lng: 10.30509, lat: 63.426847, weight: 5},
-      {lng: 10.304835, lat: 63.426892, weight: 2},
-      {lng: 10.304678, lat: 63.426715},
-      {lng: 10.304814, lat: 63.426684},
-      {lng: 10.305027, lat: 63.426528},
-      {lng: 10.304994, lat: 63.426273},
-      {lng: 10.305177, lat: 63.425854},
-    ],
+    positions: sheepHeatMap,
     options: {
       radius: 20,
       opacity: 0.6
@@ -147,13 +156,13 @@ export function MapContainer() {
           )) : null
         }
         
-        { 
+        { /*
         tours.length > 0 ? 
           tours.map((tour:Tour) => (
             tour.sheepPositions.map((sheep: SheepPosition, index : number) => (
               <MapMarker lat={sheep.latitude} lng={sheep.longitude} text={sheep.id.toString()} key={index} />
             )
-          ))) : null
+          ))) : null*/
         }
         {
           /*tours.map((tour: Tour) => (
