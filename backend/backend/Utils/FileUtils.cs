@@ -201,7 +201,7 @@ namespace backend.Utils
             DateTime start = new DateTime(2019, 5, 17);
             (List<SheepPositionTestData> sheepPositions, SheepPositionTestData baseSheep) = ReadTestDataHerds();
             int id = 0;
-            for (int year = 2019; year < 2023; year++)
+            for (int year = 2019; year < 2020; year++)
             {
                 GenerateYearlyTours(year, tours, sheepPositions, baseSheep, id);
             }

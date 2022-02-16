@@ -15,7 +15,7 @@ const useStyles = makeStyles({
   marker: {
     height: "30px",
     width: "30px",
-    backgroundColor: "red",
+    //backgroundColor: "red",
     borderRadius: "50%",
     textAlign: "center",
     marginBottom: "15px",
@@ -27,9 +27,9 @@ const useStyles = makeStyles({
 });
 
 
-export const MapMarker = (props: {lat: number, lng: number, text?: string}) => {
+export const MapMarker = (props: {lat: number, lng: number, text?: string, backgroundColor: string}) => {
   const classes = useStyles()
-  return <div className={classes.marker}>
+  return <div className={classes.marker} style={{backgroundColor: props.backgroundColor}}>
     <Typography variant="h6" className={classes.text}>{props.text}</Typography>
     {/*<img style={markerStyle} src={Marker} alt="pin" />*/}
   </div>

@@ -8,13 +8,24 @@ import { TourMap } from "./TourMap";
 import { mapFlockOfSheep } from "./MapFlockOfSheep";
 import { tourService } from "../Services/TourService";
 import { useAppSelector } from "../hooks";
+import { animalService } from "../Services/AnimalService";
+import { Jerv } from "../Types/Jerv";
+let utm = require("utm")
+//import utm from "utm"
 
+interface MapContainerProps {
+  combinedSheepTourPositions: CombinedSheepTourPosition[]
+  startTourIndex: number,
+  sheepFlock: boolean,
+  heatmap: boolean
+}
 
-export function MapContainer() {
+export function MapContainer(props: MapContainerProps) {
   const [tours, setTours] = useState<Tour[]>([]);
   const [sheepTourPositions, setSheepTourPositions] = useState<LatLong[][]>([])
-  const [combinedSheepTourPositions, setCombinedSheepTourPositions] = useState<CombinedSheepTourPosition[]>([])
+  //const [combinedSheepTourPositions, setCombinedSheepTourPositions] = useState<CombinedSheepTourPosition[]>([])
   const [sheepHeatMap, setSheepHeatMap] = useState<any[]>([])
+  const [jervData, setJervData] = useState<Jerv[]>([])
   const [map, setMap] = useState()
   const [maps, setMaps] = useState()
   const [mapProps, setMapProps] = useState<{map: any |null, maps: any | null, loaded: boolean}>({
@@ -26,40 +37,31 @@ export function MapContainer() {
   const loggedIn = useAppSelector((state) => state.loggedIn.value)
 
   useEffect(() => {
-    fetchTours()
+    //fetchTours()
     fetchGeneratedTours()
+    fetchJerv()
   }, [])
-
-  const fetchTours = async () => {
-    if (loggedIn.length > 0) {
-      const res = await tourService.getCombinedSheepTourPositions() //authenticationService.getTours()
-      console.log(res)
-      if (res.status === 200) {
-        setCombinedSheepTourPositions(res.data)
-        //console.log(data)
-        /*const flockTour: {tours: Tour[], sheepTourPositions: LatLong[][] } = await mapFlockOfSheep(data)
-        setTours(flockTour.tours)
-        setSheepTourPositions(flockTour.sheepTourPositions)
-        console.log(flockTour)*/
-        //setTours(res.data)
-        // if (data.length > 1) {
-        //   const _path = data.map((pos) => { return {lat: pos.latitude, lng: pos.longitude } })
-        //   console.log(_path)
-        //   setPath(_path)
-        // }
-      }
-    }
-  }
 
   const fetchGeneratedTours = async () => {
     const res = await authenticationService.getGeneratedTours()
-    console.log(res.data)
-    setTours(res.data)
+    //console.log(res.data)
+    //setTours(res.data)
   }
 
-
-  const onMapLoaded = () => {
-
+  const fetchJerv = async () => {
+    const res = await animalService.getJerv()
+    if(res.data.length > 0) {
+      //console.log(res.data)
+      //The point start at index 7 and ends at length - 1
+      const jerv: Jerv[] = await res.data.map((data: Jerv) => {
+        const utmPoint = data.wkt.substring(7, data.wkt.length-1).split(" ")
+        const {latitude, longitude} = utm.toLatLon(utmPoint[0], utmPoint[1], 33, "N", undefined, false)
+        data.latitude = latitude
+        data.longitude = longitude
+        return data
+      })
+      setJervData(jerv)
+    }
   }
 
   const path2 = [
@@ -73,17 +75,29 @@ export function MapContainer() {
   ]
 
   useEffect(() => {
-    createHeatMap()
-  }, [tours])
+    if(props.heatmap){
+      createHeatMap()
+    } else {
+      setSheepHeatMap([])
+    }
+  }, [props.combinedSheepTourPositions, props.heatmap, props.startTourIndex])
 
   const createHeatMap =  async () => {
     let arr: any = []
-    tours.map((tour:Tour) => {
+
+    props.combinedSheepTourPositions.slice(props.startTourIndex, props.startTourIndex +1).map((sheepTour: CombinedSheepTourPosition) => {
+      sheepTour.combinedSheepPositions.map((sheep: CombinedSheepPosition) => {
+        sheep.locations.map((loc: LatLong) => {
+          arr.push({lat: loc.latitude, lng: loc.longitude, weight: sheep.totalNumberOfSheep/sheep.locations.length })
+        })
+      })
+    })
+
+    /*tours.map((tour:Tour) => {
       tour.sheepPositions.map((sheep: SheepPosition, index : number) => {
         arr.push({lat: sheep.latitude, lng: sheep.longitude, weight: sheep.totalNumberOfSheep })
       }
-    )})
-    console.log(arr)
+    )})*/
     setSheepHeatMap(arr)
   }
 
@@ -100,7 +114,7 @@ export function MapContainer() {
       <div>heheeh</div>
       <GoogleMapReact 
         bootstrapURLKeys={{key:"AIzaSyB-xQ9kta6HYHD5OtV9SF_ybPAD31Edc0w"}}
-        defaultCenter={{lat: 63.446827, lng: 10.421906}}
+        defaultCenter={{lat: 62.702802875467334, lng: 9.14644192722107}}
         defaultZoom={11}
         yesIWantToUseGoogleMapApiInternals
         heatmapLibrary={true}
@@ -126,7 +140,7 @@ export function MapContainer() {
         > 
         {
         mapProps.loaded ? (
-          combinedSheepTourPositions.map((combinedTour: CombinedSheepTourPosition) => (
+          props.combinedSheepTourPositions.slice(props.startTourIndex, props.startTourIndex +1).map((combinedTour: CombinedSheepTourPosition) => (
             combinedTour.combinedSheepPositions.map((combinedSheep: CombinedSheepPosition, index: number) => (
               <Polyline
                 key={index}
@@ -145,14 +159,22 @@ export function MapContainer() {
            ) : null
         }
 
-        { combinedSheepTourPositions &&
-          combinedSheepTourPositions.length > 0 ?
-          combinedSheepTourPositions.map((combinedTour: CombinedSheepTourPosition) => (
+        { props.combinedSheepTourPositions &&
+          props.combinedSheepTourPositions.length > 0 &&
+          props.sheepFlock ?
+          props.combinedSheepTourPositions.slice(props.startTourIndex, props.startTourIndex +1).map((combinedTour: CombinedSheepTourPosition) => (
             combinedTour.combinedSheepPositions.map((combinedSheep: CombinedSheepPosition) => (
               combinedSheep.locations.map((location: LatLong, index: number) => (
-                <MapMarker lat={location.latitude} lng={location.longitude} text={combinedSheep.flockId.toString()} key={index} />
+                <MapMarker backgroundColor="red" lat={location.latitude} lng={location.longitude} text={combinedSheep.flockId.toString()} key={index} />
               ))
             ))
+          )) : null
+        }
+
+        {
+          jervData.length > 0 ? 
+          jervData.map((jerv: Jerv, index: number) => (
+            <MapMarker backgroundColor="blue" lat={jerv.latitude} lng={jerv.longitude} text={jerv.artsIDPrøve} key={index} />
           )) : null
         }
         

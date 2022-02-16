@@ -2218,6 +2218,11 @@
   resolved "https://registry.npmjs.org/@types/trusted-types/-/trusted-types-2.0.2.tgz"
   integrity sha512-F5DIZ36YVLE+PN+Zwws4kJogq47hNgX3Nx6WyDJ3kcplxyke3XIzB8uK5n/Lpm1HBsbGzd6nmGehL8cPekP+Tg==
 
+"@types/utm@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@types/utm/-/utm-1.1.1.tgz#50f08a5bfd62dfad3916a8af34e96a70de5f3241"
+  integrity sha512-iIqxs3T7X2drAkeTn0DE3Xpcx5z0MHXJFnjvvWCTzZDF0CnM5D2CGn4eEFZi+uHNnCXx4j/3vA8MO6+xXpQYqA==
+
 "@types/ws@^8.2.2":
   version "8.2.2"
   resolved "https://registry.npmjs.org/@types/ws/-/ws-8.2.2.tgz"
@@ -9158,6 +9163,11 @@ utils-merge@1.0.1:
   version "1.0.1"
   resolved "https://registry.npmjs.org/utils-merge/-/utils-merge-1.0.1.tgz"
   integrity sha1-n5VxD1CiZ5R7LMwSR0HBAoQn5xM=
+
+utm@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/utm/-/utm-1.1.1.tgz#c6ec8789a59aae21ffad160e7b51bd4bdebec18f"
+  integrity sha512-rJIv6i1u86OVy91Burh/6oRFfE8zOCd6Unc8fvA0N7fjQT43ogqhVeUp5NByaZPe278QyiA5wMMEaAU9Jx6QRA==
 
 uuid@^8.3.2:
   version "8.3.2"

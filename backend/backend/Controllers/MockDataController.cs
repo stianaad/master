@@ -20,6 +20,29 @@ namespace backend.Controllers
             _context = context;
         }
 
+        [HttpPost("api/generatedData/uploadTour")]
+        public async Task<IActionResult> UploadGeneratedTour()
+        {
+            /* var _files = Request.Form.Files;
+             var tourFile = _files.GetFile("Tour");
+             var tourLocationFile = _files.GetFile("TourLocations");
+             var sheepLocationFile = _files.GetFile("SheepPositions");
+             TourData tour = FileUtils.ReadTourDataFromFiles(tourFile, tourLocationFile, sheepLocationFile, 5);*/
+            List<TourData> tourList = FileUtils.GenerateTours();
+            if (tourList.Count> 0)
+            {
+                tourList.ForEach((TourData t) =>
+                {
+                    t.Email = "generated@test.com";
+                    //t.IdTour = 0;
+                    _context.Tours.Add(t);
+
+                });
+                await _context.SaveChangesAsync();
+            }
+            return Ok();
+        }
+
         [HttpPost("api/uploadTour")]
         public async Task<IActionResult> UploadTour()
         {

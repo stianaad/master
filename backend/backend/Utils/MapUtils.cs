@@ -155,7 +155,7 @@ namespace backend.Utils
                     {
                         //Console.WriteLine("Distance: " + distance + "Id " + sheepCurrentTour.Id + " ID " + sheepNextTour.Id);
                     }
-                    if(distance < 150 && distance != 0 && !flock.Exists(s => s.Id == sheepNextTour.Id))
+                    if(distance < 500 && distance != 0 && !flock.Exists(s => s.Id == sheepNextTour.Id))
                     {
                         flock.Add(sheepNextTour);
                         //Console.WriteLine("Fra ID" + sheepCurrentTour.Id + "Til ID" + sheepNextTour.Id+ "Distance  " + distance);
