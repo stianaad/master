@@ -7,7 +7,8 @@ export interface Tour {
 
 export interface CombinedSheepTourPosition {
   idTour: number,
-  combinedSheepPositions: CombinedSheepPosition[]
+  combinedSheepPositions: CombinedSheepPosition[],
+  tourTime: Date
 }
 
 export interface CombinedSheepPosition {
