@@ -151,10 +151,6 @@ namespace backend.Utils
                         continue;
                     }
                     double distance = GetDistance(sheepCurrentTour.Latitude, sheepCurrentTour.Longitude, sheepNextTour.Latitude, sheepNextTour.Longitude);
-                    if (sheepCurrentTour.IdTour == 7 )
-                    {
-                        //Console.WriteLine("Distance: " + distance + "Id " + sheepCurrentTour.Id + " ID " + sheepNextTour.Id);
-                    }
                     if(distance < 500 && distance != 0 && !flock.Exists(s => s.Id == sheepNextTour.Id))
                     {
                         flock.Add(sheepNextTour);
@@ -188,6 +184,7 @@ namespace backend.Utils
                     int totalNumberOfSheep = 0;
                     List<Location> locations = new List<Location>();
                     int idTour = sheepFlock[0].IdTour;
+                    DateTime dateTime = sheepFlock[0].TimeOfObsevation;
                     sheepFlock.ForEach((SheepPositionData sheep) =>
                     {
                         totalNumberOfSheep += sheep.TotalNumberOfSheep;
@@ -199,7 +196,7 @@ namespace backend.Utils
                     //If the next sheepFlock is on the next tour, add all CombinedSheepPosition to the CombinedSheepTourPosition
                     if((flockOfSheep.Count > index+1 && flockOfSheep[index+1][0].IdTour != sheepFlock[0].IdTour) || flockOfSheep.Count == index + 1)
                     {
-                        CombinedSheepTourPositionData dataTour =  new CombinedSheepTourPositionData(sheepFlock[0].IdTour, combined);
+                        CombinedSheepTourPositionData dataTour =  new CombinedSheepTourPositionData(sheepFlock[0].IdTour, combined, dateTime);
                         //Console.WriteLine(dataTour);
                         combinedTour.Add(dataTour);
                         combined = new List<CombinedSheepPositionData>();

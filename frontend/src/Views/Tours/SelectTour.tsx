@@ -26,16 +26,18 @@ export function SelectTour() {
   const classes = useStyles()
   const loggedIn = useAppSelector((state) => state.loggedIn.value)
   const [combinedSheepTourPositions, setCombinedSheepTourPositions] = useState<CombinedSheepTourPosition[]>([])
+  const [currentSelectedSheepTourPositions, setCurrentSelectedSheepTourPositions] = useState<CombinedSheepTourPosition[]>([])
   const [startTourIndex, setStartTourIndex] = useState<number>(0)
   const [heatmap, setHeatmap] = useState<boolean>(false)
-  const [sheepFlock, setSheepFlock] = useState<boolean>(false)
+  const [sheepFlock, setSheepFlock] = useState<boolean>(true)
 
   const fetchTours = async () => {
     if (loggedIn.length > 0) {
       const res = await tourService.getCombinedSheepTourPositions() //authenticationService.getTours()
       console.log(res.data)
       if (res.status === 200) {
-        setCombinedSheepTourPositions(res.data.splice(0,10))
+        setCombinedSheepTourPositions(res.data)
+        setCurrentSelectedSheepTourPositions(res.data.slice(startTourIndex, startTourIndex + 1))
       }
     }
   }
@@ -44,15 +46,31 @@ export function SelectTour() {
     fetchTours()
   }, [])
 
+  /*useEffect(() => {
+    setCurrentSelectedSheepTourPositions(combinedSheepTourPositions.slice(startTourIndex, startTourIndex + 1))
+  }, [startTourIndex])*/
+
   return (
     <div className={classes.root}>
-      <Typography variant="h2">Velg dato</Typography>
       <Grid container>
         <Grid item xs={3}>
-          <NavigateTour sheepFlock={sheepFlock} setSheepFlock={setSheepFlock} heatmap={heatmap} setHeatmap={setHeatmap} combinedSheepTourPositions={combinedSheepTourPositions} startTourIndex={startTourIndex} setStartTourIndex={setStartTourIndex} />
+          <NavigateTour 
+          sheepFlock={sheepFlock} 
+          setSheepFlock={setSheepFlock}  
+          currentSelectedSheepTourPositions={currentSelectedSheepTourPositions}
+          setCurrentSelectedSheepTourPositions={setCurrentSelectedSheepTourPositions} 
+          heatmap={heatmap} 
+          setHeatmap={setHeatmap} 
+          combinedSheepTourPositions={combinedSheepTourPositions} 
+          startTourIndex={startTourIndex} 
+          setStartTourIndex={setStartTourIndex} />
         </Grid>
         <Grid item xs={9}>
-          <MapContainer sheepFlock={sheepFlock} heatmap={heatmap} combinedSheepTourPositions={combinedSheepTourPositions} startTourIndex={startTourIndex} />
+          <MapContainer 
+          sheepFlock={sheepFlock} 
+          heatmap={heatmap} 
+          currentSelectedSheepTourPositions={currentSelectedSheepTourPositions} 
+          startTourIndex={startTourIndex} />
         </Grid>
       </Grid>
     </div>

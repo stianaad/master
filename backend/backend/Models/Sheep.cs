@@ -48,12 +48,14 @@ namespace backend.Models
     public class CombinedSheepTourPositionData
     {
         public int IdTour { get; set; }
+        public DateTime tourTime { get; set; }
         public List<CombinedSheepPositionData> CombinedSheepPositions { get; set; }
 
-        public CombinedSheepTourPositionData(int IdTour, List<CombinedSheepPositionData> combinedSheepPositions)
+        public CombinedSheepTourPositionData(int IdTour, List<CombinedSheepPositionData> combinedSheepPositions, DateTime tourTime)
         {
             this.IdTour = IdTour;
             this.CombinedSheepPositions = combinedSheepPositions;
+            this.tourTime = tourTime;
         }
 
         public override string ToString()

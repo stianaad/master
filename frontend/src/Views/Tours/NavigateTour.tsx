@@ -1,12 +1,28 @@
-import { Button, FormControlLabel, Grid, Switch, Typography } from "@mui/material"
+import { Button, FormControlLabel, FormGroup, Grid, Switch, Typography } from "@mui/material"
 import { makeStyles } from "@mui/styles";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { CombinedSheepTourPosition } from "../../Types/Tour"
 
 const useStyles = makeStyles({
   pCurrent: {
     color: "red"
   },
+  notActiveWeekOrMonth: {
+    color: "grey"
+  },
+  activeWeekOrMonth: {
+    color: "blue"
+  },
+  header:{
+    paddingTop: "3vh"
+  },
+  tourIds: {
+    overflowY: "auto",
+    height: "70vh"
+  },
+  switch: {
+    marginLeft: "1vw",
+  }
 });
 
 
@@ -17,39 +33,102 @@ interface NavigateTourProps {
   sheepFlock: boolean,
   setSheepFlock: Dispatch<SetStateAction<boolean>>,
   heatmap: boolean,
-  setHeatmap: Dispatch<SetStateAction<boolean>>
+  setHeatmap: Dispatch<SetStateAction<boolean>>,
+  setCurrentSelectedSheepTourPositions: Dispatch<SetStateAction<CombinedSheepTourPosition[]>>,
+  currentSelectedSheepTourPositions: CombinedSheepTourPosition[]
 }
 
 export const NavigateTour = (props: NavigateTourProps) => {
   const classes = useStyles()
+  const [week, setWeek] = useState<boolean>(true) //False is month
+  const [monthOverview, setMonthOverview] = useState<string[]>([])
 
+  //When the user click next og previeous week/month
   const changeIndex = (value: number) => {
-    if( (props.startTourIndex + value) < props.combinedSheepTourPositions.length && (props.startTourIndex + value) > -1) {
-      props.setStartTourIndex(props.startTourIndex + value)
-    } else if (props.startTourIndex + value >= props.combinedSheepTourPositions.length) {
-      props.setStartTourIndex(0)
+    if(week) {
+      changeWeek(value)
     } else {
-      props.setStartTourIndex(props.combinedSheepTourPositions.length - 1)
+      changeMonth(value)
     }
   }
+
+  const changeWeek = (value: number) => {
+    //Find the current index
+    let tempIndex = 0
+    if( (props.startTourIndex + value) < props.combinedSheepTourPositions.length && (props.startTourIndex + value) > -1) {
+       tempIndex = props.startTourIndex + value
+    } else if (props.startTourIndex + value < 0) {
+      tempIndex = props.combinedSheepTourPositions.length - 1
+    }
+
+    props.setStartTourIndex(tempIndex)
+    props.setCurrentSelectedSheepTourPositions(props.combinedSheepTourPositions.slice(tempIndex, tempIndex + 1))
+  }
+
+  const changeMonth = (value: number) => {
+    //Find the current index
+    let tempIndex = 0
+    if( (props.startTourIndex + value) < monthOverview.length && (props.startTourIndex + value) > -1 ) {
+      tempIndex = props.startTourIndex + value
+    } else if (props.startTourIndex + value < 0) {
+      tempIndex = monthOverview.length - 1
+    }
+
+    const currentMonth = monthOverview[tempIndex]
+    const newSheepTourArray = props.combinedSheepTourPositions.filter((sheep: CombinedSheepTourPosition) => sheep.tourTime.toString().slice(0,7) === currentMonth)
+    props.setCurrentSelectedSheepTourPositions(newSheepTourArray)
+    props.setStartTourIndex(tempIndex)
+  }
+
+  //Create a array with all the months
+  useEffect(() => {
+    if(props.combinedSheepTourPositions.length > 0) {
+      let tempMonthArray: string[] = []
+      let tempMonth = props.combinedSheepTourPositions[0].tourTime.toString().slice(0,7)
+      props.combinedSheepTourPositions.forEach((sheepTour: CombinedSheepTourPosition, index: number) => {
+        const currentMonth = sheepTour.tourTime.toString().slice(0,7)
+        //Check if the current month is equal to the previous
+        if( currentMonth != tempMonth) {
+          tempMonthArray.push(tempMonth)
+          tempMonth = currentMonth
+        }
+        //If it is the last index, and the month is not pushed yet
+        if(index + 1 === props.combinedSheepTourPositions.length) {
+          tempMonthArray.push(tempMonth)
+        }
+      })
+      console.log(tempMonthArray)
+      setMonthOverview(tempMonthArray)
+    }
+  }, [props.combinedSheepTourPositions])
+
+  //Update the sheepTour array when it changes from week to month and vice versa
+  useEffect(() => {
+    changeIndex(-props.startTourIndex)
+  }, [week])
+
+  
   return(
     <>
-      <Typography variant="h4">Turoversikt</Typography>
-      <FormControlLabel control={<Switch checked={props.heatmap} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setHeatmap(event.target.checked)} />} label="Heatmap" />
-      <FormControlLabel control={<Switch checked={props.sheepFlock} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setSheepFlock(event.target.checked)} />} label="Saueflokker" />
+      <Typography variant="h4" className={classes.header}>Turoversikt</Typography>
+      <FormGroup className={classes.switch}>
+        <FormControlLabel control={<Switch checked={props.heatmap} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setHeatmap(event.target.checked)} />} label="Heatmap" />
+        <FormControlLabel control={<Switch checked={props.sheepFlock} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setSheepFlock(event.target.checked)} />} label="Saueflokker" />
+      </FormGroup>
       
       <Grid container>
         <Grid item xs={6}>
-          <Button >Uke</Button>
+          <Button className={week ? classes.activeWeekOrMonth : classes.notActiveWeekOrMonth} onClick={() => {setWeek(true); props.setStartTourIndex(0)}} >Uke</Button>
         </Grid>
         <Grid item xs={6}>
-          <Button >Måned</Button>
+          <Button className={!week ? classes.activeWeekOrMonth : classes.notActiveWeekOrMonth} onClick={() => {setWeek(false); props.setStartTourIndex(0)}}>Måned</Button>
         </Grid>
       </Grid>
-
-      {props.combinedSheepTourPositions.map((combinedSheep : CombinedSheepTourPosition, index: number) => (
-        <p className={props.startTourIndex === index ? classes.pCurrent : "" }>{combinedSheep.idTour}</p>
-      ))}
+      <div className={classes.tourIds}>
+        {props.combinedSheepTourPositions.map((combinedSheep : CombinedSheepTourPosition, index: number) => (
+          <p key={index} className={ (week && props.startTourIndex === index || props.currentSelectedSheepTourPositions.some((value: CombinedSheepTourPosition) => value.idTour === combinedSheep.idTour)) ? classes.pCurrent : "" }>{combinedSheep.idTour}</p>
+          ))}
+      </div>
 
       <Grid container >
         <Grid item xs={6}>
