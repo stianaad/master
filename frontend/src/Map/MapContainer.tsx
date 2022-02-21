@@ -18,7 +18,8 @@ interface MapContainerProps {
   currentSelectedSheepTourPositions: CombinedSheepTourPosition[]
   startTourIndex: number,
   sheepFlock: boolean,
-  heatmap: boolean
+  heatmap: boolean,
+  opacityBonitet: number
 }
 
 export function MapContainer(props: MapContainerProps) {
@@ -151,109 +152,31 @@ export function MapContainer(props: MapContainerProps) {
             loaded: true,
           })
 
-          /*const t =  new maps.KmlLayer({
-            url: 'https://wms.nibio.no/cgi-bin/ar250?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=true&LAYERS=Bonitet&CRS=EPSG%3A25833&STYLES=&WIDTH=998&HEIGHT=1204&BBOX=200580.47491253127%2C6965501.835524839%2C206897.8716612783%2C6973123.223987256'
-          })
-          t.setMap(map)*/
-
-          /*map.mapTypes.set("test", new maps.ImageMapType({
-            getTileUrl: async (cord: any, zoom: any) => {
-              /*if (bonitetData?.height && bonitetData.ne && bonitetData.sw && bonitetData.width) {
-                const sw_utm: {easting: number, northing: number, zoneLetter: string, zoneNum: number} = utm.fromLatLon(bonitetData.sw.latitude, bonitetData.sw.longitude, 33)
-                const ne_utm: {easting: number, northing: number, zoneLetter: string, zoneNum: number} = utm.fromLatLon(bonitetData.ne.latitude, bonitetData.ne.longitude, 33)
-                //return `https://wms.nibio.no/cgi-bin/ar250?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&LAYERS=Bonitet&CRS=EPSG:25833&STYLES=&WIDTH=${bonitetData.width}&HEIGHT=${bonitetData.height}&BBOX=${sw_utm.easting},${sw_utm.northing},${ne_utm.easting},${ne_utm.northing}`
-              }
-              return 'https://wms.nibio.no/cgi-bin/ar250?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&LAYERS=Bonitet&CRS=EPSG:25833&STYLES=&WIDTH=1006&HEIGHT=1227&BBOX=190994.57269703568,6959370.228024009,201081.60670746968,6971673.20091745'
-            },
-            tileSize: new maps.Size(256,256),//(bonitetData?.width,bonitetData?.height),
-            name: "t", 
-            maxZoom: 18
-          }))
-          map.setMapTypeId("test")*/
-
-          // map.mapTypes.set("s", new maps.ImageMapType({
-          //   getTileUrl: async (cords: any, zoom: any) => {
-          //     let boundsNE = await map.getBounds().getNorthEast()
-          //     let boundsSW = await map.getBounds().getSouthWest()
-          //     const ne_lat = boundsNE.lat()
-          //     const ne_lng = boundsNE.lng()
-          //     const sw_lat = boundsSW.lat()
-          //     const sw_lng = boundsSW.lng()
-
-          //     const sw_utm: {easting: number, northing: number, zoneLetter: string, zoneNum: number} = utm.fromLatLon(sw_lat, sw_lng, 33)
-          //     const ne_utm: {easting: number, northing: number, zoneLetter: string, zoneNum: number} = utm.fromLatLon(ne_lat, ne_lng, 33)
-          //     console.log("SW", sw_utm)
-              
-          //     const str = `https://wms.nibio.no/cgi-bin/ar250?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&LAYERS=Bonitet&CRS=EPSG:25833&STYLES=&WIDTH=${map.getDiv().offsetWidth}&HEIGHT=${map.getDiv().offsetHeight}&BBOX=${sw_utm.easting},${sw_utm.northing},${ne_utm.easting},${ne_utm.northing}`
-          //     console.log(str)
-          //     //return str
-          //     return 'https://wms.nibio.no/cgi-bin/ar250?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&LAYERS=Bonitet&CRS=EPSG:25833&STYLES=&WIDTH=1006&HEIGHT=1227&BBOX=190994.57269703568,6959370.228024009,201081.60670746968,6971673.20091745'
-          //   },
-          //   tileSize: new maps.Size(256, 256),//(bon?.width,bon?.height),
-          //   name: "s_master",
-          //   maxZoom: 18
-          // }))
-          // map.setMapTypeId("s")
-
-
-          /*map.mapTypes.set("norgeskart", new maps.ImageMapType({
+          const norgeskartLayer = new maps.ImageMapType({
             getTileUrl: (cord: any, zoom: any) => {
-              console.log(cord)
-              //console.log(cord)
-              //return `https://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=norgeskart_bakgrunn&zoom=${zoom}&x=${cord.x}&y=${cord.y}`
-              //return 'https://wms.nibio.no/cgi-bin/ar250?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&LAYERS=Bonitet&CRS=EPSG:25833&STYLES=&WIDTH=1006&HEIGHT=1227&BBOX=190994.57269703568,6959370.228024009,201081.60670746968,6971673.20091745'
-              let boundsNE =  map.getBounds().getNorthEast()
-              let boundsSW = map.getBounds().getSouthWest()
-              const ne_lat = boundsNE.lat()
-              const ne_lng = boundsNE.lng()
-              const sw_lat = boundsSW.lat()
-              const sw_lng = boundsSW.lng()
-
-              const sw_utm: {easting: number, northing: number, zoneLetter: string, zoneNum: number} = utm.fromLatLon(sw_lat, sw_lng, 33)
-              const ne_utm: {easting: number, northing: number, zoneLetter: string, zoneNum: number} = utm.fromLatLon(ne_lat, ne_lng, 33)
-              //console.log("SW", sw_utm)
               
-              //const str = `https://wms.nibio.no/cgi-bin/ar250?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&LAYERS=Bonitet&CRS=EPSG:25833&STYLES=&WIDTH=${map.getDiv().offsetWidth}&HEIGHT=${map.getDiv().offsetHeight}&BBOX=${sw_utm.easting},${sw_utm.northing},${ne_utm.easting},${ne_utm.northing}`
-              const str = `https://wms.nibio.no/cgi-bin/ar250?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&LAYERS=Bonitet&CRS=EPSG:25833&STYLES=&WIDTH=256&HEIGHT=256&BBOX=${xyzToBounds(cord.x, cord.y, zoom).join(",")}`
-              console.log(str)
+              const str = `https://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=norgeskart_bakgrunn&zoom=${zoom}&x=${cord.x}&y=${cord.y}` 
               return str
             },
-            //tileSize: new maps.Size(256,256),// new maps.Size(map.getDiv().offsetWidth,map.getDiv().offsetHeight),
-            name: "master", 
+            tileSize: new maps.Size(256, 256),// new maps.Size(map.getDiv().offsetWidth,map.getDiv().offsetHeight),
+            name: "norgeskart_master", 
             maxZoom: 18,
-            opacity: 0.5
-          }))
-          map.setMapTypeId("norgeskart")*/
-
-          const height = map.getDiv().offsetHeight;
-          const width = map.getDiv().offsetWidth;
-
-          /*const t = new maps.ImageMapType({
+            opacity: 1
+          })
+          
+          console.log(props.opacityBonitet)
+          const bonitetLayer = new maps.ImageMapType({
             getTileUrl: (cord: any, zoom: any) => {
-              //return `https://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=norgeskart_bakgrunn&zoom=${zoom}&x=${cord.x}&y=${cord.y}`
-              //return 'https://wms.nibio.no/cgi-bin/ar250?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&LAYERS=Bonitet&CRS=EPSG:25833&STYLES=&WIDTH=1006&HEIGHT=1227&BBOX=190994.57269703568,6959370.228024009,201081.60670746968,6971673.20091745'
-              let boundsNE =  map.getBounds().getNorthEast()
-              let boundsSW = map.getBounds().getSouthWest()
-              const ne_lat = boundsNE.lat()
-              const ne_lng = boundsNE.lng()
-              const sw_lat = boundsSW.lat()
-              const sw_lng = boundsSW.lng()
-              console.log("SW, lat ", sw_lat, "long, ", sw_lng)
-              //console.log("NE, lat ", ne_lat, "long, ", ne_lng)
-
-              const sw_utm: {easting: number, northing: number, zoneLetter: string, zoneNum: number} = utm.fromLatLon(sw_lat, sw_lng, 33)
-              const ne_utm: {easting: number, northing: number, zoneLetter: string, zoneNum: number} = utm.fromLatLon(ne_lat, ne_lng, 33)
-              
-              const str = `https://wms.nibio.no/cgi-bin/ar250?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&LAYERS=Bonitet&CRS=EPSG:25833&STYLES=&WIDTH=${width}&HEIGHT=${height}&BBOX=${sw_utm.easting},${sw_utm.northing},${ne_utm.easting},${ne_utm.northing}`
-              //console.log(str)
+              const str = `https://wms.nibio.no/cgi-bin/ar250?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&LAYERS=Bonitet&CRS=EPSG:3857&STYLES=&WIDTH=${256}&HEIGHT=${256}&BBOX=${xyzToBounds(cord.x, cord.y, zoom).join(",")}` 
               return str
             },
-            tileSize: new maps.Size(width, height),// new maps.Size(map.getDiv().offsetWidth,map.getDiv().offsetHeight),
-            name: "master", 
+            tileSize: new maps.Size(256, 256),// new maps.Size(map.getDiv().offsetWidth,map.getDiv().offsetHeight),
+            name: "bonitet_master", 
             maxZoom: 18,
-            opacity: 1.0
+            opacity: props.opacityBonitet
           })
-          map.overlayMapTypes.push(t)*/
+          map.overlayMapTypes.push(norgeskartLayer)
+          map.overlayMapTypes.push(bonitetLayer)
         }}
         > 
         {
