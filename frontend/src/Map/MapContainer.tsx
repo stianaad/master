@@ -109,6 +109,52 @@ export function MapContainer(props: MapContainerProps) {
     }
   }
 
+  var EXTENT = [-Math.PI * 6378137, Math.PI * 6378137];
+
+  function xyzToBounds(x: number, y: number, z: number) {
+    var tileSize = (EXTENT[1] * 2) / Math.pow(2, z);
+    var minx = EXTENT[0] + x * tileSize;
+    var maxx = EXTENT[0] + (x + 1) * tileSize;
+    // remember y origin starts at top
+    var miny = EXTENT[1] - (y + 1) * tileSize;
+    var maxy = EXTENT[1] - y * tileSize;
+    return [minx, miny, maxx, maxy];
+  }
+
+  const TILE_SIZE = 256;
+  var EARTH_RADIUS_IN_METERS = 6378137;
+	var CIRCUMFERENCE = 2 * Math.PI * EARTH_RADIUS_IN_METERS;
+
+  function getBounds(x: number, y: number, z: number) {
+		y = Math.pow(2, z) - y - 1; // Translate Y value
+		
+		var resolution = (CIRCUMFERENCE / TILE_SIZE) / Math.pow(2, z); // meters per pixel
+		
+		var swPoint = getMercatorCoord(x, y, resolution);
+		var nePoint = getMercatorCoord(x + 1, y + 1, resolution);
+		
+		var bounds = {
+				swX : swPoint.x,
+				swY : swPoint.y,
+				neX : nePoint.x,
+				neY : nePoint.y
+		};
+		
+		return bounds;
+	};
+
+	/*
+	 * Translate the xy & resolution to spherical mercator (EPSG:3857, EPSG:900913).
+	 */
+	function getMercatorCoord(x: number, y: number, resolution: number) {
+		var point = {
+				x: x * TILE_SIZE * resolution - CIRCUMFERENCE / 2.0,
+				y: y * TILE_SIZE * resolution - CIRCUMFERENCE / 2.0
+		};
+		
+		return point;
+	};
+
   return(
     <div style={{ height: '100vh', width: '100%' }}>
       <div>heheeh</div>
@@ -128,16 +174,44 @@ export function MapContainer(props: MapContainerProps) {
             loaded: true,
           })
           map.mapTypes.set("norgeskart", new maps.ImageMapType({
-            getTileUrl: (cord: any, zoom: any) => {
-              return `https://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=norgeskart_bakgrunn&zoom=${zoom}&x=${cord.x}&y=${cord.y}`
+            getTileUrl: async (cord: any, zoom: any) => {
+              var proj = map.getProjection();
+              console.log(proj)
+              var zfactor = Math.pow(2, zoom);
+              // get Long Lat coordinates
+              var top = proj.fromPointToLatLng(new maps.Point(cord.x * 256 / zfactor, cord.y * 256 / zfactor));
+              var bot = proj.fromPointToLatLng(new maps.Point((cord.x + 1) * 256 / zfactor, (cord.y + 1) * 256 / zfactor));
+
+              //corrections for the slight shift of the SLP (mapserver)
+              var deltaX = 0.0013;
+              var deltaY = 0.00058;
+
+              // var bbox =     (top.lng() + deltaX) + "," +
+    	        //                        (bot.lat() + deltaY) + "," +
+    	        //                        (bot.lng() + deltaX) + "," +
+    	        //                        (top.lat() + deltaY);
+      
+              // const bounds = map.getBounds();
+              // var NECorner = await bounds.getNorthEast();
+              // var SWCorner = await bounds.getSouthWest();
+              // var NWCorner = new maps.LatLng(NECorner.lat(), SWCorner.lng());
+              // var SECorner = new maps.LatLng(SWCorner.lat(), NECorner.lng());
+              // console.log(bbox)
+
+              const bounds = getBounds(cord.x, cord.y, zoom)
+              console.log(bounds)
+              var bbox = bounds.swX + "," + bounds.swY + "," + bounds.neX + "," + bounds.neY;
+              
+              //return `https://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=norgeskart_bakgrunn&zoom=${zoom}&x=${cord.x}&y=${cord.y}`
+              return `https://wms.nibio.no/cgi-bin/ar250?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=true&LAYERS=Bonitet&CRS=EPSG:25833&STYLES=&WIDTH=256&HEIGHT=256&BBOX=${bbox}`
             },
             tileSize: new maps.Size(256,256),
-            name: "master", 
+            name: "master",
             maxZoom: 18
           }))
           map.setMapTypeId("norgeskart")
         }}
-        > 
+        >
         {
         mapProps.loaded ? (
           props.combinedSheepTourPositions.slice(props.startTourIndex, props.startTourIndex +1).map((combinedTour: CombinedSheepTourPosition) => (

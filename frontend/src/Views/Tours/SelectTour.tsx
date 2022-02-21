@@ -24,7 +24,7 @@ const useStyles = makeStyles({
 
 export function SelectTour() {
   const classes = useStyles()
-  const loggedIn = useAppSelector((state) => state.loggedIn.value)
+  const loggedIn = useAppSelector((state: any) => state.loggedIn.value)
   const [combinedSheepTourPositions, setCombinedSheepTourPositions] = useState<CombinedSheepTourPosition[]>([])
   const [startTourIndex, setStartTourIndex] = useState<number>(0)
   const [heatmap, setHeatmap] = useState<boolean>(false)
