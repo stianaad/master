@@ -1,8 +1,12 @@
 import service from './Service'
 
 class AnimalService {
-  getJerv(){
+  getJerv() {
     return service.get("/api/tour/sheep/test")
+  }
+  getAnimalPreditors(from: Date, to: Date, types: number[]) {
+    const typesStr = types.map((type) => `types=${type}`)
+    return service.get(`/api/tour/preditors?${typesStr.join('&')}&from=${from.toISOString()}&to=${to.toISOString()}`)
   }
 }
 

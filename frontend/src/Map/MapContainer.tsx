@@ -1,4 +1,5 @@
 import GoogleMapReact, { Heatmap } from "google-map-react";
+import { MarkerClusterer } from "@googlemaps/markerclusterer";
 import { Polyline } from './Polyline'
 import { MapMarker } from "./MapMarker";
 import React, { useState, useEffect } from 'react';
@@ -9,8 +10,10 @@ import { mapFlockOfSheep } from "./MapFlockOfSheep";
 import { tourService } from "../Services/TourService";
 import { useAppSelector } from "../hooks";
 import { animalService } from "../Services/AnimalService";
-import { Jerv } from "../Types/Jerv";
+import { Jerv, PreditoColors, SkadeType } from "../Types/Jerv";
 import { Bonitet } from "../Types/Bonitet";
+import { cowIcon, crossIcon, deerIcon, dnaIcon, dogIcon, dotsIcon, eyeIcon, footPrint, goatIcon, hairIcon, sheepIcon } from "../Registrations/rovbaseIcons";
+import { getPreditorMarkers } from "./MarkerHelper";
 let utm = require("utm")
 //import utm from "utm"
 
@@ -19,11 +22,13 @@ interface MapContainerProps {
   startTourIndex: number,
   sheepFlock: boolean,
   heatmap: boolean
+  preditors: {[key: number]: boolean}
 }
 
 export function MapContainer(props: MapContainerProps) {
   const [tours, setTours] = useState<Tour[]>([]);
   const [sheepTourPositions, setSheepTourPositions] = useState<LatLong[][]>([])
+  const [markerCluster, setMarkerCluster] = useState<MarkerClusterer | null>(null)
   //const [combinedSheepTourPositions, setCombinedSheepTourPositions] = useState<CombinedSheepTourPosition[]>([])
   const [sheepHeatMap, setSheepHeatMap] = useState<any[]>([])
   const [jervData, setJervData] = useState<Jerv[]>([])
@@ -44,6 +49,16 @@ export function MapContainer(props: MapContainerProps) {
     fetchJerv()
   }, [])
 
+  useEffect(() => {
+    fetchJerv()
+  }, [props.startTourIndex])
+
+
+  useEffect(() => {
+    detachPreditorMarkers()
+    renderPreditorMarkers(jervData.filter((pred) => props.preditors[pred.rovdyrArtsID]))
+  }, [mapProps.loaded, props.preditors, jervData])
+
   const fetchGeneratedTours = async () => {
     const res = await authenticationService.getGeneratedTours()
     //console.log(res.data)
@@ -51,7 +66,20 @@ export function MapContainer(props: MapContainerProps) {
   }
 
   const fetchJerv = async () => {
-    const res = await animalService.getJerv()
+    console.log('fetching jerv')
+    const activePreditors = []
+    for (const key in props.preditors) {
+      if (props.preditors[key]) {
+        activePreditors.push(parseInt(key))
+        
+      }
+    }
+    if (activePreditors.length === 0) {
+      setJervData([])
+      return
+    }
+    detachPreditorMarkers()
+    const res = await animalService.getAnimalPreditors(new Date(2022,1,1), new Date(2022,2,21), activePreditors)
     if(res.data.length > 0) {
       //console.log(res.data)
       //The point start at index 7 and ends at length - 1
@@ -63,6 +91,24 @@ export function MapContainer(props: MapContainerProps) {
         return data
       })
       setJervData(jerv)
+      renderPreditorMarkers(jerv)
+    }
+  }
+
+  
+  const [preditorMarkers, setPreditorMarkers] = useState<any[]>([])
+  const renderPreditorMarkers = (preditors: Jerv[]) => {
+    const markers = getPreditorMarkers(preditors, mapProps)
+    setPreditorMarkers(markers)
+    markerCluster?.clearMarkers()
+    markerCluster?.addMarkers(markers)
+  }
+
+  const detachPreditorMarkers = () => {
+    if (mapProps.loaded) {
+      for (const marker of preditorMarkers) {
+        marker.setMap(null);
+      }
     }
   }
 
@@ -150,6 +196,7 @@ export function MapContainer(props: MapContainerProps) {
             maps: maps,
             loaded: true,
           })
+          setMarkerCluster(new MarkerClusterer({map}))
 
           /*const t =  new maps.KmlLayer({
             url: 'https://wms.nibio.no/cgi-bin/ar250?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=true&LAYERS=Bonitet&CRS=EPSG%3A25833&STYLES=&WIDTH=998&HEIGHT=1204&BBOX=200580.47491253127%2C6965501.835524839%2C206897.8716612783%2C6973123.223987256'
@@ -290,10 +337,9 @@ export function MapContainer(props: MapContainerProps) {
         }
 
         {
-          jervData.length > 0 ? 
-          jervData.map((jerv: Jerv, index: number) => (
-            <MapMarker backgroundColor="blue" lat={jerv.latitude} lng={jerv.longitude} text={jerv.artsIDPrøve} key={index} />
-            )) : null
+          // jervData.map((jerv: Jerv, index: number) => (
+          //   <MapMarker backgroundColor={PreditoColors[jerv.rovdyrArtsID]} lat={jerv.latitude} lng={jerv.longitude} text={jerv.artsIDPrøve} key={index} />
+          //   ))
           }
 
         {

@@ -5,6 +5,7 @@ import { useAppSelector } from '../../hooks';
 import { MapContainer } from '../../Map/MapContainer';
 import { Sidebar } from '../../Map/Sidebar';
 import { tourService } from '../../Services/TourService';
+import { PreditorType } from '../../Types/Jerv';
 import { CombinedSheepTourPosition } from '../../Types/Tour';
 import { NavigateTour } from './NavigateTour';
 
@@ -30,6 +31,16 @@ export function SelectTour() {
   const [startTourIndex, setStartTourIndex] = useState<number>(0)
   const [heatmap, setHeatmap] = useState<boolean>(false)
   const [sheepFlock, setSheepFlock] = useState<boolean>(true)
+  const [preditors, setPreditors] = useState<{[key: number]: boolean}>({
+    1: true,
+    2: true,
+    3: true,
+    4: true
+  })
+
+  const handleActivePreditors = (type: number, value: boolean) => {
+    setPreditors({...preditors, [type]: value})
+  }
 
   const fetchTours = async () => {
     if (loggedIn.length > 0) {
@@ -58,7 +69,9 @@ export function SelectTour() {
           sheepFlock={sheepFlock} 
           setSheepFlock={setSheepFlock}  
           currentSelectedSheepTourPositions={currentSelectedSheepTourPositions}
-          setCurrentSelectedSheepTourPositions={setCurrentSelectedSheepTourPositions} 
+          setCurrentSelectedSheepTourPositions={setCurrentSelectedSheepTourPositions}
+          preditors={preditors}
+          setActivePreditors={handleActivePreditors}
           heatmap={heatmap} 
           setHeatmap={setHeatmap} 
           combinedSheepTourPositions={combinedSheepTourPositions} 
@@ -67,7 +80,8 @@ export function SelectTour() {
         </Grid>
         <Grid item xs={9}>
           <MapContainer 
-          sheepFlock={sheepFlock} 
+          sheepFlock={sheepFlock}
+          preditors={preditors}
           heatmap={heatmap} 
           currentSelectedSheepTourPositions={currentSelectedSheepTourPositions} 
           startTourIndex={startTourIndex} />
