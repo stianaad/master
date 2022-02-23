@@ -19,7 +19,7 @@ export function TourMap(props: { tour: Tour }) {
         }} />*/}
   return(
       <>
-        {
+        {/*
         props.tour.sheepPositions.map((sheep) => (
           <MapMarker
             backgroundColor="red"
@@ -28,7 +28,7 @@ export function TourMap(props: { tour: Tour }) {
             text={`${sheep.id}`}
             //key={sheep.id}
           />
-        ))
+        ))*/
       }
       </>
   )

@@ -4,7 +4,9 @@ import { useEffect, useState } from 'react';
 import { useAppSelector } from '../../hooks';
 import { MapContainer } from '../../Map/MapContainer';
 import { Sidebar } from '../../Map/Sidebar';
+import { animalService } from '../../Services/AnimalService';
 import { tourService } from '../../Services/TourService';
+import { DeadSheepPosition } from '../../Types/Sheep';
 import { PreditorType } from '../../Types/Jerv';
 import { CombinedSheepTourPosition } from '../../Types/Tour';
 import { NavigateTour } from './NavigateTour';
@@ -43,6 +45,7 @@ export function SelectTour() {
   }
   const [showBonitet, setShowBonitet] = useState<boolean>(false)
   const [opacityBonitet, setOpacityBonitet] = useState<number>(0)
+  const [deadSheep, setDeadSheep] = useState<DeadSheepPosition[]>([])
 
   const fetchTours = async () => {
     if (loggedIn.length > 0) {
@@ -55,21 +58,35 @@ export function SelectTour() {
     }
   }
 
+  const fetchDeadSheep = async (fromDate: Date, toDate: Date) => {
+    if(loggedIn.length > 0) {
+      const res = await animalService.getDeadSheep(fromDate, toDate)
+      if (res.status === 200) {
+        setDeadSheep(res.data)
+        console.log(res.data)
+      }
+    }
+  }
+
+  useEffect(() => {
+    //If there is only one element selected
+    if(currentSelectedSheepTourPositions.length === 1) {
+      fetchDeadSheep(currentSelectedSheepTourPositions[0].tourTime, currentSelectedSheepTourPositions[0].tourTime)
+    } else if (currentSelectedSheepTourPositions.length > 1) {
+      const maxIndex = currentSelectedSheepTourPositions.length -1
+      fetchDeadSheep(currentSelectedSheepTourPositions[0].tourTime, currentSelectedSheepTourPositions[maxIndex].tourTime)
+    }
+  }, [currentSelectedSheepTourPositions])
+
   useEffect(() => {
     fetchTours()
   }, [])
-
-  /*useEffect(() => {
-    setCurrentSelectedSheepTourPositions(combinedSheepTourPositions.slice(startTourIndex, startTourIndex + 1))
-  }, [startTourIndex])*/
 
   return (
     <div className={classes.root}>
       <Grid container>
         <Grid item xs={3}>
           <NavigateTour 
-          showBonitet={showBonitet}
-          setShowBonitet={setShowBonitet}
           opacityBonitet={opacityBonitet}
           setOpacityBonitet={setOpacityBonitet}
           sheepFlock={sheepFlock} 
@@ -86,6 +103,7 @@ export function SelectTour() {
         </Grid>
         <Grid item xs={9}>
           <MapContainer
+          deadSheep={deadSheep}
             opacityBonitet={opacityBonitet} 
             sheepFlock={sheepFlock} 
             preditors={preditors}

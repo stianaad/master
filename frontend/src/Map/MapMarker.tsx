@@ -2,15 +2,6 @@ import { Typography } from '@mui/material';
 import Marker from '../static/marker.png'
 import { makeStyles } from '@mui/styles';
 
-
-const markerStyle: any = {
-  position: "absolute",
-  top: "100%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  height: "30px"
-};
-
 const useStyles = makeStyles({
   marker: {
     height: "30px",
@@ -27,9 +18,10 @@ const useStyles = makeStyles({
 });
 
 
-export const MapMarker = (props: {lat: number, lng: number, text?: string, backgroundColor: string}) => {
+export const MapMarker = (props: {lat: number, lng: number, text?: string, backgroundColor: string, handleClick: (index: number) => void, index: number}) => {
   const classes = useStyles()
-  return <div className={classes.marker} style={{backgroundColor: props.backgroundColor}}>
+
+  return <div className={classes.marker} onClick={() => props.handleClick(props.index)} style={{backgroundColor: props.backgroundColor, zIndex: 2}}>
     <Typography variant="h6" className={classes.text}>{props.text}</Typography>
     {/*<img style={markerStyle} src={Marker} alt="pin" />*/}
   </div>

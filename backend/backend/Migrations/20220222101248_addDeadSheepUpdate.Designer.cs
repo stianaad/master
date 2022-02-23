@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using backend.Models;
 
-namespace backend.Migrations
+namespace backend.Migrations.Sheep
 {
     [DbContext(typeof(SheepContext))]
-    partial class SheepContextModelSnapshot : ModelSnapshot
+    [Migration("20220222101248_addDeadSheepUpdate")]
+    partial class addDeadSheepUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -41,7 +43,7 @@ namespace backend.Migrations
                     b.Property<int>("Size")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("TimeOfObservation")
+                    b.Property<DateTime>("TimeOfObsevation")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");

@@ -1,3 +1,5 @@
+import { CombinedSheepPosition, SheepPosition } from "./Sheep";
+
 export interface Tour {
   idTour: number;
   start: Date;
@@ -11,32 +13,8 @@ export interface CombinedSheepTourPosition {
   tourTime: Date
 }
 
-export interface CombinedSheepPosition {
-  totalNumberOfSheep: number,
-  flockId: number,
-  locations: LatLong[]
-}
-
 export interface ActivatableTour extends Tour {
   active: boolean
-}
-
-export interface SheepPosition {
-  id: number
-  longitude: number
-  latitude: number
-  timeOfObsevation: Date
-  smallBrownSheep: number
-  smallWhiteSheep: number
-  bigBrownSheep: number
-  bigWhiteSheep: number
-  tieGreen: number
-  tieRed: number
-  tieYellow: number
-  tieBlue: number
-  idTour: number
-  totalNumberOfSheep: number
-  flockId?: number
 }
 
 export interface TourLocation {
@@ -45,9 +23,4 @@ export interface TourLocation {
   latitude: number
   timePosition: Date
   idTour: number
-}
-
-export interface LatLong {
-  latitude: number,
-  longitude: number
 }

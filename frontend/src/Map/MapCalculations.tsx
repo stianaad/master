@@ -1,4 +1,4 @@
-import { LatLong } from "../Types/Tour";
+import { LatLong } from "../Types/Sheep";
 
 export const degToRad = (deg: number) => {
   return (deg * Math.PI) / 180;

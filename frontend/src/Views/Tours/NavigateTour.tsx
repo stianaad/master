@@ -19,14 +19,15 @@ const useStyles = makeStyles({
   },
   tourIds: {
     overflowY: "auto",
-    height: "70vh"
+    height: "50vh"
   },
   switch: {
     marginLeft: "1vw",
   },
   sliderBonitet: {
     marginRight: "2vw",
-    marginLeft: "2vw"
+    marginLeft: "2vw",
+    width: "80%"
   }
 });
 
@@ -40,8 +41,6 @@ interface NavigateTourProps {
   setSheepFlock: Dispatch<SetStateAction<boolean>>,
   heatmap: boolean,
   setHeatmap: Dispatch<SetStateAction<boolean>>,
-  showBonitet: boolean,
-  setShowBonitet: Dispatch<SetStateAction<boolean>>,
   opacityBonitet: number,
   setOpacityBonitet: Dispatch<SetStateAction<number>>,
   setCurrentSelectedSheepTourPositions: Dispatch<SetStateAction<CombinedSheepTourPosition[]>>,
@@ -53,6 +52,7 @@ export const NavigateTour = (props: NavigateTourProps) => {
   const classes = useStyles()
   const [week, setWeek] = useState<boolean>(true) //False is month
   const [monthOverview, setMonthOverview] = useState<string[]>([])
+  const [showBonitet, setShowBonitet] = useState<boolean>(false)
 
   //When the user click next og previeous week/month
   const changeIndex = (value: number) => {
@@ -87,6 +87,7 @@ export const NavigateTour = (props: NavigateTourProps) => {
 
     const currentMonth = monthOverview[tempIndex]
     const newSheepTourArray = props.combinedSheepTourPositions.filter((sheep: CombinedSheepTourPosition) => sheep.tourTime.toString().slice(0,7) === currentMonth)
+    console.log(newSheepTourArray)
     props.setCurrentSelectedSheepTourPositions(newSheepTourArray)
     props.setStartTourIndex(tempIndex)
   }
@@ -120,24 +121,32 @@ export const NavigateTour = (props: NavigateTourProps) => {
   const changeOpacityBonitet = (event: Event, newValue: number | number[], activeThumb: number) => {
     if(!Array.isArray(newValue)) {
       props.setOpacityBonitet(newValue)
+      //console.log(newValue)
     }
   }
+
+  useEffect(() => {
+    if(showBonitet){
+      props.setOpacityBonitet(0.5)
+    } else {
+      props.setOpacityBonitet(0)
+    }
+  }, [showBonitet])
 
   
   return(
     <>
       <Typography variant="h4" className={classes.header}>Turoversikt</Typography>
       <FormGroup className={classes.switch}>
-
-        <FormControlLabel control={<Switch checked={props.showBonitet} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setShowBonitet(event.target.checked)} />} label="Bonitet" />
-        {props.showBonitet ? <Slider
+        <FormControlLabel control={<Switch checked={showBonitet} onChange={(event: React.ChangeEvent<HTMLInputElement>) => setShowBonitet(event.target.checked)} />} label="Bonitet" />
+        {showBonitet ? <Slider
           className={classes.sliderBonitet}
           onChange={changeOpacityBonitet}
           size="small"
           min={0}
           max={1}
           step={0.01}
-          defaultValue={0.5}
+          value={props.opacityBonitet}
           aria-label="Small"
           valueLabelDisplay="auto"
         /> : null}
