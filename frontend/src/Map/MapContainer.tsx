@@ -96,10 +96,13 @@ export function MapContainer(props: MapContainerProps) {
     }
   }
 
+  const handlePreditorClicked = (preditor: Jerv, marker: any) => {
+    console.log(preditor)
+  }
   
   const [preditorMarkers, setPreditorMarkers] = useState<any[]>([])
   const renderPreditorMarkers = (preditors: Jerv[]) => {
-    const markers = getPreditorMarkers(preditors, mapProps)
+    const markers = getPreditorMarkers(preditors, mapProps, handlePreditorClicked)
     setPreditorMarkers(markers)
     markerCluster?.clearMarkers()
     markerCluster?.addMarkers(markers)
@@ -189,6 +192,7 @@ export function MapContainer(props: MapContainerProps) {
         heatmapLibrary={true}
         heatmap={heatMapData}
         onChange={change}
+        options={{maxZoom: 20}}
         onGoogleApiLoaded={({map, maps}) => {
           setMap(map)
           setMaps(maps)
@@ -207,7 +211,7 @@ export function MapContainer(props: MapContainerProps) {
             },
             tileSize: new maps.Size(256, 256),// new maps.Size(map.getDiv().offsetWidth,map.getDiv().offsetHeight),
             name: "norgeskart_master", 
-            maxZoom: 18,
+            maxZoom: 20,
             opacity: 1
           })
           

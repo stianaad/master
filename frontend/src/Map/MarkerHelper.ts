@@ -2,26 +2,27 @@ import { cowIcon, crossIcon, deerIcon, dnaIcon, dogIcon, dotsIcon, eyeIcon, foot
 import { Jerv, PreditoColors, SkadeType } from "../Types/Jerv";
 
 
-export const getPreditorMarkers = (preditors: Jerv[], mapProps: any): any[] => {
+export const getPreditorMarkers = (preditors: Jerv[], mapProps: any, markerClicked: (preditor: Jerv, marker: any) => void): any[] => {
   const markers = []
   if (mapProps.loaded) {
     for (const pred of preditors) {
-      markers.push(createMarker(getPreditorIcon(pred), pred.longitude, pred.latitude, mapProps.maps, mapProps.map))
+      markers.push(createPreditorMarker(getPreditorIcon(pred), pred.longitude, pred.latitude, mapProps.maps, mapProps.map, (marker) => markerClicked(pred, marker)))
     }
   }
   return markers
 }
 
-export const createMarker = (icon: string, longitude: number, latitude: number, maps: any, map: any) : any => {
+export const createPreditorMarker = (icon: string, longitude: number, latitude: number, maps: any, map: any, markerClicked: (marker: any) => void) : any => {
   const markerImage = {
     url: `data:image/svg+xml;base64,${icon}`,
     scaledSize: new maps.Size(45, 45),
   }
-  return new maps.Marker({
+  const marker = new maps.Marker({
     position: { lat: latitude, lng: longitude },
     map: map,
     icon: markerImage,
   })
+  marker.addListener('click', () => markerClicked(marker))
 }
 
 export const getPreditorIcon = (preditor: Jerv) => {
@@ -88,9 +89,9 @@ export const getPreditorIcon = (preditor: Jerv) => {
       height = icon.height
       size = Math.min(height, width)
     }
-    const path = icon !== null ? `<g><path fill="white" d="${icon.path}"/></g>` : ''
+    const path = icon !== null ? `<path fill="white" d="${icon.path}"/>` : ''
     const svg = window.btoa(`
-      <svg fill="${PreditoColors[preditor.rovdyrArtsID]}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}">
+      <svg fill="${PreditoColors[preditor.rovdyrArtsID]}" xmlns="http://www.w3.org/2000/svg" width="64" height="64">
         <circle cx="32" cy="32" r="24.2" />
         ${path}
       </svg>`);
