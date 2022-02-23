@@ -41,6 +41,8 @@ export function SelectTour() {
   const handleActivePreditors = (type: number, value: boolean) => {
     setPreditors({...preditors, [type]: value})
   }
+  const [showBonitet, setShowBonitet] = useState<boolean>(false)
+  const [opacityBonitet, setOpacityBonitet] = useState<number>(0)
 
   const fetchTours = async () => {
     if (loggedIn.length > 0) {
@@ -66,6 +68,10 @@ export function SelectTour() {
       <Grid container>
         <Grid item xs={3}>
           <NavigateTour 
+          showBonitet={showBonitet}
+          setShowBonitet={setShowBonitet}
+          opacityBonitet={opacityBonitet}
+          setOpacityBonitet={setOpacityBonitet}
           sheepFlock={sheepFlock} 
           setSheepFlock={setSheepFlock}  
           currentSelectedSheepTourPositions={currentSelectedSheepTourPositions}
@@ -79,12 +85,13 @@ export function SelectTour() {
           setStartTourIndex={setStartTourIndex} />
         </Grid>
         <Grid item xs={9}>
-          <MapContainer 
-          sheepFlock={sheepFlock}
-          preditors={preditors}
-          heatmap={heatmap} 
-          currentSelectedSheepTourPositions={currentSelectedSheepTourPositions} 
-          startTourIndex={startTourIndex} />
+          <MapContainer
+            opacityBonitet={opacityBonitet} 
+            sheepFlock={sheepFlock} 
+            preditors={preditors}
+            heatmap={heatmap} 
+            currentSelectedSheepTourPositions={currentSelectedSheepTourPositions} 
+            startTourIndex={startTourIndex} />
         </Grid>
       </Grid>
     </div>

@@ -1,4 +1,4 @@
-import { Button, FormControlLabel, FormGroup, Grid, Switch, Typography } from "@mui/material"
+import { Button, Divider, FormControlLabel, FormGroup, Grid, Slider, Switch, Typography } from "@mui/material"
 import { makeStyles } from "@mui/styles";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { PreditorType } from "../../Types/Jerv";
@@ -23,6 +23,10 @@ const useStyles = makeStyles({
   },
   switch: {
     marginLeft: "1vw",
+  },
+  sliderBonitet: {
+    marginRight: "2vw",
+    marginLeft: "2vw"
   }
 });
 
@@ -36,6 +40,10 @@ interface NavigateTourProps {
   setSheepFlock: Dispatch<SetStateAction<boolean>>,
   heatmap: boolean,
   setHeatmap: Dispatch<SetStateAction<boolean>>,
+  showBonitet: boolean,
+  setShowBonitet: Dispatch<SetStateAction<boolean>>,
+  opacityBonitet: number,
+  setOpacityBonitet: Dispatch<SetStateAction<number>>,
   setCurrentSelectedSheepTourPositions: Dispatch<SetStateAction<CombinedSheepTourPosition[]>>,
   setActivePreditors: ((type: number, value: boolean) => void),
   currentSelectedSheepTourPositions: CombinedSheepTourPosition[]
@@ -100,7 +108,6 @@ export const NavigateTour = (props: NavigateTourProps) => {
           tempMonthArray.push(tempMonth)
         }
       })
-      console.log(tempMonthArray)
       setMonthOverview(tempMonthArray)
     }
   }, [props.combinedSheepTourPositions])
@@ -110,11 +117,31 @@ export const NavigateTour = (props: NavigateTourProps) => {
     changeIndex(-props.startTourIndex)
   }, [week])
 
+  const changeOpacityBonitet = (event: Event, newValue: number | number[], activeThumb: number) => {
+    if(!Array.isArray(newValue)) {
+      props.setOpacityBonitet(newValue)
+    }
+  }
+
   
   return(
     <>
       <Typography variant="h4" className={classes.header}>Turoversikt</Typography>
       <FormGroup className={classes.switch}>
+
+        <FormControlLabel control={<Switch checked={props.showBonitet} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setShowBonitet(event.target.checked)} />} label="Bonitet" />
+        {props.showBonitet ? <Slider
+          className={classes.sliderBonitet}
+          onChange={changeOpacityBonitet}
+          size="small"
+          min={0}
+          max={1}
+          step={0.01}
+          defaultValue={0.5}
+          aria-label="Small"
+          valueLabelDisplay="auto"
+        /> : null}
+        <Divider />
         <FormControlLabel control={<Switch checked={props.heatmap} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setHeatmap(event.target.checked)} />} label="Heatmap" />
         <FormControlLabel control={<Switch checked={props.sheepFlock} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setSheepFlock(event.target.checked)} />} label="Saueflokker" />
       </FormGroup>
