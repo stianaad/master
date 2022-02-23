@@ -1,4 +1,5 @@
-import { LatLong, SheepPosition, Tour } from "../Types/Tour";
+import { Tour } from "../Types/Tour";
+import { LatLong, SheepPosition } from '../Types/Sheep'
 import { distanceBetweenCoords } from "./MapCalculations";
 import { SheepTourPolyline } from "./SheepTourPolyline";
 

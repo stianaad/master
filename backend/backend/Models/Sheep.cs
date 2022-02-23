@@ -29,6 +29,7 @@ namespace backend.Models
         public int IdTour { get; set; }
         public List<TourLocationData> Positions { get; set; }
         public List<SheepPositionData> SheepPositions { get; set; }
+        public List<DeadSheepPositionData> DeadSheepPositions { get; set; }
         public DateTime Start { get; set; }
         public string Email { get; set; }
     }
@@ -92,8 +93,21 @@ namespace backend.Models
                text += location.ToString() + "\n";
            });
             return text;
-
         }
+    }
+
+    public class DeadSheepPositionData
+    {
+        [Key]
+        public int Id { get; set; }
+        public double Longitude { get; set; }
+        public double Latitude { get; set; }
+        public DateTime TimeOfObservation { get; set; }
+        public int Size { get; set; }
+        public int Color { get; set; }
+        public int IdTour { get; set; }
+        [JsonIgnore]
+        public TourData Tour { get; set; }
     }
 
     public class SheepPositionData

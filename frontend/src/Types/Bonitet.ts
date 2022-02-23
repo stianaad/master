@@ -1,4 +1,4 @@
-import { LatLong } from "./Tour";
+import { LatLong } from "./Sheep";
 
 export interface Bonitet {
   sw: LatLong,

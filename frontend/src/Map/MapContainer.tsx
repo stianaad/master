@@ -3,7 +3,8 @@ import { Polyline } from './Polyline'
 import { MapMarker } from "./MapMarker";
 import React, { useState, useEffect } from 'react';
 import { authenticationService } from "../Services/AuthenticationService";
-import { CombinedSheepPosition, CombinedSheepTourPosition, LatLong, SheepPosition, Tour, TourLocation } from "../Types/Tour";
+import { CombinedSheepTourPosition, Tour, TourLocation } from "../Types/Tour";
+import { CombinedSheepPosition, SheepPosition, LatLong, DeadSheepPosition } from "../Types/Sheep"
 import { TourMap } from "./TourMap";
 import { mapFlockOfSheep } from "./MapFlockOfSheep";
 import { tourService } from "../Services/TourService";
@@ -11,6 +12,7 @@ import { useAppSelector } from "../hooks";
 import { animalService } from "../Services/AnimalService";
 import { Jerv } from "../Types/Jerv";
 import { Bonitet } from "../Types/Bonitet";
+import { InformationBoxMap } from "./InformationBox/InformationBoxMap";
 let utm = require("utm")
 //import utm from "utm"
 
@@ -19,7 +21,8 @@ interface MapContainerProps {
   startTourIndex: number,
   sheepFlock: boolean,
   heatmap: boolean,
-  opacityBonitet: number
+  opacityBonitet: number,
+  deadSheep: DeadSheepPosition[]
 }
 
 export function MapContainer(props: MapContainerProps) {
@@ -28,7 +31,9 @@ export function MapContainer(props: MapContainerProps) {
   //const [combinedSheepTourPositions, setCombinedSheepTourPositions] = useState<CombinedSheepTourPosition[]>([])
   const [sheepHeatMap, setSheepHeatMap] = useState<any[]>([])
   const [jervData, setJervData] = useState<Jerv[]>([])
-  const [bonitetData, setBonitetData] = useState<Bonitet>()
+  const [southWestCorner, setSouthWestCorner] = useState<LatLong>()
+  const [selectedDeadSheep, setSelectedDeadSheep] = useState<DeadSheepPosition>()
+  const [selectedSheepTourPosition, setSelectedSheepTourPosition] = useState<CombinedSheepTourPosition>()
   const [map, setMap] = useState<any>()
   const [maps, setMaps] = useState<any>()
   const [mapProps, setMapProps] = useState<{map: any |null, maps: any | null, loaded: boolean}>({
@@ -36,9 +41,8 @@ export function MapContainer(props: MapContainerProps) {
     maps: null,
     loaded: false
   })
-  const [path, setPath] = useState<{lat: number, lng: number}[]>([]);
-  const loggedIn = useAppSelector((state) => state.loggedIn.value)
-
+  const [openInformationBox, setOpenInformationBox] = useState<boolean>(false)
+  
   useEffect(() => {
     //fetchTours()
     fetchGeneratedTours()
@@ -54,7 +58,6 @@ export function MapContainer(props: MapContainerProps) {
   const fetchJerv = async () => {
     const res = await animalService.getJerv()
     if(res.data.length > 0) {
-      //console.log(res.data)
       //The point start at index 7 and ends at length - 1
       const jerv: Jerv[] = await res.data.map((data: Jerv) => {
         const utmPoint = data.wkt.substring(7, data.wkt.length-1).split(" ")
@@ -66,16 +69,6 @@ export function MapContainer(props: MapContainerProps) {
       setJervData(jerv)
     }
   }
-
-  const path2 = [
-    {lng: 10.30509, lat: 63.426847},
-    {lng: 10.304835, lat: 63.426892},
-    {lng: 10.304678, lat: 63.426715},
-    {lng: 10.304814, lat: 63.426684},
-    {lng: 10.305027, lat: 63.426528},
-    {lng: 10.304994, lat: 63.426273},
-    {lng: 10.305177, lat: 63.425854},
-  ]
 
   useEffect(() => {
     if(props.heatmap){
@@ -95,12 +88,6 @@ export function MapContainer(props: MapContainerProps) {
         })
       })
     })
-
-    /*tours.map((tour:Tour) => {
-      tour.sheepPositions.map((sheep: SheepPosition, index : number) => {
-        arr.push({lat: sheep.latitude, lng: sheep.longitude, weight: sheep.totalNumberOfSheep })
-      }
-    )})*/
     setSheepHeatMap(arr)
   }
 
@@ -125,16 +112,30 @@ export function MapContainer(props: MapContainerProps) {
   }
 
   const change = (c: any) => {
-    setBonitetData({
-      sw: {latitude: c.marginBounds.sw.lat, longitude: c.marginBounds.sw.lng}, 
-      ne: {latitude: c.marginBounds.ne.lat, longitude: c.marginBounds.ne.lng},
-      height: c.size.height,
-      width: c.size.width
-    })
+    setSouthWestCorner({latitude: c.marginBounds.sw.lat, longitude: c.marginBounds.sw.lng})
   }
 
+  const handleClickOnDeadAnimal = (index: number) => {
+    setSelectedDeadSheep(props.deadSheep[index])
+    setOpenInformationBox(true)
+  }
+
+  const handleClickOnFlock = (indexTour: number, indexSheep: number) => {
+    const newTour: CombinedSheepTourPosition = {...props.currentSelectedSheepTourPositions[indexTour]}
+    newTour.combinedSheepPositions = [newTour.combinedSheepPositions[indexSheep]]
+    console.log(newTour)
+    setSelectedSheepTourPosition(newTour)
+  }
+
+  //Change the opacity on the bonitet map
+  useEffect(() => {
+    if(map && map.overlayMapTypes.Ed.length > 1){
+      map.overlayMapTypes.Ed[1].setOpacity(props.opacityBonitet)
+    }
+  }, [props.opacityBonitet])
+
   return(
-    <div style={{ height: '100vh', width: '100%' }}>
+    <div style={{ height: '100vh', width: '100%', position: "relative" }}>
       <GoogleMapReact 
         bootstrapURLKeys={{key:"AIzaSyB-xQ9kta6HYHD5OtV9SF_ybPAD31Edc0w"}}
         defaultCenter={{lat: 62.702802875467334, lng: 9.14644192722107}}
@@ -151,26 +152,24 @@ export function MapContainer(props: MapContainerProps) {
             maps: maps,
             loaded: true,
           })
-
           const norgeskartLayer = new maps.ImageMapType({
             getTileUrl: (cord: any, zoom: any) => {
               
               const str = `https://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=norgeskart_bakgrunn&zoom=${zoom}&x=${cord.x}&y=${cord.y}` 
               return str
             },
-            tileSize: new maps.Size(256, 256),// new maps.Size(map.getDiv().offsetWidth,map.getDiv().offsetHeight),
+            tileSize: new maps.Size(256, 256),
             name: "norgeskart_master", 
             maxZoom: 18,
             opacity: 1
           })
-          
-          console.log(props.opacityBonitet)
+
           const bonitetLayer = new maps.ImageMapType({
             getTileUrl: (cord: any, zoom: any) => {
               const str = `https://wms.nibio.no/cgi-bin/ar250?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&LAYERS=Bonitet&CRS=EPSG:3857&STYLES=&WIDTH=${256}&HEIGHT=${256}&BBOX=${xyzToBounds(cord.x, cord.y, zoom).join(",")}` 
               return str
             },
-            tileSize: new maps.Size(256, 256),// new maps.Size(map.getDiv().offsetWidth,map.getDiv().offsetHeight),
+            tileSize: new maps.Size(256, 256),
             name: "bonitet_master", 
             maxZoom: 18,
             opacity: props.opacityBonitet
@@ -203,45 +202,32 @@ export function MapContainer(props: MapContainerProps) {
         { props.currentSelectedSheepTourPositions &&
           props.currentSelectedSheepTourPositions.length > 0 &&
           props.sheepFlock ?
-          props.currentSelectedSheepTourPositions.map((combinedTour: CombinedSheepTourPosition) => (
-            combinedTour.combinedSheepPositions.map((combinedSheep: CombinedSheepPosition) => (
+          props.currentSelectedSheepTourPositions.map((combinedTour: CombinedSheepTourPosition, indexCombinedTour: number) => (
+            combinedTour.combinedSheepPositions.map((combinedSheep: CombinedSheepPosition, indexCombinedSheep: number) => (
               combinedSheep.locations.map((location: LatLong, index: number) => (
-                <MapMarker backgroundColor="red" lat={location.latitude} lng={location.longitude} text={combinedSheep.flockId.toString()} key={index} />
+                <MapMarker backgroundColor="red" handleClick={(indexTour) => handleClickOnFlock(indexTour, indexCombinedSheep)} index={indexCombinedTour} lat={location.latitude} lng={location.longitude} text={combinedSheep.flockId.toString()} key={index} />
               ))
             ))
           )) : null
         }
 
         {
+          props.deadSheep.map((dead: DeadSheepPosition, index: number) => (
+            <MapMarker backgroundColor="purple" handleClick={handleClickOnDeadAnimal} index={index} lat={dead.latitude} lng={dead.longitude} text={dead.id.toString()} key={index} />
+          ))
+        }
+
+        {
           jervData.length > 0 ? 
           jervData.map((jerv: Jerv, index: number) => (
-            <MapMarker backgroundColor="blue" lat={jerv.latitude} lng={jerv.longitude} text={jerv.artsIDPrøve} key={index} />
+            <MapMarker backgroundColor="blue" index={index} handleClick={handleClickOnDeadAnimal} lat={jerv.latitude} lng={jerv.longitude} text={jerv.artsIDPrøve} key={index} />
             )) : null
-          }
-
-        {
-          bonitetData?.ne && bonitetData.sw ?
-            <MapMarker backgroundColor="blue" lat={bonitetData.ne.latitude} lng={bonitetData.ne.longitude} text={"ne"} key={1} /> : null
-        }
-
-{
-          bonitetData?.ne && bonitetData.sw ?
-            <MapMarker backgroundColor="blue" lat={bonitetData.sw.latitude} lng={bonitetData.sw.longitude} text={"sw"} key={2} /> : null
-        }
-        
-        { /*
-        tours.length > 0 ? 
-          tours.map((tour:Tour) => (
-            tour.sheepPositions.map((sheep: SheepPosition, index : number) => (
-              <MapMarker lat={sheep.latitude} lng={sheep.longitude} text={sheep.id.toString()} key={index} />
-            )
-          ))) : null*/
         }
         {
-          /*tours.map((tour: Tour) => (
-            <TourMap tour={tour} key={tour.idTour} />
-          ))*/
+          southWestCorner && openInformationBox ?
+          <InformationBoxMap deadSheep={selectedDeadSheep} sheepFlock={selectedSheepTourPosition} lat={southWestCorner.latitude} lng={southWestCorner.longitude} onClose={() => setOpenInformationBox(false)} /> : null
         }
+
       </GoogleMapReact>
     </div>
   )

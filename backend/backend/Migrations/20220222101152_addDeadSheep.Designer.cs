@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using backend.Models;
 
-namespace backend.Migrations
+namespace backend.Migrations.Sheep
 {
     [DbContext(typeof(SheepContext))]
-    partial class SheepContextModelSnapshot : ModelSnapshot
+    [Migration("20220222101152_addDeadSheep")]
+    partial class addDeadSheep
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -26,9 +28,6 @@ namespace backend.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("Color")
-                        .HasColumnType("int");
-
                     b.Property<int>("IdTour")
                         .HasColumnType("int");
 
@@ -38,11 +37,14 @@ namespace backend.Migrations
                     b.Property<double>("Longitude")
                         .HasColumnType("float");
 
-                    b.Property<int>("Size")
+                    b.Property<DateTime>("TimeOfObsevation")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("color")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("TimeOfObservation")
-                        .HasColumnType("datetime2");
+                    b.Property<int>("size")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 

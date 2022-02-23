@@ -7,6 +7,7 @@ namespace backend.Models
         public DbSet<TourData> Tours { get; set; }
         public DbSet<TourLocationData> TourLocations { get; set; }
         public DbSet<SheepPositionData> SheepPositions { get; set; }
+        public DbSet<DeadSheepPositionData> DeadSheepPositions { get; set; }
         public SheepContext(DbContextOptions<SheepContext> options) : base(options)
         { }
 
@@ -22,6 +23,12 @@ namespace backend.Models
                 .HasOne(sheepPosition => sheepPosition.Tour)
                 .WithMany(tour => tour.SheepPositions)
                 .HasForeignKey(sheepPosition => sheepPosition.IdTour)
+                .HasPrincipalKey(tour => tour.IdTour);
+
+            modelBuilder.Entity<DeadSheepPositionData>()
+                .HasOne(deadSheep => deadSheep.Tour)
+                .WithMany(tour => tour.DeadSheepPositions)
+                .HasForeignKey(deadSheep => deadSheep.IdTour)
                 .HasPrincipalKey(tour => tour.IdTour);
         }
 
