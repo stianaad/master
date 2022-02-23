@@ -41,7 +41,7 @@ namespace backend.Controllers
                 LanguageCode = "no",
                 SearchFilter = new SearchFilterObj
                 {
-                    Carnivore = new List<int> { 4},
+                    Carnivore = new List<int> {1,2,3,4},
                     CarnivoreDamage = new List<int> { 1,2,3,4,5},
                     Evaluation = new List<int> { 1,2,3},
                     Observation = new List<int> { 1,2,3,12,11},
@@ -49,6 +49,48 @@ namespace backend.Controllers
                     FromDate = "2022-01-12T00:00:00.000Z",
                     ToDate = "2022-02-11T00:00:00.000Z",
                     Country = new List<int>() { 1},
+                    Region = new List<string>(),
+                    County = new List<string>(),
+                    Municipality = new List<string>(),
+                    IndividualNameOrID = "",
+                    Barcode = "",
+                    Rovdjursforum = false,
+                    ID = ""
+                },
+            };
+            var ser = JsonSerializer.Serialize(t);
+            var json = new StringContent(
+                ser,
+                Encoding.UTF8,
+                Application.Json);
+
+            var stringTask = client.PostAsync("https://rovbase.no/api/Feature", json);
+
+            var msg = await stringTask;
+            var response = await msg.Content.ReadAsStringAsync();
+            //Console.Write(response);
+            //msg.EnsureSuccessStatusCode();
+
+            return response;
+        }
+
+        [HttpGet("preditors")]
+        public async Task<ActionResult<string>> GetPreditors( [FromQuery] int[] types, string from, string to)
+        {
+            //Create Jerv JSON to POST request
+            Jerv t = new Jerv
+            {
+                LanguageCode = "no",
+                SearchFilter = new SearchFilterObj
+                {
+                    Carnivore = new List<int>(types),
+                    CarnivoreDamage = new List<int> { 1, 2, 3, 4, 5 },
+                    Evaluation = new List<int> { 1, 2, 3 },
+                    Observation = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 11 },
+                    Offspring = false,
+                    FromDate = from,
+                    ToDate = to,
+                    Country = new List<int>() { 1 },
                     Region = new List<string>(),
                     County = new List<string>(),
                     Municipality = new List<string>(),

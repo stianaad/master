@@ -1,6 +1,7 @@
 import { Button, Divider, FormControlLabel, FormGroup, Grid, Slider, Switch, Typography } from "@mui/material"
 import { makeStyles } from "@mui/styles";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { PreditorType } from "../../Types/Jerv";
 import { CombinedSheepTourPosition } from "../../Types/Tour"
 
 const useStyles = makeStyles({
@@ -34,6 +35,7 @@ const useStyles = makeStyles({
 interface NavigateTourProps {
   combinedSheepTourPositions: CombinedSheepTourPosition[]
   startTourIndex: number,
+  preditors: {[key: number]: boolean},
   setStartTourIndex: Dispatch<SetStateAction<number>>,
   sheepFlock: boolean,
   setSheepFlock: Dispatch<SetStateAction<boolean>>,
@@ -42,6 +44,7 @@ interface NavigateTourProps {
   opacityBonitet: number,
   setOpacityBonitet: Dispatch<SetStateAction<number>>,
   setCurrentSelectedSheepTourPositions: Dispatch<SetStateAction<CombinedSheepTourPosition[]>>,
+  setActivePreditors: ((type: number, value: boolean) => void),
   currentSelectedSheepTourPositions: CombinedSheepTourPosition[]
 }
 
@@ -150,6 +153,13 @@ export const NavigateTour = (props: NavigateTourProps) => {
         <Divider />
         <FormControlLabel control={<Switch checked={props.heatmap} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setHeatmap(event.target.checked)} />} label="Heatmap" />
         <FormControlLabel control={<Switch checked={props.sheepFlock} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setSheepFlock(event.target.checked)} />} label="Saueflokker" />
+      </FormGroup>
+
+      <FormGroup className={classes.switch}>
+        <FormControlLabel control={<Switch checked={props.preditors[PreditorType.BJORN]} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setActivePreditors(PreditorType.BJORN, event.target.checked)} />} label="Bjørn" />
+        <FormControlLabel control={<Switch checked={props.preditors[PreditorType.GAUPE]} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setActivePreditors(PreditorType.GAUPE, event.target.checked)} />} label="Gaupe" />
+        <FormControlLabel control={<Switch checked={props.preditors[PreditorType.ULV]} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setActivePreditors(PreditorType.ULV, event.target.checked)} />} label="Ulv" />
+        <FormControlLabel control={<Switch checked={props.preditors[PreditorType.JERV]} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setActivePreditors(PreditorType.JERV, event.target.checked)} />} label="Jerv" />
       </FormGroup>
       
       <Grid container>

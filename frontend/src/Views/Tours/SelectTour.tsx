@@ -7,6 +7,7 @@ import { Sidebar } from '../../Map/Sidebar';
 import { animalService } from '../../Services/AnimalService';
 import { tourService } from '../../Services/TourService';
 import { DeadSheepPosition } from '../../Types/Sheep';
+import { PreditorType } from '../../Types/Jerv';
 import { CombinedSheepTourPosition } from '../../Types/Tour';
 import { NavigateTour } from './NavigateTour';
 
@@ -26,12 +27,23 @@ const useStyles = makeStyles({
 
 export function SelectTour() {
   const classes = useStyles()
-  const loggedIn = useAppSelector((state) => state.loggedIn.value)
+  const loggedIn = useAppSelector((state: any) => state.loggedIn.value)
   const [combinedSheepTourPositions, setCombinedSheepTourPositions] = useState<CombinedSheepTourPosition[]>([])
   const [currentSelectedSheepTourPositions, setCurrentSelectedSheepTourPositions] = useState<CombinedSheepTourPosition[]>([])
   const [startTourIndex, setStartTourIndex] = useState<number>(0)
   const [heatmap, setHeatmap] = useState<boolean>(false)
   const [sheepFlock, setSheepFlock] = useState<boolean>(true)
+  const [preditors, setPreditors] = useState<{[key: number]: boolean}>({
+    1: true,
+    2: true,
+    3: true,
+    4: true
+  })
+
+  const handleActivePreditors = (type: number, value: boolean) => {
+    setPreditors({...preditors, [type]: value})
+  }
+  const [showBonitet, setShowBonitet] = useState<boolean>(false)
   const [opacityBonitet, setOpacityBonitet] = useState<number>(0)
   const [deadSheep, setDeadSheep] = useState<DeadSheepPosition[]>([])
 
@@ -80,7 +92,9 @@ export function SelectTour() {
           sheepFlock={sheepFlock} 
           setSheepFlock={setSheepFlock}  
           currentSelectedSheepTourPositions={currentSelectedSheepTourPositions}
-          setCurrentSelectedSheepTourPositions={setCurrentSelectedSheepTourPositions} 
+          setCurrentSelectedSheepTourPositions={setCurrentSelectedSheepTourPositions}
+          preditors={preditors}
+          setActivePreditors={handleActivePreditors}
           heatmap={heatmap} 
           setHeatmap={setHeatmap} 
           combinedSheepTourPositions={combinedSheepTourPositions} 
@@ -90,11 +104,12 @@ export function SelectTour() {
         <Grid item xs={9}>
           <MapContainer
           deadSheep={deadSheep}
-          opacityBonitet={opacityBonitet} 
-          sheepFlock={sheepFlock} 
-          heatmap={heatmap} 
-          currentSelectedSheepTourPositions={currentSelectedSheepTourPositions} 
-          startTourIndex={startTourIndex} />
+            opacityBonitet={opacityBonitet} 
+            sheepFlock={sheepFlock} 
+            preditors={preditors}
+            heatmap={heatmap} 
+            currentSelectedSheepTourPositions={currentSelectedSheepTourPositions} 
+            startTourIndex={startTourIndex} />
         </Grid>
       </Grid>
     </div>

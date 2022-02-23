@@ -1,4 +1,5 @@
 import GoogleMapReact, { Heatmap } from "google-map-react";
+import { MarkerClusterer } from "@googlemaps/markerclusterer";
 import { Polyline } from './Polyline'
 import { MapMarker } from "./MapMarker";
 import React, { useState, useEffect } from 'react';
@@ -10,9 +11,11 @@ import { mapFlockOfSheep } from "./MapFlockOfSheep";
 import { tourService } from "../Services/TourService";
 import { useAppSelector } from "../hooks";
 import { animalService } from "../Services/AnimalService";
-import { Jerv } from "../Types/Jerv";
+import { Jerv, PreditoColors, SkadeType } from "../Types/Jerv";
 import { Bonitet } from "../Types/Bonitet";
 import { InformationBoxMap } from "./InformationBox/InformationBoxMap";
+import { cowIcon, crossIcon, deerIcon, dnaIcon, dogIcon, dotsIcon, eyeIcon, footPrint, goatIcon, hairIcon, sheepIcon } from "../Registrations/rovbaseIcons";
+import { getPreditorMarkers } from "./MarkerHelper";
 let utm = require("utm")
 //import utm from "utm"
 
@@ -20,6 +23,7 @@ interface MapContainerProps {
   currentSelectedSheepTourPositions: CombinedSheepTourPosition[]
   startTourIndex: number,
   sheepFlock: boolean,
+  preditors: {[key: number]: boolean}
   heatmap: boolean,
   opacityBonitet: number,
   deadSheep: DeadSheepPosition[]
@@ -28,6 +32,7 @@ interface MapContainerProps {
 export function MapContainer(props: MapContainerProps) {
   const [tours, setTours] = useState<Tour[]>([]);
   const [sheepTourPositions, setSheepTourPositions] = useState<LatLong[][]>([])
+  const [markerCluster, setMarkerCluster] = useState<MarkerClusterer | null>(null)
   //const [combinedSheepTourPositions, setCombinedSheepTourPositions] = useState<CombinedSheepTourPosition[]>([])
   const [sheepHeatMap, setSheepHeatMap] = useState<any[]>([])
   const [jervData, setJervData] = useState<Jerv[]>([])
@@ -49,6 +54,16 @@ export function MapContainer(props: MapContainerProps) {
     fetchJerv()
   }, [])
 
+  useEffect(() => {
+    fetchJerv()
+  }, [props.startTourIndex])
+
+
+  useEffect(() => {
+    detachPreditorMarkers()
+    renderPreditorMarkers(jervData.filter((pred) => props.preditors[pred.rovdyrArtsID]))
+  }, [mapProps.loaded, props.preditors, jervData])
+
   const fetchGeneratedTours = async () => {
     const res = await authenticationService.getGeneratedTours()
     //console.log(res.data)
@@ -56,7 +71,20 @@ export function MapContainer(props: MapContainerProps) {
   }
 
   const fetchJerv = async () => {
-    const res = await animalService.getJerv()
+    console.log('fetching jerv')
+    const activePreditors = []
+    for (const key in props.preditors) {
+      if (props.preditors[key]) {
+        activePreditors.push(parseInt(key))
+        
+      }
+    }
+    if (activePreditors.length === 0) {
+      setJervData([])
+      return
+    }
+    detachPreditorMarkers()
+    const res = await animalService.getAnimalPreditors(new Date(2022,1,1), new Date(2022,2,21), activePreditors)
     if(res.data.length > 0) {
       //The point start at index 7 and ends at length - 1
       const jerv: Jerv[] = await res.data.map((data: Jerv) => {
@@ -67,6 +95,24 @@ export function MapContainer(props: MapContainerProps) {
         return data
       })
       setJervData(jerv)
+      renderPreditorMarkers(jerv)
+    }
+  }
+
+  
+  const [preditorMarkers, setPreditorMarkers] = useState<any[]>([])
+  const renderPreditorMarkers = (preditors: Jerv[]) => {
+    const markers = getPreditorMarkers(preditors, mapProps)
+    setPreditorMarkers(markers)
+    markerCluster?.clearMarkers()
+    markerCluster?.addMarkers(markers)
+  }
+
+  const detachPreditorMarkers = () => {
+    if (mapProps.loaded) {
+      for (const marker of preditorMarkers) {
+        marker.setMap(null);
+      }
     }
   }
 
@@ -152,6 +198,8 @@ export function MapContainer(props: MapContainerProps) {
             maps: maps,
             loaded: true,
           })
+          setMarkerCluster(new MarkerClusterer({map}))
+
           const norgeskartLayer = new maps.ImageMapType({
             getTileUrl: (cord: any, zoom: any) => {
               
@@ -177,7 +225,7 @@ export function MapContainer(props: MapContainerProps) {
           map.overlayMapTypes.push(norgeskartLayer)
           map.overlayMapTypes.push(bonitetLayer)
         }}
-        > 
+        >
         {
         mapProps.loaded ? (
           props.currentSelectedSheepTourPositions.map((combinedTour: CombinedSheepTourPosition) => (
@@ -217,11 +265,11 @@ export function MapContainer(props: MapContainerProps) {
           ))
         }
 
-        {
+        {/*
           jervData.length > 0 ? 
           jervData.map((jerv: Jerv, index: number) => (
             <MapMarker backgroundColor="blue" index={index} handleClick={handleClickOnDeadAnimal} lat={jerv.latitude} lng={jerv.longitude} text={jerv.artsIDPrøve} key={index} />
-            )) : null
+            )) : null*/
         }
         {
           southWestCorner && openInformationBox ?

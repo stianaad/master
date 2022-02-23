@@ -24,7 +24,7 @@ export function Home(){
   const navigate = useNavigate()
   const classes = useStyles()
   const [loginAlternatives, setLoginAlternatives] = useState<string>("login")
-  const loggedIn = useAppSelector((state) => state.loggedIn.value)
+  const loggedIn = useAppSelector((state: any) => state.loggedIn.value)
 
   const chooseLoginAlternatives = () => {
     if(loginAlternatives === "login") {

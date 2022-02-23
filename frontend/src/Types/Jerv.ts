@@ -1,7 +1,7 @@
 export interface Jerv {
   artsIDAnalyse: string,
   artsIDPrøve: string,
-  datatype: string,
+  datatype: PreditorDataType,
   dato: string,
   dnaID: string,
   funnsted: string,
@@ -10,9 +10,11 @@ export interface Jerv {
   kommune: string,
   prøvestatusID: string,
   prøvetypeID: string,
-  rovdyrArtsID: string,
+  rovdyrArtsID: number,
   strekkode: string,
   vueringID: string,
+  observasjoner: number[]
+  skadetypeID: string
   wkt: string,
   latitude: number,
   longitude: number
@@ -35,6 +37,33 @@ interface SearchFilter {
   rovdjursforum: string,
   iD: string
 }
+
+type PreditorDataType = "Rovviltobservasjon" | "DodeRovdyr" | "dna" | "Rovviltskade"
+
+export enum SkadeType {
+    SAU,
+    REIN,
+    HUND,
+    GEIT,
+    STORFE,
+}
+
+export enum PreditorType {
+    UNSPECIFIED,
+    ULV,
+    BJORN,
+    GAUPE,
+    JERV,
+  }
+
+export const PreditoColors: {[key: number]: string} = {
+    1: '#cb4335',
+    2: '#784212',
+    3: '#00a677',
+    4: '#2582a0'
+}
+
+
 
 /*
 "LanguageCode": "no",
