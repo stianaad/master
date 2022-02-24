@@ -6,7 +6,7 @@ export const getPreditorMarkers = (preditors: Jerv[], mapProps: any, markerClick
   const markers = []
   if (mapProps.loaded) {
     for (const pred of preditors) {
-      const marker = createPreditorMarker(getPreditorIcon(pred), pred.longitude, pred.latitude, mapProps.maps, mapProps.map)
+      const marker = createPreditorMarker(getPreditorIcon(pred), pred.longitude, pred.latitude, mapProps.maps, mapProps.map, pred)
       marker.addListener('click', () => markerClicked(pred ,marker))
       markers.push(marker)
     }
@@ -14,7 +14,7 @@ export const getPreditorMarkers = (preditors: Jerv[], mapProps: any, markerClick
   return markers
 }
 
-export const createPreditorMarker = (icon: string, longitude: number, latitude: number, maps: any, map: any) : any => {
+export const createPreditorMarker = (icon: string, longitude: number, latitude: number, maps: any, map: any, pred: Jerv) : any => {
   const markerImage = {
     url: `data:image/svg+xml;base64,${icon}`,
     scaledSize: new maps.Size(45, 45),
@@ -23,6 +23,7 @@ export const createPreditorMarker = (icon: string, longitude: number, latitude: 
     position: { lat: latitude, lng: longitude },
     map: map,
     icon: markerImage,
+    preditor: pred
   })
 }
 

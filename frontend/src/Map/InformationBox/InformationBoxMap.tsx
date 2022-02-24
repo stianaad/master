@@ -5,6 +5,8 @@ import { DeadSheepPosition } from "../../Types/Sheep";
 import { colorSheep, sizeSheep } from "../../Constants/DeadSheepConstants";
 import { DeadSheepView } from "./DeadSheepView";
 import { CombinedSheepTourPosition } from "../../Types/Tour";
+import { Jerv } from "../../Types/Jerv";
+import { PreditorView } from "./PreditorView";
 
 const useStyles = makeStyles({
   marker: {
@@ -27,7 +29,8 @@ interface InformationBoxMapProps {
   lng: number,
   onClose: () => void,
   deadSheep?: DeadSheepPosition,
-  sheepFlock?: CombinedSheepTourPosition
+  sheepFlock?: CombinedSheepTourPosition,
+  preditor?: Jerv[]
 }
 
 export const InformationBoxMap = (props: InformationBoxMapProps) => {
@@ -42,7 +45,7 @@ export const InformationBoxMap = (props: InformationBoxMapProps) => {
       </Grid>
     </Grid>
     { props.deadSheep ? <DeadSheepView deadSheep={props.deadSheep} /> : null }
-
+    { props.preditor ? <PreditorView preditorData={props.preditor} /> : null }
   </div>
 }
 

@@ -39,6 +39,7 @@ export function MapContainer(props: MapContainerProps) {
   const [southWestCorner, setSouthWestCorner] = useState<LatLong>()
   const [selectedDeadSheep, setSelectedDeadSheep] = useState<DeadSheepPosition>()
   const [selectedSheepTourPosition, setSelectedSheepTourPosition] = useState<CombinedSheepTourPosition>()
+  const [selectedPreditor, setSelectedPreditor] = useState<Jerv[]>()
   const [map, setMap] = useState<any>()
   const [maps, setMaps] = useState<any>()
   const [mapProps, setMapProps] = useState<{map: any |null, maps: any | null, loaded: boolean}>({
@@ -202,7 +203,18 @@ export function MapContainer(props: MapContainerProps) {
             maps: maps,
             loaded: true,
           })
-          setMarkerCluster(new MarkerClusterer({map}))
+          setMarkerCluster(new MarkerClusterer({map, onClusterClick(event, cluster, map) {
+            if(cluster !== undefined && cluster.markers) {
+              const res = cluster?.markers
+              const tmpPred: Jerv[] = []
+              cluster?.markers.forEach((value) => {
+                tmpPred.push(value.preditor)
+              })
+              console.log(tmpPred)
+              setSelectedPreditor(tmpPred)
+              setOpenInformationBox(true)
+            }
+          }}))
 
           const norgeskartLayer = new maps.ImageMapType({
             getTileUrl: (cord: any, zoom: any) => {
@@ -277,7 +289,7 @@ export function MapContainer(props: MapContainerProps) {
         }
         {
           southWestCorner && openInformationBox ?
-          <InformationBoxMap deadSheep={selectedDeadSheep} sheepFlock={selectedSheepTourPosition} lat={southWestCorner.latitude} lng={southWestCorner.longitude} onClose={() => setOpenInformationBox(false)} /> : null
+          <InformationBoxMap preditor={selectedPreditor} deadSheep={selectedDeadSheep} sheepFlock={selectedSheepTourPosition} lat={southWestCorner.latitude} lng={southWestCorner.longitude} onClose={() => setOpenInformationBox(false)} /> : null
         }
 
       </GoogleMapReact>

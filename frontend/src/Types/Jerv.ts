@@ -17,7 +17,8 @@ export interface Jerv {
   skadetypeID: string
   wkt: string,
   latitude: number,
-  longitude: number
+  longitude: number,
+  vekt: string
 }
 
 interface SearchFilter {
