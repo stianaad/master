@@ -1,5 +1,5 @@
 import GoogleMapReact, { Heatmap } from "google-map-react";
-import { MarkerClusterer } from "@googlemaps/markerclusterer";
+import { Cluster, MarkerClusterer } from "@googlemaps/markerclusterer";
 import { Polyline } from './Polyline'
 import { MapMarker } from "./MapMarker";
 import React, { useState, useEffect } from 'react';
@@ -15,7 +15,7 @@ import { Jerv, PreditoColors, SkadeType } from "../Types/Jerv";
 import { Bonitet } from "../Types/Bonitet";
 import { InformationBoxMap } from "./InformationBox/InformationBoxMap";
 import { cowIcon, crossIcon, deerIcon, dnaIcon, dogIcon, dotsIcon, eyeIcon, footPrint, goatIcon, hairIcon, sheepIcon } from "../Registrations/rovbaseIcons";
-import { getPreditorMarkers } from "./MarkerHelper";
+import { ClusterRenderer, getClusterIcon, getPreditorIcon, getPreditorMarkers } from "./MarkerHelper";
 let utm = require("utm")
 //import utm from "utm"
 
@@ -47,6 +47,9 @@ export function MapContainer(props: MapContainerProps) {
     maps: null,
     loaded: false
   })
+  
+  let activeMarker: null | {data: Jerv | CombinedSheepPosition | Cluster, marker: any} = null
+
   const [openInformationBox, setOpenInformationBox] = useState<boolean>(false)
   
   useEffect(() => {
@@ -101,7 +104,71 @@ export function MapContainer(props: MapContainerProps) {
   }
 
   const handlePreditorClicked = (preditor: Jerv, marker: any) => {
-    console.log(preditor)
+    // if (activeMarker !== null) {
+    //   const markerImage = {
+    //     url: `data:image/svg+xml;base64,${getPreditorIcon(activeMarker.data as Jerv, false)}`,
+    //     scaledSize: new maps.Size(45, 45),
+    //   }
+    //   activeMarker.marker.setIcon(markerImage)
+    // }
+    removeActiveMarker()
+    const markerImage = {
+      url: `data:image/svg+xml;base64,${getPreditorIcon(preditor, true)}`,
+      scaledSize: new google.maps.Size(45, 45),
+    }
+    marker.setIcon(markerImage)
+    activeMarker = {
+      data: preditor,
+      marker: marker
+    }
+  }
+
+  const handleClusterClicked = (event: google.maps.MapMouseEvent, cluster: Cluster, map: google.maps.Map) => {
+    removeActiveMarker()
+    const markerImage = {
+      url: `data:image/svg+xml;base64,${getClusterIcon(cluster.markers, true)}`,
+      scaledSize: new google.maps.Size(45, 45),
+    }
+    cluster.marker.setIcon(markerImage)
+    activeMarker = {
+      data: cluster,
+      marker: cluster.marker
+    }
+
+    if(cluster !== undefined && cluster.markers) {
+      const tmpPred: Jerv[] = []
+      cluster?.markers.forEach((value: any) => {
+        tmpPred.push(value.preditor)
+      })
+      console.log(tmpPred)
+      setSelectedPreditor(tmpPred)
+      setOpenInformationBox(true)
+    }
+  }
+
+  const removeActiveMarker = () => {
+    if (activeMarker != null) {
+      let markerImage = {
+        url: '',
+        scaledSize: new google.maps.Size(45, 45),
+      }
+      const type = activeMarker.marker.get('type')
+      if (type === 'preditor') {
+        markerImage = {
+          url: `data:image/svg+xml;base64,${getPreditorIcon(activeMarker.data as Jerv, false)}`,
+          scaledSize: new google.maps.Size(45, 45),
+        }
+      } else if (type === 'cluster') {
+        const cluster = activeMarker.data as Cluster
+        markerImage = {
+          url: `data:image/svg+xml;base64,${getClusterIcon(cluster.markers, false)}`,
+          scaledSize: new google.maps.Size(45, 45),
+        }
+      }
+      if (markerImage.url !== '') {
+        activeMarker.marker.setIcon(markerImage)
+      }
+    }
   }
   
   const [preditorMarkers, setPreditorMarkers] = useState<any[]>([])
@@ -203,18 +270,7 @@ export function MapContainer(props: MapContainerProps) {
             maps: maps,
             loaded: true,
           })
-          setMarkerCluster(new MarkerClusterer({map, onClusterClick(event, cluster, map) {
-            if(cluster !== undefined && cluster.markers) {
-              const res = cluster?.markers
-              const tmpPred: Jerv[] = []
-              cluster?.markers.forEach((value) => {
-                tmpPred.push(value.preditor)
-              })
-              console.log(tmpPred)
-              setSelectedPreditor(tmpPred)
-              setOpenInformationBox(true)
-            }
-          }}))
+          setMarkerCluster(new MarkerClusterer({map: map, renderer: new ClusterRenderer(), onClusterClick: handleClusterClicked}))
 
           const norgeskartLayer = new maps.ImageMapType({
             getTileUrl: (cord: any, zoom: any) => {
