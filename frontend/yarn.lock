@@ -2254,6 +2254,11 @@
   dependencies:
     "@types/react" "*"
 
+"@types/google.maps@^3.47.4":
+  "integrity" "sha512-wgNs0Cb0SpWMBmD5WV560bQ++sdtAOqR6V6qQIA5jZFORLsxat4kVkXOOg7KDFqHwNgYpg36Vai2zXUCTmbtnQ=="
+  "resolved" "https://registry.npmjs.org/@types/google.maps/-/google.maps-3.47.4.tgz"
+  "version" "3.47.4"
+
 "@types/graceful-fs@^4.1.2":
   "integrity" "sha512-anKkLmZZ+xm4p8JWBf4hElkM4XR+EZeA2M9BAkkTldmcyDY4mbdIJnRghDJH3Ov5ooY7/UAoENtmdMSkaAd7Cw=="
   "resolved" "https://registry.npmjs.org/@types/graceful-fs/-/graceful-fs-4.1.5.tgz"

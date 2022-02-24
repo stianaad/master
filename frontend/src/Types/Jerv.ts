@@ -41,7 +41,7 @@ interface SearchFilter {
 type PreditorDataType = "Rovviltobservasjon" | "DodeRovdyr" | "dna" | "Rovviltskade"
 
 export enum SkadeType {
-    SAU,
+    SAU = 1,
     REIN,
     HUND,
     GEIT,
