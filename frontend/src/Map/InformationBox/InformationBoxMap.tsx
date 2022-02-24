@@ -7,10 +7,12 @@ import { DeadSheepView } from "./DeadSheepView";
 import { CombinedSheepTourPosition } from "../../Types/Tour";
 import { Jerv } from "../../Types/Jerv";
 import { PreditorView } from "./PreditorView";
+import { useState } from "react";
+import { SheepFlockView } from "./SheepFlockView";
 
 const useStyles = makeStyles({
   marker: {
-    height: "200px",
+    //height: "200px",
     width: "300px",
     backgroundColor: "white",
     //marginLeft: "2vw",
@@ -21,6 +23,9 @@ const useStyles = makeStyles({
   },
   closeIcon: {
     marginTop: "10%"
+  },
+  header:{
+    backgroundColor: "#B4DBFF"
   }
 });
 
@@ -35,17 +40,20 @@ interface InformationBoxMapProps {
 
 export const InformationBoxMap = (props: InformationBoxMapProps) => {
   const classes = useStyles()
+  const [header, setHeader] = useState<string>("")
   return  <div className={classes.marker} >
-    <Grid container>
-      <Grid item xs={10}>
-        <Typography variant="h6" className={classes.text}></Typography>
+    <Grid container className={classes.header}>
+      <Grid item xs={2}></Grid>
+      <Grid item xs={8}>
+        <Typography variant="h6" className={classes.text}>{header}</Typography>
       </Grid>
       <Grid item xs={2} >
         <CloseIcon className={classes.closeIcon} onClick={props.onClose} />
       </Grid>
     </Grid>
-    { props.deadSheep ? <DeadSheepView deadSheep={props.deadSheep} /> : null }
-    { props.preditor ? <PreditorView preditorData={props.preditor} /> : null }
+    { props.deadSheep ? <DeadSheepView deadSheep={props.deadSheep} setHeader={setHeader} /> : null }
+    { props.preditor ? <PreditorView preditorData={props.preditor} setHeader={setHeader} /> : null }
+    { props.sheepFlock ? <SheepFlockView setHeader={setHeader} sheepFlock={props.sheepFlock} /> : null }
   </div>
 }
 

@@ -121,6 +121,12 @@ export function MapContainer(props: MapContainerProps) {
       data: preditor,
       marker: marker
     }
+
+    console.log(preditor)
+    setSelectedDeadSheep(undefined)
+    setSelectedSheepTourPosition(undefined)
+    setSelectedPreditor([preditor])
+    setOpenInformationBox(true)
   }
 
   const handleClusterClicked = (event: google.maps.MapMouseEvent, cluster: Cluster, map: google.maps.Map) => {
@@ -135,12 +141,15 @@ export function MapContainer(props: MapContainerProps) {
       marker: cluster.marker
     }
 
+    //Add selected markers in cluster to informationbox
     if(cluster !== undefined && cluster.markers) {
       const tmpPred: Jerv[] = []
       cluster?.markers.forEach((value: any) => {
         tmpPred.push(value.preditor)
       })
       console.log(tmpPred)
+      setSelectedDeadSheep(undefined)
+      setSelectedSheepTourPosition(undefined)
       setSelectedPreditor(tmpPred)
       setOpenInformationBox(true)
     }
@@ -233,6 +242,8 @@ export function MapContainer(props: MapContainerProps) {
   }
 
   const handleClickOnDeadAnimal = (index: number) => {
+    setSelectedSheepTourPosition(undefined)
+    setSelectedPreditor(undefined)
     setSelectedDeadSheep(props.deadSheep[index])
     setOpenInformationBox(true)
   }
@@ -241,7 +252,10 @@ export function MapContainer(props: MapContainerProps) {
     const newTour: CombinedSheepTourPosition = {...props.currentSelectedSheepTourPositions[indexTour]}
     newTour.combinedSheepPositions = [newTour.combinedSheepPositions[indexSheep]]
     console.log(newTour)
+    setSelectedDeadSheep(undefined)
+    setSelectedPreditor(undefined)
     setSelectedSheepTourPosition(newTour)
+    setOpenInformationBox(true)
   }
 
   //Change the opacity on the bonitet map
