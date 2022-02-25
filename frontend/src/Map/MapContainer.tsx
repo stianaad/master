@@ -339,16 +339,17 @@ export function MapContainer(props: MapContainerProps) {
           props.currentSelectedSheepTourPositions.map((combinedTour: CombinedSheepTourPosition, indexCombinedTour: number) => (
             combinedTour.combinedSheepPositions.map((combinedSheep: CombinedSheepPosition, indexCombinedSheep: number) => (
               combinedSheep.locations.map((location: LatLong, index: number) => (
-                <MapMarker backgroundColor="red" handleClick={(indexTour) => handleClickOnFlock(indexTour, indexCombinedSheep)} index={indexCombinedTour} lat={location.latitude} lng={location.longitude} text={combinedSheep.flockId.toString()} key={index} />
+                <MapMarker dead={false} backgroundColor="red" handleClick={(indexTour) => handleClickOnFlock(indexTour, indexCombinedSheep)} index={indexCombinedTour} lat={location.latitude} lng={location.longitude} text={combinedSheep.flockId.toString()} key={index} />
               ))
             ))
           )) : null
         }
 
         {
+          props.sheepFlock ?
           props.deadSheep.map((dead: DeadSheepPosition, index: number) => (
-            <MapMarker backgroundColor="purple" handleClick={handleClickOnDeadAnimal} index={index} lat={dead.latitude} lng={dead.longitude} text={dead.id.toString()} key={index} />
-          ))
+            <MapMarker dead={true} backgroundColor="purple" handleClick={handleClickOnDeadAnimal} index={index} lat={dead.latitude} lng={dead.longitude} text={dead.id.toString()} key={index} />
+          )) : null
         }
 
         {/*

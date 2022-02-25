@@ -3,6 +3,8 @@ import { makeStyles } from "@mui/styles";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { PreditorType } from "../../Types/Jerv";
 import { CombinedSheepTourPosition } from "../../Types/Tour"
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import { MenuItem } from "./MenuItem";
 
 const useStyles = makeStyles({
   pCurrent: {
@@ -15,11 +17,12 @@ const useStyles = makeStyles({
     color: "blue"
   },
   header:{
-    paddingTop: "3vh"
+    paddingTop: "3vh",
+    paddingBottom: "3vh"
   },
   tourIds: {
     overflowY: "auto",
-    height: "50vh"
+    height: "30vh"
   },
   switch: {
     marginLeft: "1vw",
@@ -28,6 +31,14 @@ const useStyles = makeStyles({
     marginRight: "2vw",
     marginLeft: "2vw",
     width: "80%"
+  },
+  divider: {
+    marginTop: "2vh",
+    marginBottom: "2vh"
+  },
+  preditorSwitch: {
+    textAlign: "left",
+    marginLeft: "2vw"
   }
 });
 
@@ -53,6 +64,8 @@ export const NavigateTour = (props: NavigateTourProps) => {
   const [week, setWeek] = useState<boolean>(true) //False is month
   const [monthOverview, setMonthOverview] = useState<string[]>([])
   const [showBonitet, setShowBonitet] = useState<boolean>(false)
+  const [showPreditor, setShowPreditor] = useState<boolean>(false)
+  const [showSheep, setShowSheep] = useState<boolean>(false)
 
   //When the user click next og previeous week/month
   const changeIndex = (value: number) => {
@@ -135,7 +148,7 @@ export const NavigateTour = (props: NavigateTourProps) => {
 
   
   return(
-    <>
+    <div>
       <Typography variant="h4" className={classes.header}>Turoversikt</Typography>
       <FormGroup className={classes.switch}>
         <FormControlLabel control={<Switch checked={showBonitet} onChange={(event: React.ChangeEvent<HTMLInputElement>) => setShowBonitet(event.target.checked)} />} label="Bonitet" />
@@ -150,18 +163,40 @@ export const NavigateTour = (props: NavigateTourProps) => {
           aria-label="Small"
           valueLabelDisplay="auto"
         /> : null}
-        <Divider />
+        <Divider className={classes.divider} />
+      </FormGroup>
+
+
+
+
+      <MenuItem open={showPreditor} setOpen={setShowPreditor} header="Rovdyr" />
+      { showPreditor ? 
+        <Grid container className={classes.preditorSwitch}>
+          <Grid item xs={6}>
+            <FormControlLabel control={<Switch checked={props.preditors[PreditorType.BJORN]} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setActivePreditors(PreditorType.BJORN, event.target.checked)} />} label="Bjørn" />
+          </Grid>
+          <Grid item xs={6}>
+            <FormControlLabel control={<Switch checked={props.preditors[PreditorType.GAUPE]} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setActivePreditors(PreditorType.GAUPE, event.target.checked)} />} label="Gaupe" />
+          </Grid>
+          <Grid item xs={6}>
+            <FormControlLabel control={<Switch checked={props.preditors[PreditorType.ULV]} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setActivePreditors(PreditorType.ULV, event.target.checked)} />} label="Ulv" />
+          </Grid>
+          <Grid item xs={6}>
+            <FormControlLabel control={<Switch checked={props.preditors[PreditorType.JERV]} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setActivePreditors(PreditorType.JERV, event.target.checked)} />} label="Jerv" />
+          </Grid>
+        </Grid>
+      : null }
+      <Divider className={classes.divider} />
+      
+      <MenuItem open={showSheep} setOpen={setShowSheep} header="Sauer" />
+      { showSheep ?
+      <div>
+      <FormGroup className={classes.switch}>
         <FormControlLabel control={<Switch checked={props.heatmap} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setHeatmap(event.target.checked)} />} label="Heatmap" />
         <FormControlLabel control={<Switch checked={props.sheepFlock} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setSheepFlock(event.target.checked)} />} label="Saueflokker" />
       </FormGroup>
+      <Divider className={classes.divider} />
 
-      <FormGroup className={classes.switch}>
-        <FormControlLabel control={<Switch checked={props.preditors[PreditorType.BJORN]} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setActivePreditors(PreditorType.BJORN, event.target.checked)} />} label="Bjørn" />
-        <FormControlLabel control={<Switch checked={props.preditors[PreditorType.GAUPE]} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setActivePreditors(PreditorType.GAUPE, event.target.checked)} />} label="Gaupe" />
-        <FormControlLabel control={<Switch checked={props.preditors[PreditorType.ULV]} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setActivePreditors(PreditorType.ULV, event.target.checked)} />} label="Ulv" />
-        <FormControlLabel control={<Switch checked={props.preditors[PreditorType.JERV]} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setActivePreditors(PreditorType.JERV, event.target.checked)} />} label="Jerv" />
-      </FormGroup>
-      
       <Grid container>
         <Grid item xs={6}>
           <Button className={week ? classes.activeWeekOrMonth : classes.notActiveWeekOrMonth} onClick={() => {setWeek(true); props.setStartTourIndex(0)}} >Uke</Button>
@@ -184,6 +219,7 @@ export const NavigateTour = (props: NavigateTourProps) => {
           <Button variant="contained" onClick={() => changeIndex(1)}>neste</Button>
         </Grid>
       </Grid>
-    </>
+      </div>  : <Divider className={classes.divider} /> }
+    </div>
   )
 }
