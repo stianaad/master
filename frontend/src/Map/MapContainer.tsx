@@ -24,6 +24,7 @@ interface MapContainerProps {
   startTourIndex: number,
   sheepFlock: boolean,
   preditors: {[key: number]: boolean}
+  dateRange: {from: Date, to: Date}
   heatmap: boolean,
   opacityBonitet: number,
   deadSheep: DeadSheepPosition[]
@@ -59,7 +60,7 @@ export function MapContainer(props: MapContainerProps) {
 
   useEffect(() => {
     fetchJerv()
-  }, [props.startTourIndex])
+  }, [props.dateRange])
 
 
   useEffect(() => {
@@ -87,7 +88,7 @@ export function MapContainer(props: MapContainerProps) {
       return
     }
     detachPreditorMarkers()
-    const res = await animalService.getAnimalPreditors(new Date(2022,1,1), new Date(2022,2,21), activePreditors)
+    const res = await animalService.getAnimalPreditors(props.dateRange.from, props.dateRange.to, activePreditors)
     if(res.data.length > 0) {
       //The point start at index 7 and ends at length - 1
       const jerv: Jerv[] = await res.data.map((data: Jerv) => {

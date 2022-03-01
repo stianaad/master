@@ -1,5 +1,7 @@
-import { Button, Divider, FormControlLabel, FormGroup, Grid, Slider, Switch, Typography } from "@mui/material"
+import { Button, Divider, FormControlLabel, FormGroup, Grid, Slider, Switch, TextField, Typography } from "@mui/material"
 import { makeStyles } from "@mui/styles";
+import { DatePicker, LocalizationProvider } from '@mui/lab'
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { PreditorType } from "../../Types/Jerv";
 import { CombinedSheepTourPosition } from "../../Types/Tour"
@@ -42,8 +44,10 @@ interface NavigateTourProps {
   heatmap: boolean,
   setHeatmap: Dispatch<SetStateAction<boolean>>,
   opacityBonitet: number,
+  dateRange: {from: Date, to: Date}
   setOpacityBonitet: Dispatch<SetStateAction<number>>,
   setCurrentSelectedSheepTourPositions: Dispatch<SetStateAction<CombinedSheepTourPosition[]>>,
+  setDateRange: Dispatch<SetStateAction<{from: Date, to: Date}>>,
   setActivePreditors: ((type: number, value: boolean) => void),
   currentSelectedSheepTourPositions: CombinedSheepTourPosition[]
 }
@@ -161,6 +165,40 @@ export const NavigateTour = (props: NavigateTourProps) => {
         <FormControlLabel control={<Switch checked={props.preditors[PreditorType.ULV]} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setActivePreditors(PreditorType.ULV, event.target.checked)} />} label="Ulv" />
         <FormControlLabel control={<Switch checked={props.preditors[PreditorType.JERV]} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setActivePreditors(PreditorType.JERV, event.target.checked)} />} label="Jerv" />
       </FormGroup>
+
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <DatePicker value={props.dateRange.from} inputFormat="dd/MM/yyyy" onChange={(date: Date | null) => {
+          if (date != null) {
+            props.setDateRange({from: date, to: props.dateRange.to})
+          }
+        }} renderInput={(params) => <TextField {...params} />} />
+        <DatePicker value={props.dateRange.to} inputFormat="dd/MM/yyyy" onChange={(date: Date | null) => {
+            if (date != null) {
+              props.setDateRange({from: props.dateRange.from, to: date})
+            }
+          }} renderInput={(params) => <TextField {...params} />} />
+      </LocalizationProvider>
+
+      {/* <FormGroup className={classes.switch}>
+          <FormControlLabel control={
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <DatePicker value={props.dateRange.from} onChange={(date: React.ChangeEvent<HTMLInputElement> | null) => {
+                if (date != null && date.target.value) {
+                  props.setDateRange({from: new Date(date.target.value), to: props.dateRange.to})
+                }
+              }} renderInput={(params) => <TextField {...params} />} />
+            </LocalizationProvider>
+          } label="Fra" />
+          <FormControlLabel control={
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <DatePicker value={props.dateRange.to} onChange={(date: React.ChangeEvent<HTMLInputElement> | null) => {
+                if (date != null && date.target.value) {
+                  props.setDateRange({from: props.dateRange.from, to: new Date(date.target.value)})
+                }
+              }} renderInput={(params) => <TextField {...params} />} />
+          </LocalizationProvider>
+          } label="Til og med" />
+      </FormGroup> */}
       
       <Grid container>
         <Grid item xs={6}>

@@ -33,6 +33,10 @@ export function SelectTour() {
   const [startTourIndex, setStartTourIndex] = useState<number>(0)
   const [heatmap, setHeatmap] = useState<boolean>(false)
   const [sheepFlock, setSheepFlock] = useState<boolean>(true)
+  const toDate = new Date(Date.now())
+  var fromDate = new Date(Date.now());
+  fromDate.setMonth(fromDate.getMonth() - 1);
+  const [dateRange, setDateRange] = useState<{from: Date, to: Date}>({from: fromDate, to: toDate})
   const [preditors, setPreditors] = useState<{[key: number]: boolean}>({
     1: true,
     2: true,
@@ -86,9 +90,11 @@ export function SelectTour() {
     <div className={classes.root}>
       <Grid container>
         <Grid item xs={3}>
-          <NavigateTour 
+          <NavigateTour
+          dateRange={dateRange}
           opacityBonitet={opacityBonitet}
           setOpacityBonitet={setOpacityBonitet}
+          setDateRange={setDateRange}
           sheepFlock={sheepFlock} 
           setSheepFlock={setSheepFlock}  
           currentSelectedSheepTourPositions={currentSelectedSheepTourPositions}
@@ -103,7 +109,8 @@ export function SelectTour() {
         </Grid>
         <Grid item xs={9}>
           <MapContainer
-          deadSheep={deadSheep}
+            dateRange={dateRange}
+            deadSheep={deadSheep}
             opacityBonitet={opacityBonitet} 
             sheepFlock={sheepFlock} 
             preditors={preditors}
