@@ -1,10 +1,13 @@
-import { Button, Divider, FormControlLabel, FormGroup, Grid, Slider, Switch, TextField, Typography } from "@mui/material"
+import { Button, Divider, FormControl, FormControlLabel, FormGroup, Grid, InputLabel, Select, Slider, Switch, TextField, Typography, MenuItem as MuiMenuItem } from "@mui/material"
 import { makeStyles } from "@mui/styles";
 import { DatePicker, LocalizationProvider } from '@mui/lab'
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { PreditorType } from "../../Types/Jerv";
 import { CombinedSheepTourPosition } from "../../Types/Tour"
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import { MenuItem } from "./MenuItem";
+import { responsiveProperty } from "@mui/material/styles/cssUtils";
 
 const useStyles = makeStyles({
   pCurrent: {
@@ -17,11 +20,12 @@ const useStyles = makeStyles({
     color: "blue"
   },
   header:{
-    paddingTop: "3vh"
+    paddingTop: "3vh",
+    paddingBottom: "3vh"
   },
   tourIds: {
     overflowY: "auto",
-    height: "50vh"
+    height: "30vh"
   },
   switch: {
     marginLeft: "1vw",
@@ -30,6 +34,14 @@ const useStyles = makeStyles({
     marginRight: "2vw",
     marginLeft: "2vw",
     width: "80%"
+  },
+  divider: {
+    marginTop: "2vh",
+    marginBottom: "2vh"
+  },
+  preditorSwitch: {
+    textAlign: "left",
+    marginLeft: "2vw"
   }
 });
 
@@ -52,11 +64,16 @@ interface NavigateTourProps {
   currentSelectedSheepTourPositions: CombinedSheepTourPosition[]
 }
 
+const THREE_MONTHS = 1000 * 60 * 60 * 24 * 30 * 3
+
 export const NavigateTour = (props: NavigateTourProps) => {
   const classes = useStyles()
   const [week, setWeek] = useState<boolean>(true) //False is month
   const [monthOverview, setMonthOverview] = useState<string[]>([])
   const [showBonitet, setShowBonitet] = useState<boolean>(false)
+  const [showPreditor, setShowPreditor] = useState<boolean>(false)
+  const [showSheep, setShowSheep] = useState<boolean>(false)
+  const [dateRange, setDateRange] = useState<{from: Date, to: Date}>(props.dateRange)
 
   //When the user click next og previeous week/month
   const changeIndex = (value: number) => {
@@ -79,6 +96,53 @@ export const NavigateTour = (props: NavigateTourProps) => {
     props.setStartTourIndex(tempIndex)
     props.setCurrentSelectedSheepTourPositions(props.combinedSheepTourPositions.slice(tempIndex, tempIndex + 1))
   }
+
+  useEffect(() => {
+    setDateRange(props.dateRange)
+  }, [props.dateRange])
+
+  const getYears =  () => {
+    const now = new Date(Date.now()).getFullYear()
+    const years: number[] = []
+    for (let i = now; i > now - 6; i--) {
+      years.push(i)
+    }
+    return years
+  }
+
+  const getCurrentYear = () => {
+    return props.dateRange.from.getFullYear()
+  }
+
+  const handleYearChange = (event: any) => {
+    const year: number = event.target.value
+    if (week) {
+      const fromDate = getDateOfISOWeek(1, year);
+      const toDate = new Date(fromDate.getTime())
+      toDate.setDate(toDate.getDate() + 7)
+      props.setDateRange({from: fromDate, to: toDate})
+    } else {
+      const fromDate = new Date(year, 0, 1);
+      const toDate = new Date(year, 1, 0);
+      props.setDateRange({from: fromDate, to: toDate})
+    }
+  }
+
+  const handleDatePickerClose = () => {
+    props.setStartTourIndex(0)
+    props.setDateRange(dateRange)
+  }
+
+  const getDateOfISOWeek = (w: number, y: number) => {
+    var simple = new Date(y, 0, 1 + (w - 1) * 7);
+    var dow = simple.getDay();
+    var ISOweekStart = simple;
+    if (dow <= 4)
+        ISOweekStart.setDate(simple.getDate() - simple.getDay() + 1);
+    else
+        ISOweekStart.setDate(simple.getDate() + 8 - simple.getDay());
+    return ISOweekStart;
+}
 
   const changeMonth = (value: number) => {
     //Find the current index
@@ -139,7 +203,7 @@ export const NavigateTour = (props: NavigateTourProps) => {
 
   
   return(
-    <>
+    <div>
       <Typography variant="h4" className={classes.header}>Turoversikt</Typography>
       <FormGroup className={classes.switch}>
         <FormControlLabel control={<Switch checked={showBonitet} onChange={(event: React.ChangeEvent<HTMLInputElement>) => setShowBonitet(event.target.checked)} />} label="Bonitet" />
@@ -154,52 +218,83 @@ export const NavigateTour = (props: NavigateTourProps) => {
           aria-label="Small"
           valueLabelDisplay="auto"
         /> : null}
-        <Divider />
+        <Divider className={classes.divider} />
+      </FormGroup>
+
+
+
+
+      <MenuItem open={showPreditor} setOpen={setShowPreditor} header="Rovdyr" />
+      { showPreditor ? 
+        <Grid container className={classes.preditorSwitch}>
+          <Grid item xs={6}>
+            <FormControlLabel control={<Switch checked={props.preditors[PreditorType.BJORN]} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setActivePreditors(PreditorType.BJORN, event.target.checked)} />} label="Bjørn" />
+          </Grid>
+          <Grid item xs={6}>
+            <FormControlLabel control={<Switch checked={props.preditors[PreditorType.GAUPE]} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setActivePreditors(PreditorType.GAUPE, event.target.checked)} />} label="Gaupe" />
+          </Grid>
+          <Grid item xs={6}>
+            <FormControlLabel control={<Switch checked={props.preditors[PreditorType.ULV]} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setActivePreditors(PreditorType.ULV, event.target.checked)} />} label="Ulv" />
+          </Grid>
+          <Grid item xs={6}>
+            <FormControlLabel control={<Switch checked={props.preditors[PreditorType.JERV]} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setActivePreditors(PreditorType.JERV, event.target.checked)} />} label="Jerv" />
+          </Grid>
+        </Grid>
+      : null }
+      <Divider className={classes.divider} />
+      
+      <MenuItem open={showSheep} setOpen={setShowSheep} header="Sauer" />
+      { showSheep ?
+      <div>
+      <FormGroup className={classes.switch}>
         <FormControlLabel control={<Switch checked={props.heatmap} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setHeatmap(event.target.checked)} />} label="Heatmap" />
         <FormControlLabel control={<Switch checked={props.sheepFlock} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setSheepFlock(event.target.checked)} />} label="Saueflokker" />
       </FormGroup>
-
-      <FormGroup className={classes.switch}>
-        <FormControlLabel control={<Switch checked={props.preditors[PreditorType.BJORN]} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setActivePreditors(PreditorType.BJORN, event.target.checked)} />} label="Bjørn" />
-        <FormControlLabel control={<Switch checked={props.preditors[PreditorType.GAUPE]} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setActivePreditors(PreditorType.GAUPE, event.target.checked)} />} label="Gaupe" />
-        <FormControlLabel control={<Switch checked={props.preditors[PreditorType.ULV]} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setActivePreditors(PreditorType.ULV, event.target.checked)} />} label="Ulv" />
-        <FormControlLabel control={<Switch checked={props.preditors[PreditorType.JERV]} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setActivePreditors(PreditorType.JERV, event.target.checked)} />} label="Jerv" />
-      </FormGroup>
+      
+      <Divider className={classes.divider} />
 
       <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <DatePicker value={props.dateRange.from} inputFormat="dd/MM/yyyy" onChange={(date: Date | null) => {
+        <DatePicker value={dateRange.from} inputFormat="dd/MM/yyyy" onChange={(date: Date | null) => {
           if (date != null) {
-            props.setDateRange({from: date, to: props.dateRange.to})
+            let interval = dateRange.to.getTime() - date.getTime()
+            if (interval > 0) {
+              interval = Math.min(interval, THREE_MONTHS)
+              const newToDate: Date = new Date(date.getTime() + interval)
+              setDateRange({from: date, to: newToDate})
+            }
           }
         }} renderInput={(params) => <TextField {...params} />} />
-        <DatePicker value={props.dateRange.to} inputFormat="dd/MM/yyyy" onChange={(date: Date | null) => {
+        <DatePicker value={dateRange.to} inputFormat="dd/MM/yyyy" onChange={(date: Date | null) => {
             if (date != null) {
-              props.setDateRange({from: props.dateRange.from, to: date})
+              //setDateRange({from: dateRange.from, to: date})
+              let interval = date.getTime() - dateRange.from.getTime()
+              if (interval > 0) {
+                interval = Math.min(interval, THREE_MONTHS)
+                const newFromDate: Date = new Date(date.getTime() - interval)
+                setDateRange({from: newFromDate, to: date})
+              }
             }
           }} renderInput={(params) => <TextField {...params} />} />
       </LocalizationProvider>
+      <Button variant="contained" disabled={dateRange.from === props.dateRange.from && dateRange.to === props.dateRange.to} onClick={() => handleDatePickerClose()}>Søk</Button>
 
-      {/* <FormGroup className={classes.switch}>
-          <FormControlLabel control={
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
-              <DatePicker value={props.dateRange.from} onChange={(date: React.ChangeEvent<HTMLInputElement> | null) => {
-                if (date != null && date.target.value) {
-                  props.setDateRange({from: new Date(date.target.value), to: props.dateRange.to})
-                }
-              }} renderInput={(params) => <TextField {...params} />} />
-            </LocalizationProvider>
-          } label="Fra" />
-          <FormControlLabel control={
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
-              <DatePicker value={props.dateRange.to} onChange={(date: React.ChangeEvent<HTMLInputElement> | null) => {
-                if (date != null && date.target.value) {
-                  props.setDateRange({from: props.dateRange.from, to: new Date(date.target.value)})
-                }
-              }} renderInput={(params) => <TextField {...params} />} />
-          </LocalizationProvider>
-          } label="Til og med" />
-      </FormGroup> */}
-      
+      {/* <FormControl fullWidth>
+        <InputLabel id="demo-simple-select-label">År</InputLabel>
+        <Select
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          value={getCurrentYear()}
+          label="Age"
+          onChange={handleYearChange}
+        >
+          {
+            getYears().map((year) => (
+              <MuiMenuItem key={year} value={year}>{year.toString()}</MuiMenuItem>
+            ))
+          }
+        </Select>
+    </FormControl> */}
+
       <Grid container>
         <Grid item xs={6}>
           <Button className={week ? classes.activeWeekOrMonth : classes.notActiveWeekOrMonth} onClick={() => {setWeek(true); props.setStartTourIndex(0)}} >Uke</Button>
@@ -209,10 +304,15 @@ export const NavigateTour = (props: NavigateTourProps) => {
         </Grid>
       </Grid>
       <div className={classes.tourIds}>
-        {props.combinedSheepTourPositions.map((combinedSheep : CombinedSheepTourPosition, index: number) => (
-          <p key={index} className={ (week && props.startTourIndex === index || props.currentSelectedSheepTourPositions.some((value: CombinedSheepTourPosition) => value.idTour === combinedSheep.idTour)) ? classes.pCurrent : "" }>{combinedSheep.idTour}</p>
+        {props.combinedSheepTourPositions.map((combinedSheep : CombinedSheepTourPosition, index: number) =>  (
+          <p key={index} className={ (week && props.startTourIndex === index || props.currentSelectedSheepTourPositions.some((value: CombinedSheepTourPosition) => value.idTour === combinedSheep.idTour)) ? classes.pCurrent : "" }>Tur - {combinedSheep.tourTime}</p>
           ))}
       </div>
+      {/* <div className={classes.tourIds}>
+        {props.combinedSheepTourPositions.map((combinedSheep : CombinedSheepTourPosition, index: number) =>  (
+          <p key={index} className={ combinedSheep.tourTime.toString() >= props.dateRange.from.toISOString() && combinedSheep.tourTime.toString() <= props.dateRange.to.toISOString() ? classes.pCurrent : "" }>{combinedSheep.idTour}</p>
+          ))}
+      </div> */}
 
       <Grid container >
         <Grid item xs={6}>
@@ -222,6 +322,7 @@ export const NavigateTour = (props: NavigateTourProps) => {
           <Button variant="contained" onClick={() => changeIndex(1)}>neste</Button>
         </Grid>
       </Grid>
-    </>
+      </div>  : <Divider className={classes.divider} /> }
+    </div>
   )
 }

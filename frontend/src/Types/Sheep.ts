@@ -1,3 +1,4 @@
+import { PreditorType } from "./Jerv";
 
 export interface SheepPosition {
   id: number
@@ -22,6 +23,7 @@ export interface DeadSheepPosition {
   longitude: number,
   latitude: number,
   timeOfObservation: Date,
+  preditorId: PreditorType,
   size: number,
   color: number,
   idTour: number

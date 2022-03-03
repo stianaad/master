@@ -1,2 +1,2 @@
-export const sizeSheep = ["Lam", "Sau"]
+export const sizeSheep = ["lam", "sau"]
 export const colorSheep = ["Hvit", "Svart", "Brun"]

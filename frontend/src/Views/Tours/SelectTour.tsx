@@ -29,6 +29,7 @@ export function SelectTour() {
   const classes = useStyles()
   const loggedIn = useAppSelector((state: any) => state.loggedIn.value)
   const [combinedSheepTourPositions, setCombinedSheepTourPositions] = useState<CombinedSheepTourPosition[]>([])
+  const [activeCombinedSheepTourPositions, setActiveCombinedSheepTourPositions] = useState<CombinedSheepTourPosition[]>([])
   const [currentSelectedSheepTourPositions, setCurrentSelectedSheepTourPositions] = useState<CombinedSheepTourPosition[]>([])
   const [startTourIndex, setStartTourIndex] = useState<number>(0)
   const [heatmap, setHeatmap] = useState<boolean>(false)
@@ -57,10 +58,19 @@ export function SelectTour() {
       console.log(res.data)
       if (res.status === 200) {
         setCombinedSheepTourPositions(res.data)
+        const startDate = new Date(res.data[0].tourTime)
+        const endDate = new Date(res.data[res.data.length - 1].tourTime)
+        setDateRange({from: startDate, to: endDate})
         setCurrentSelectedSheepTourPositions(res.data.slice(startTourIndex, startTourIndex + 1))
       }
     }
   }
+
+  useEffect(() => {
+    const tours = combinedSheepTourPositions.filter((tour) => tour.tourTime.toString() >= dateRange.from.toISOString() && tour.tourTime.toString() <= dateRange.to.toISOString())
+    console.log('tours:',tours)
+    setActiveCombinedSheepTourPositions(tours)
+  }, [dateRange])
 
   const fetchDeadSheep = async (fromDate: Date, toDate: Date) => {
     if(loggedIn.length > 0) {
@@ -103,7 +113,7 @@ export function SelectTour() {
           setActivePreditors={handleActivePreditors}
           heatmap={heatmap} 
           setHeatmap={setHeatmap} 
-          combinedSheepTourPositions={combinedSheepTourPositions} 
+          combinedSheepTourPositions={activeCombinedSheepTourPositions} 
           startTourIndex={startTourIndex} 
           setStartTourIndex={setStartTourIndex} />
         </Grid>

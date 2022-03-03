@@ -17,7 +17,8 @@ export interface Jerv {
   skadetypeID: string
   wkt: string,
   latitude: number,
-  longitude: number
+  longitude: number,
+  vekt: string
 }
 
 interface SearchFilter {
@@ -57,6 +58,7 @@ export enum PreditorType {
   }
 
 export const PreditoColors: {[key: number]: string} = {
+    0: 'white',
     1: '#cb4335',
     2: '#784212',
     3: '#00a677',
