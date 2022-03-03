@@ -111,6 +111,7 @@ namespace backend.Models
         public DateTime TimeOfObservation { get; set; }
         public int Size { get; set; }
         public int Color { get; set; }
+        public int PreditorId { get; set; }
         public int IdTour { get; set; }
         [JsonIgnore]
         public TourData Tour { get; set; }
