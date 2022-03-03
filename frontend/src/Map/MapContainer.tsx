@@ -79,7 +79,7 @@ export function MapContainer(props: MapContainerProps) {
   const rerenderPreditorMarker = () => {
     detachPreditorMarkers()
     let activePreditors = jervData.filter((pred) => props.preditors[pred.rovdyrArtsID])
-    const deadSheeps: Jerv[] = props.deadSheep.filter((s) => props.preditors[s.preditorId] || s.preditorId === 0).map((dSheep) => { return { rovdyrArtsID: dSheep.preditorId, longitude: dSheep.longitude, latitude: dSheep.latitude, datatype: 'Rovviltskade', skadetypeID: SkadeType.SAU } as unknown as Jerv})
+    const deadSheeps: Jerv[] = props.deadSheep.filter((s) => props.preditors[s.preditorId] || s.preditorId === 0).map((dSheep) => { return { rovdyrArtsID: dSheep.preditorId, longitude: dSheep.longitude, latitude: dSheep.latitude, datatype: 'Rovviltskade', skadetypeID: SkadeType.SAU, dato: dSheep.timeOfObservation } as unknown as Jerv})
     activePreditors = activePreditors.concat(deadSheeps)
     renderPreditorMarkers(activePreditors)
   }
@@ -354,7 +354,7 @@ export function MapContainer(props: MapContainerProps) {
           map.overlayMapTypes.push(bonitetLayer)
         }}
         >
-        {
+        {/*
         mapProps.loaded ? (
           props.currentSelectedSheepTourPositions.map((combinedTour: CombinedSheepTourPosition) => (
             combinedTour.combinedSheepPositions.map((combinedSheep: CombinedSheepPosition, index: number) => (
@@ -365,14 +365,7 @@ export function MapContainer(props: MapContainerProps) {
                 path={combinedSheep.locations.map((l: LatLong) =>  {return {lat: l.latitude, lng: l.longitude}})} />
             ))
           ))
-          /*sheepTourPositions.map((pos: LatLong[], index: number) => 
-          <Polyline
-            key={index}
-            map={mapProps.map}
-            maps={mapProps.maps}
-            path={pos} />
-          )*/
-           ) : null
+           ) : null*/
         }
 
         { 

@@ -34,6 +34,7 @@ export function SelectTour() {
   const [startTourIndex, setStartTourIndex] = useState<number>(0)
   const [heatmap, setHeatmap] = useState<boolean>(false)
   const [sheepFlock, setSheepFlock] = useState<boolean>(true)
+  const [week, setWeek] = useState<boolean>(true) //False is month
   const toDate = new Date(Date.now())
   var fromDate = new Date(Date.now());
   fromDate.setMonth(fromDate.getMonth() - 1);
@@ -48,19 +49,18 @@ export function SelectTour() {
   const handleActivePreditors = (type: number, value: boolean) => {
     setPreditors({...preditors, [type]: value})
   }
-  const [showBonitet, setShowBonitet] = useState<boolean>(false)
   const [opacityBonitet, setOpacityBonitet] = useState<number>(0)
   const [deadSheep, setDeadSheep] = useState<DeadSheepPosition[]>([])
 
   const fetchTours = async () => {
     if (loggedIn.length > 0) {
       const res = await tourService.getCombinedSheepTourPositions() //authenticationService.getTours()
-      console.log(res.data)
       if (res.status === 200) {
         setCombinedSheepTourPositions(res.data)
         const startDate = new Date(res.data[0].tourTime)
         const endDate = new Date(res.data[res.data.length - 1].tourTime)
         setDateRange({from: startDate, to: endDate})
+        setActiveCombinedSheepTourPositions(res.data)
         setCurrentSelectedSheepTourPositions(res.data.slice(startTourIndex, startTourIndex + 1))
       }
     }
@@ -68,15 +68,16 @@ export function SelectTour() {
 
   useEffect(() => {
     const tours = combinedSheepTourPositions.filter((tour) => tour.tourTime.toString() >= dateRange.from.toISOString() && tour.tourTime.toString() <= dateRange.to.toISOString())
-    console.log('tours:',tours)
     setActiveCombinedSheepTourPositions(tours)
+    if(week) {
+      setCurrentSelectedSheepTourPositions(tours.slice(0, 1))
+    }
   }, [dateRange])
 
   const fetchDeadSheep = async (fromDate: Date, toDate: Date) => {
     if(loggedIn.length > 0) {
       const res = await animalService.getDeadSheep(fromDate, toDate)
       if (res.status === 200) {
-        console.log(res.data)
         setDeadSheep(res.data)
       }
     }
@@ -114,9 +115,13 @@ export function SelectTour() {
           setActivePreditors={handleActivePreditors}
           heatmap={heatmap} 
           setHeatmap={setHeatmap} 
-          combinedSheepTourPositions={activeCombinedSheepTourPositions} 
+          combinedSheepTourPositions={combinedSheepTourPositions}
+          activeCombinedSheepTourPositions={activeCombinedSheepTourPositions}
           startTourIndex={startTourIndex} 
-          setStartTourIndex={setStartTourIndex} />
+          setStartTourIndex={setStartTourIndex} 
+          week={week}
+          setWeek={setWeek}
+          />
         </Grid>
         <Grid item xs={9}>
           <MapContainer

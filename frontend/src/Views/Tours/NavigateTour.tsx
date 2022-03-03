@@ -10,9 +10,15 @@ import { MenuItem } from "./MenuItem";
 import { pdfService } from "../../Services/PDFService";
 import { DeadSheepPosition } from "../../Types/Sheep";
 import { animalService } from "../../Services/AnimalService";
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import { responsiveProperty } from "@mui/material/styles/cssUtils";
 
 const useStyles = makeStyles({
+  root: {
+    overflowY: "auto",
+    height: "100vh",
+    overflowX: "hidden"
+  },
   pCurrent: {
     color: "red"
   },
@@ -27,8 +33,8 @@ const useStyles = makeStyles({
     paddingBottom: "3vh"
   },
   tourIds: {
-    overflowY: "auto",
-    height: "30vh"
+    //overflowY: "auto",
+    //height: "30vh"
   },
   switch: {
     marginLeft: "1vw",
@@ -45,12 +51,23 @@ const useStyles = makeStyles({
   preditorSwitch: {
     textAlign: "left",
     marginLeft: "2vw"
+  },
+  download: {
+    margin: "2vh 0",
+    textTransform: "none"
+  },
+  dateMargin: {
+    marginBottom: "1vh"
+  },
+  sheepNextPrev: {
+    marginBottom: "2vh"
   }
 });
 
 
 interface NavigateTourProps {
-  combinedSheepTourPositions: CombinedSheepTourPosition[]
+  combinedSheepTourPositions: CombinedSheepTourPosition[],
+  activeCombinedSheepTourPositions: CombinedSheepTourPosition[]
   startTourIndex: number,
   preditors: {[key: number]: boolean},
   setStartTourIndex: Dispatch<SetStateAction<number>>,
@@ -65,23 +82,26 @@ interface NavigateTourProps {
   setDateRange: Dispatch<SetStateAction<{from: Date, to: Date}>>,
   setActivePreditors: ((type: number, value: boolean) => void),
   currentSelectedSheepTourPositions: CombinedSheepTourPosition[],
-  deadSheeps: DeadSheepPosition[]
+  deadSheeps: DeadSheepPosition[],
+  week: boolean,
+  setWeek: Dispatch<SetStateAction<boolean>>
 }
 
 const THREE_MONTHS = 1000 * 60 * 60 * 24 * 30 * 3
 
 export const NavigateTour = (props: NavigateTourProps) => {
   const classes = useStyles()
-  const [week, setWeek] = useState<boolean>(true) //False is month
   const [monthOverview, setMonthOverview] = useState<string[]>([])
   const [showBonitet, setShowBonitet] = useState<boolean>(false)
+  const [showBonitetButton, setShowBonitetButton] = useState<boolean>(false)
   const [showPreditor, setShowPreditor] = useState<boolean>(false)
   const [showSheep, setShowSheep] = useState<boolean>(false)
+  const [showPDFGenerator, setShowPDFGenerator] = useState<boolean>(false)
   const [dateRange, setDateRange] = useState<{from: Date, to: Date}>(props.dateRange)
 
   //When the user click next og previeous week/month
   const changeIndex = (value: number) => {
-    if(week) {
+    if(props.week) {
       changeWeek(value)
     } else {
       changeMonth(value)
@@ -91,14 +111,14 @@ export const NavigateTour = (props: NavigateTourProps) => {
   const changeWeek = (value: number) => {
     //Find the current index
     let tempIndex = 0
-    if( (props.startTourIndex + value) < props.combinedSheepTourPositions.length && (props.startTourIndex + value) > -1) {
+    if( (props.startTourIndex + value) < props.activeCombinedSheepTourPositions.length && (props.startTourIndex + value) > -1) {
        tempIndex = props.startTourIndex + value
     } else if (props.startTourIndex + value < 0) {
-      tempIndex = props.combinedSheepTourPositions.length - 1
+      tempIndex = props.activeCombinedSheepTourPositions.length - 1
     }
 
     props.setStartTourIndex(tempIndex)
-    props.setCurrentSelectedSheepTourPositions(props.combinedSheepTourPositions.slice(tempIndex, tempIndex + 1))
+    props.setCurrentSelectedSheepTourPositions(props.activeCombinedSheepTourPositions.slice(tempIndex, tempIndex + 1))
   }
 
   useEffect(() => {
@@ -120,7 +140,7 @@ export const NavigateTour = (props: NavigateTourProps) => {
 
   const handleYearChange = (event: any) => {
     const year: number = event.target.value
-    if (week) {
+    if (props.week) {
       const fromDate = getDateOfISOWeek(1, year);
       const toDate = new Date(fromDate.getTime())
       toDate.setDate(toDate.getDate() + 7)
@@ -158,17 +178,17 @@ export const NavigateTour = (props: NavigateTourProps) => {
     }
 
     const currentMonth = monthOverview[tempIndex]
-    const newSheepTourArray = props.combinedSheepTourPositions.filter((sheep: CombinedSheepTourPosition) => sheep.tourTime.toString().slice(0,7) === currentMonth)
+    const newSheepTourArray = props.activeCombinedSheepTourPositions.filter((sheep: CombinedSheepTourPosition) => sheep.tourTime.toString().slice(0,7) === currentMonth)
     props.setCurrentSelectedSheepTourPositions(newSheepTourArray)
     props.setStartTourIndex(tempIndex)
   }
 
   //Create a array with all the months
   useEffect(() => {
-    if(props.combinedSheepTourPositions.length > 0) {
+    if(props.activeCombinedSheepTourPositions.length > 0) {
       let tempMonthArray: string[] = []
-      let tempMonth = props.combinedSheepTourPositions[0].tourTime.toString().slice(0,7)
-      props.combinedSheepTourPositions.forEach((sheepTour: CombinedSheepTourPosition, index: number) => {
+      let tempMonth = props.activeCombinedSheepTourPositions[0].tourTime.toString().slice(0,7)
+      props.activeCombinedSheepTourPositions.forEach((sheepTour: CombinedSheepTourPosition, index: number) => {
         const currentMonth = sheepTour.tourTime.toString().slice(0,7)
         //Check if the current month is equal to the previous
         if( currentMonth != tempMonth) {
@@ -176,18 +196,22 @@ export const NavigateTour = (props: NavigateTourProps) => {
           tempMonth = currentMonth
         }
         //If it is the last index, and the month is not pushed yet
-        if(index + 1 === props.combinedSheepTourPositions.length) {
+        if(index + 1 === props.activeCombinedSheepTourPositions.length) {
           tempMonthArray.push(tempMonth)
         }
       })
       setMonthOverview(tempMonthArray)
+      if(!props.week) {
+        const newSheepTourArray = props.activeCombinedSheepTourPositions.filter((sheep: CombinedSheepTourPosition) => sheep.tourTime.toString().slice(0,7) === tempMonthArray[0])
+        props.setCurrentSelectedSheepTourPositions(newSheepTourArray)
+      }
     }
-  }, [props.combinedSheepTourPositions])
+  }, [props.activeCombinedSheepTourPositions])
 
   //Update the sheepTour array when it changes from week to month and vice versa
   useEffect(() => {
     changeIndex(-props.startTourIndex)
-  }, [week])
+  }, [props.week])
 
   const changeOpacityBonitet = (event: Event, newValue: number | number[], activeThumb: number) => {
     if(!Array.isArray(newValue)) {
@@ -206,8 +230,8 @@ export const NavigateTour = (props: NavigateTourProps) => {
 
   const downloadPDF = async () => {
     try{
-      const deadSheep = await animalService.getDeadSheep(props.combinedSheepTourPositions[0].tourTime, props.combinedSheepTourPositions[props.combinedSheepTourPositions.length -1].tourTime)
-      const res = await pdfService.getPDF(props.combinedSheepTourPositions, deadSheep.data)
+      const deadSheep = await animalService.getDeadSheep(props.activeCombinedSheepTourPositions[0].tourTime, props.activeCombinedSheepTourPositions[props.activeCombinedSheepTourPositions.length -1].tourTime)
+      const res = await pdfService.getPDF(props.activeCombinedSheepTourPositions, deadSheep.data)
       const url = window.URL.createObjectURL(new Blob([res.data]));
       const link = document.createElement('a');
       link.href = url;
@@ -220,9 +244,58 @@ export const NavigateTour = (props: NavigateTourProps) => {
   }
   
   return(
-    <div>
+    <div className={classes.root}>
       <Typography variant="h4" className={classes.header}>Turoversikt</Typography>
-      <FormGroup className={classes.switch}>
+
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <DatePicker value={dateRange.from} inputFormat="dd/MM/yyyy" onChange={(date: Date | null) => {
+            if (date != null) {
+              let interval = dateRange.to.getTime() - date.getTime()
+              if (interval > 0) {
+                interval = Math.min(interval, THREE_MONTHS)
+                const newToDate: Date = new Date(date.getTime() + interval)
+                setDateRange({from: date, to: newToDate})
+              }
+            }
+          }} renderInput={(params) => <TextField {...params} className={classes.dateMargin} />} />
+          <DatePicker value={dateRange.to} inputFormat="dd/MM/yyyy" onChange={(date: Date | null) => {
+              if (date != null) {
+                //setDateRange({from: dateRange.from, to: date})
+                let interval = date.getTime() - dateRange.from.getTime()
+                if (interval > 0) {
+                  interval = Math.min(interval, THREE_MONTHS)
+                  const newFromDate: Date = new Date(date.getTime() - interval)
+                  setDateRange({from: newFromDate, to: date})
+                }
+              }
+            }} renderInput={(params) => <TextField {...params} className={classes.dateMargin} />} />
+        </LocalizationProvider>
+        <br/>
+        <Button variant="contained" disabled={dateRange.from === props.dateRange.from && dateRange.to === props.dateRange.to} onClick={() => handleDatePickerClose()}>Søk</Button>
+
+      <Divider className={classes.divider} />
+
+      <MenuItem open={showPDFGenerator} setOpen={setShowPDFGenerator} header="Årsrapport" />
+      {
+        showPDFGenerator ?
+        <Grid container>
+          <Grid item xs={12}>
+            <Button className={classes.download} variant="outlined" startIcon={<FileDownloadIcon />} onClick={downloadPDF}>Generer årsrapport</Button>
+          </Grid>
+        </Grid>
+        : null
+      }
+      {/*
+      
+      <Typography variant="body1" className={classes.download} onClick={downloadPDF}><FileDownloadIcon style={{verticalAlign: "middle"}}  /> Last ned PDF </Typography>
+      */}
+      <Divider className={classes.divider} />
+
+
+      <MenuItem open={showBonitetButton} setOpen={setShowBonitetButton} header="Bonitet" />
+      {
+        showBonitetButton ? 
+        <FormGroup className={classes.switch}>
         <FormControlLabel control={<Switch checked={showBonitet} onChange={(event: React.ChangeEvent<HTMLInputElement>) => setShowBonitet(event.target.checked)} />} label="Bonitet" />
         {showBonitet ? <Slider
           className={classes.sliderBonitet}
@@ -234,12 +307,11 @@ export const NavigateTour = (props: NavigateTourProps) => {
           value={props.opacityBonitet}
           aria-label="Small"
           valueLabelDisplay="auto"
-        /> : null}
-        <Divider className={classes.divider} />
+          /> : null}
       </FormGroup>
-
-      <Button variant="contained" onClick={downloadPDF}>Last ned</Button>
-
+      : null
+      }
+      <Divider className={classes.divider} />
 
       <MenuItem open={showPreditor} setOpen={setShowPreditor} header="Rovdyr" />
       { showPreditor ? 
@@ -260,7 +332,7 @@ export const NavigateTour = (props: NavigateTourProps) => {
       : null }
       <Divider className={classes.divider} />
       
-      <MenuItem open={showSheep} setOpen={setShowSheep} header="Sauer" />
+      <MenuItem open={showSheep} setOpen={setShowSheep} header="Sau" />
       { showSheep ?
       <div>
       <FormGroup className={classes.switch}>
@@ -269,32 +341,6 @@ export const NavigateTour = (props: NavigateTourProps) => {
       </FormGroup>
       
       <Divider className={classes.divider} />
-
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <DatePicker value={dateRange.from} inputFormat="dd/MM/yyyy" onChange={(date: Date | null) => {
-          if (date != null) {
-            let interval = dateRange.to.getTime() - date.getTime()
-            if (interval > 0) {
-              interval = Math.min(interval, THREE_MONTHS)
-              const newToDate: Date = new Date(date.getTime() + interval)
-              setDateRange({from: date, to: newToDate})
-            }
-          }
-        }} renderInput={(params) => <TextField {...params} />} />
-        <DatePicker value={dateRange.to} inputFormat="dd/MM/yyyy" onChange={(date: Date | null) => {
-            if (date != null) {
-              //setDateRange({from: dateRange.from, to: date})
-              let interval = date.getTime() - dateRange.from.getTime()
-              if (interval > 0) {
-                interval = Math.min(interval, THREE_MONTHS)
-                const newFromDate: Date = new Date(date.getTime() - interval)
-                setDateRange({from: newFromDate, to: date})
-              }
-            }
-          }} renderInput={(params) => <TextField {...params} />} />
-      </LocalizationProvider>
-      <Button variant="contained" disabled={dateRange.from === props.dateRange.from && dateRange.to === props.dateRange.to} onClick={() => handleDatePickerClose()}>Søk</Button>
-
       {/* <FormControl fullWidth>
         <InputLabel id="demo-simple-select-label">År</InputLabel>
         <Select
@@ -314,15 +360,15 @@ export const NavigateTour = (props: NavigateTourProps) => {
 
       <Grid container>
         <Grid item xs={6}>
-          <Button className={week ? classes.activeWeekOrMonth : classes.notActiveWeekOrMonth} onClick={() => {setWeek(true); props.setStartTourIndex(0)}} >Uke</Button>
+          <Button className={props.week ? classes.activeWeekOrMonth : classes.notActiveWeekOrMonth} onClick={() => {props.setWeek(true); props.setStartTourIndex(0)}} >Uke</Button>
         </Grid>
         <Grid item xs={6}>
-          <Button className={!week ? classes.activeWeekOrMonth : classes.notActiveWeekOrMonth} onClick={() => {setWeek(false); props.setStartTourIndex(0)}}>Måned</Button>
+          <Button className={!props.week ? classes.activeWeekOrMonth : classes.notActiveWeekOrMonth} onClick={() => {props.setWeek(false); props.setStartTourIndex(0)}}>Måned</Button>
         </Grid>
       </Grid>
       <div className={classes.tourIds}>
-        {props.combinedSheepTourPositions.map((combinedSheep : CombinedSheepTourPosition, index: number) =>  (
-          <p key={index} className={ (week && props.startTourIndex === index || props.currentSelectedSheepTourPositions.some((value: CombinedSheepTourPosition) => value.idTour === combinedSheep.idTour)) ? classes.pCurrent : "" }>Tur - {combinedSheep.tourTime}</p>
+        {props.activeCombinedSheepTourPositions.map((combinedSheep : CombinedSheepTourPosition, index: number) =>  (
+          <p key={index} className={ (props.week && props.startTourIndex === index || props.currentSelectedSheepTourPositions.some((value: CombinedSheepTourPosition) => value.idTour === combinedSheep.idTour)) ? classes.pCurrent : "" }>Tur - {combinedSheep.tourTime}</p>
           ))}
       </div>
       {/* <div className={classes.tourIds}>
@@ -331,7 +377,7 @@ export const NavigateTour = (props: NavigateTourProps) => {
           ))}
       </div> */}
 
-      <Grid container >
+      <Grid container className={classes.sheepNextPrev}>
         <Grid item xs={6}>
           <Button variant="contained" onClick={() => changeIndex(-1)}>forrige</Button>
         </Grid>

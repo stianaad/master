@@ -38,6 +38,7 @@ export const PreditorView = (props: PreditorViewProps) => {
     if(props.preditorData.length > 0) {
       setCurrentPreditor(props.preditorData[0])
       props.setHeader(`1 av ${props.preditorData.length}`)
+      setIndex(0)
     }
   }, [props.preditorData])
 
