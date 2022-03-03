@@ -17,6 +17,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using DinkToPdf.Contracts;
+using DinkToPdf;
 
 namespace backend
 {
@@ -41,13 +43,15 @@ namespace backend
                                   });
             });*/
             services.AddCors(c => { c.AddPolicy("AllowOrigin", options => options.AllowCredentials().SetIsOriginAllowed(host => true)); });
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson();
             services.AddDbContext<AuthenticationContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddDbContext<SheepContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("SheepConnection")));
             // For Identity  
             services.AddIdentity<AuthenticationUser, IdentityRole>()
                 .AddEntityFrameworkStores<AuthenticationContext>()
                 .AddDefaultTokenProviders();
+
+            services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
 
 
             // Adding Authentication  
@@ -72,9 +76,6 @@ namespace backend
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Secret"]))
                 };
             });
-
-            //services.AddIdentity(options => options.ClaimsIdentity.UserIdClaimType = "UserId");
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

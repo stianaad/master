@@ -62,8 +62,8 @@ export function SelectTour() {
     if(loggedIn.length > 0) {
       const res = await animalService.getDeadSheep(fromDate, toDate)
       if (res.status === 200) {
-        setDeadSheep(res.data)
         console.log(res.data)
+        setDeadSheep(res.data)
       }
     }
   }
@@ -87,6 +87,7 @@ export function SelectTour() {
       <Grid container>
         <Grid item xs={3}>
           <NavigateTour 
+          deadSheeps={deadSheep}
           opacityBonitet={opacityBonitet}
           setOpacityBonitet={setOpacityBonitet}
           sheepFlock={sheepFlock} 

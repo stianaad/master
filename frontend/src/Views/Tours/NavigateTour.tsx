@@ -5,6 +5,9 @@ import { PreditorType } from "../../Types/Jerv";
 import { CombinedSheepTourPosition } from "../../Types/Tour"
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { MenuItem } from "./MenuItem";
+import { pdfService } from "../../Services/PDFService";
+import { DeadSheepPosition } from "../../Types/Sheep";
+import { animalService } from "../../Services/AnimalService";
 
 const useStyles = makeStyles({
   pCurrent: {
@@ -56,7 +59,8 @@ interface NavigateTourProps {
   setOpacityBonitet: Dispatch<SetStateAction<number>>,
   setCurrentSelectedSheepTourPositions: Dispatch<SetStateAction<CombinedSheepTourPosition[]>>,
   setActivePreditors: ((type: number, value: boolean) => void),
-  currentSelectedSheepTourPositions: CombinedSheepTourPosition[]
+  currentSelectedSheepTourPositions: CombinedSheepTourPosition[],
+  deadSheeps: DeadSheepPosition[]
 }
 
 export const NavigateTour = (props: NavigateTourProps) => {
@@ -100,7 +104,6 @@ export const NavigateTour = (props: NavigateTourProps) => {
 
     const currentMonth = monthOverview[tempIndex]
     const newSheepTourArray = props.combinedSheepTourPositions.filter((sheep: CombinedSheepTourPosition) => sheep.tourTime.toString().slice(0,7) === currentMonth)
-    console.log(newSheepTourArray)
     props.setCurrentSelectedSheepTourPositions(newSheepTourArray)
     props.setStartTourIndex(tempIndex)
   }
@@ -146,6 +149,20 @@ export const NavigateTour = (props: NavigateTourProps) => {
     }
   }, [showBonitet])
 
+  const downloadPDF = async () => {
+    try{
+      const deadSheep = await animalService.getDeadSheep(props.combinedSheepTourPositions[0].tourTime, props.combinedSheepTourPositions[props.combinedSheepTourPositions.length -1].tourTime)
+      const res = await pdfService.getPDF(props.combinedSheepTourPositions, deadSheep.data)
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'SimplePdf.pdf'); //or any other extension
+      document.body.appendChild(link);
+      link.click();
+    } catch (e){
+      console.log(e)
+    }
+  }
   
   return(
     <div>
@@ -166,7 +183,7 @@ export const NavigateTour = (props: NavigateTourProps) => {
         <Divider className={classes.divider} />
       </FormGroup>
 
-
+      <Button variant="contained" onClick={downloadPDF}>Last ned</Button>
 
 
       <MenuItem open={showPreditor} setOpen={setShowPreditor} header="Rovdyr" />

@@ -123,9 +123,6 @@ namespace backend.Controllers
             List<SheepPositionData> sheepList = await _context.SheepPositions.Include(s => s.Tour).Where(s => s.Tour.Email == "generated@test.com").ToListAsync();
             List<CombinedSheepTourPositionData> combined = await MapUtils.FindBigFlock(sheepList);
             List<CombinedSheepTourPositionData> res = await MapUtils.FindClosestFlockOnNextTour(combined);
-            res.ForEach((CombinedSheepTourPositionData test) => {
-                Console.WriteLine(test.ToString());
-            });
             return combined;
         }
 

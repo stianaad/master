@@ -182,15 +182,21 @@ namespace backend.Utils
                 if (sheepFlock.Count() > 0)
                 {
                     int totalNumberOfSheep = 0;
+                    int numberOfBlackSheep = 0;
+                    int numberOfGreySheep = 0;
+                    int numberOfWhiteSheep = 0;
                     List<Location> locations = new List<Location>();
                     int idTour = sheepFlock[0].IdTour;
                     DateTime dateTime = sheepFlock[0].TimeOfObsevation;
                     sheepFlock.ForEach((SheepPositionData sheep) =>
                     {
+                        numberOfBlackSheep += sheep.BigBlackSheep + sheep.SmallBlackSheep;
+                        numberOfGreySheep += sheep.BigBrownSheep + sheep.SmallBrownSheep;
+                        numberOfWhiteSheep += sheep.BigWhiteSheep + sheep.SmallWhiteSheep;
                         totalNumberOfSheep += sheep.TotalNumberOfSheep;
                         locations.Add(new Location(sheep.Longitude, sheep.Latitude));
                     });
-                    CombinedSheepPositionData data = new CombinedSheepPositionData(totalNumberOfSheep, locations, index);
+                    CombinedSheepPositionData data = new CombinedSheepPositionData(totalNumberOfSheep, locations, index, numberOfBlackSheep, numberOfWhiteSheep, numberOfGreySheep);
                     //Console.WriteLine(data.ToString());
                     combined.Add(data);
                     //If the next sheepFlock is on the next tour, add all CombinedSheepPosition to the CombinedSheepTourPosition

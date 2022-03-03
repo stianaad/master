@@ -76,13 +76,19 @@ namespace backend.Models
     {
         public int TotalNumberOfSheep { get; set; }
         public int FlockId { get; set; }
+        public int NumberOfBlackSheep { get; set; }
+        public int NumberOfWhiteSheep { get; set; }
+        public int NumberOfGreySheep { get; set; }
         public List<Location> locations { get; set; }
 
-        public CombinedSheepPositionData(int TotalNumberOfSheep, List<Location> locations, int FlockId)
+        public CombinedSheepPositionData(int TotalNumberOfSheep, List<Location> locations, int FlockId, int NumberOfBlackSheep, int NumberOfWhiteSheep, int NumberOfGreySheep)
         {
             this.TotalNumberOfSheep = TotalNumberOfSheep;
             this.locations = locations;
             this.FlockId = FlockId;
+            this.NumberOfBlackSheep = NumberOfBlackSheep;
+            this.NumberOfGreySheep = NumberOfGreySheep;
+            this.NumberOfWhiteSheep = NumberOfWhiteSheep;
         }
 
         public override string ToString()

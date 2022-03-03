@@ -1,0 +1,23 @@
+﻿.header {
+    text-align: center;
+    color: black;
+    padding-bottom: 100px;
+    font-size: 250px;
+}
+
+table {
+    width: 80%;
+    border-collapse: collapse;
+}
+
+td, th {
+    border: 1px solid gray;
+    padding: 50px;
+    font-size: 250px;
+    text-align: center;
+}
+
+table th {
+    background-color: #B4DBFF;
+    color: black;
+}
