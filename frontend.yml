@@ -19,7 +19,12 @@ jobs:
           node-version: "16.x"
 
       - name: install and build
-        run: cd frontend && yarn cache clean && yarn install --network-timeout 1000000 && yarn build && yarn start
+        run: | 
+        cd frontent 
+        yarn cache clean 
+        yarn install --network-timeout 1000000 
+        yarn build
+        yarn start
 
       - name: "Deploy to Azure Web App"
         id: deploy-to-webapp
