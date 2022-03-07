@@ -21,10 +21,10 @@ jobs:
       - name: install and build
         run: | 
         cd frontent 
-        yarn cache clean 
-        yarn install --network-timeout 1000000 
-        yarn build
-        yarn start
+        npm cache clean 
+        npm install --network-timeout 1000000 
+        npm build
+        npm start
 
       - name: "Deploy to Azure Web App"
         id: deploy-to-webapp
