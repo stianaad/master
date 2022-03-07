@@ -31,11 +31,8 @@ interface MapContainerProps {
 }
 
 export function MapContainer(props: MapContainerProps) {
-  const [tours, setTours] = useState<Tour[]>([]);
-  const [sheepTourPositions, setSheepTourPositions] = useState<LatLong[][]>([])
   const [markerCluster, setMarkerCluster] = useState<MarkerClusterer | null>(null)
   const [sheepPositionCluster, setSheepPositionCluster] = useState<MarkerClusterer | null>(null)
-  //const [combinedSheepTourPositions, setCombinedSheepTourPositions] = useState<CombinedSheepTourPosition[]>([])
   const [sheepHeatMap, setSheepHeatMap] = useState<any[]>([])
   const [jervData, setJervData] = useState<Jerv[]>([])
   const [southWestCorner, setSouthWestCorner] = useState<LatLong>()
@@ -53,12 +50,6 @@ export function MapContainer(props: MapContainerProps) {
   let activeMarker: null | {data: Jerv | CombinedSheepPosition | Cluster, marker: any} = null
 
   const [openInformationBox, setOpenInformationBox] = useState<boolean>(false)
-  
-  useEffect(() => {
-    //fetchTours()
-    fetchGeneratedTours()
-    fetchJerv()
-  }, [])
 
   useEffect(() => {
     fetchJerv()
@@ -66,8 +57,6 @@ export function MapContainer(props: MapContainerProps) {
 
 
   useEffect(() => {
-    // detachPreditorMarkers()
-    // renderPreditorMarkers(jervData.filter((pred) => props.preditors[pred.rovdyrArtsID]))
     rerenderPreditorMarker()
   }, [mapProps.loaded, props.preditors, props.deadSheep, jervData])
 
@@ -84,14 +73,7 @@ export function MapContainer(props: MapContainerProps) {
     renderPreditorMarkers(activePreditors)
   }
 
-  const fetchGeneratedTours = async () => {
-    const res = await authenticationService.getGeneratedTours()
-    //console.log(res.data)
-    //setTours(res.data)
-  }
-
   const fetchJerv = async () => {
-    console.log('fetching jerv')
     const activePreditors = []
     for (const key in props.preditors) {
       if (props.preditors[key]) {
@@ -119,13 +101,6 @@ export function MapContainer(props: MapContainerProps) {
   }
 
   const handlePreditorClicked = (preditor: Jerv, marker: any) => {
-    // if (activeMarker !== null) {
-    //   const markerImage = {
-    //     url: `data:image/svg+xml;base64,${getPreditorIcon(activeMarker.data as Jerv, false)}`,
-    //     scaledSize: new maps.Size(45, 45),
-    //   }
-    //   activeMarker.marker.setIcon(markerImage)
-    // }
     removeActiveMarker()
     const markerImage = {
       url: `data:image/svg+xml;base64,${getPreditorIcon(preditor, true)}`,
@@ -137,7 +112,6 @@ export function MapContainer(props: MapContainerProps) {
       marker: marker
     }
 
-    console.log(preditor)
     setSelectedDeadSheep(undefined)
     setSelectedSheepTourPosition(undefined)
     setSelectedPreditor([preditor])
@@ -292,7 +266,6 @@ export function MapContainer(props: MapContainerProps) {
   const handleClickOnFlock = (indexTour: number, indexSheep: number) => {
     const newTour: CombinedSheepTourPosition = {...props.currentSelectedSheepTourPositions[indexTour]}
     newTour.combinedSheepPositions = [newTour.combinedSheepPositions[indexSheep]]
-    console.log(newTour)
     setSelectedDeadSheep(undefined)
     setSelectedPreditor(undefined)
     setSelectedSheepTourPosition(newTour)
