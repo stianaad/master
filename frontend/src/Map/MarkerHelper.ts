@@ -4,6 +4,7 @@ import { Renderer, Cluster, ClusterStats } from "@googlemaps/markerclusterer";
 import { CombinedSheepPosition } from "../Types/Sheep";
 import { CombinedSheepTourPosition } from "../Types/Tour";
 
+const RED_COLOR = '#D9381E'
 
 export const getPreditorMarkers = (preditors: Jerv[], mapProps: any, markerClicked: (preditor: Jerv, marker: any) => void): any[] => {
   const markers = []
@@ -108,6 +109,7 @@ export const getPreditorIcon = (preditor: Jerv, active: boolean = false) => {
   const svg = window.btoa(`
     <svg fill="${color}" xmlns="http://www.w3.org/2000/svg" width="64" height="64">
       ${activeCircle}
+      <circle fill="${RED_COLOR}" cx="32" cy="32" r="32" />
       <path fill="${fillColor}" d="M32 8.6c12.9 0 23.4 10.5 23.4 23.4S44.9 55.4 32 55.4 8.6 44.9 8.6 32 19.1 8.6 32 8.6M32 7C18.2 7 7 18.2 7 32s11.2 25 25 25 25-11.2 25-25S45.8 7 32 7z"></path>
       <circle cx="32" cy="32" r="24.2" />
       ${path}
@@ -211,13 +213,13 @@ export const getClusterIcon = (markers: google.maps.Marker[] | undefined, active
     indicatorColor = 'orange'
   }
   if (markers && markers.length > 0) {
-    color = markers[0].get('type') === 'preditor' ? 'green' : 'red' 
+    color = markers[0].get('type') === 'preditor' ? RED_COLOR : 'red' 
   }
 
   // create svg url with fill color
   return window.btoa(`
   <svg fill="${color}" xmlns="http://www.w3.org/2000/svg" width="64" height="64">
-    <circle fill="${indicatorColor}" cx="32" cy="32" opacity=".6" r="32" />
+    <circle fill="${RED_COLOR}" cx="32" cy="32" opacity="${active ?0.7 : 0.4}" r="32" />
     <circle cx="32" cy="32" r="24.2" />
   </svg>`);
 }

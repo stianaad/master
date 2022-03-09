@@ -3,7 +3,7 @@ import { makeStyles } from "@mui/styles";
 import { DatePicker, LocalizationProvider } from '@mui/lab'
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { PreditorType } from "../../Types/Jerv";
+import { PreditoColors, PreditorType } from "../../Types/Jerv";
 import { CombinedSheepTourPosition } from "../../Types/Tour"
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { MenuItem } from "./MenuItem";
@@ -11,7 +11,9 @@ import { pdfService } from "../../Services/PDFService";
 import { DeadSheepPosition } from "../../Types/Sheep";
 import { animalService } from "../../Services/AnimalService";
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import Box from '@mui/material/Box';
 import { responsiveProperty } from "@mui/material/styles/cssUtils";
+import { borderRadius } from "@mui/system";
 
 const useStyles = makeStyles({
   root: {
@@ -61,6 +63,11 @@ const useStyles = makeStyles({
   },
   sheepNextPrev: {
     marginBottom: "2vh"
+  },
+  preditorColor: {
+    width: "20px",
+    height: "20px",
+    borderRadius: "3px" 
   }
 });
 
@@ -317,16 +324,28 @@ export const NavigateTour = (props: NavigateTourProps) => {
       { showPreditor ? 
         <Grid container className={classes.preditorSwitch}>
           <Grid item xs={6}>
-            <FormControlLabel control={<Switch checked={props.preditors[PreditorType.BJORN]} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setActivePreditors(PreditorType.BJORN, event.target.checked)} />} label="Bjørn" />
+            <Box display="flex" alignItems={'center'}>
+              <FormControlLabel control={<Switch checked={props.preditors[PreditorType.BJORN]} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setActivePreditors(PreditorType.BJORN, event.target.checked)} />} label="Bjørn" />
+              <div className={classes.preditorColor} style={{backgroundColor: PreditoColors[2]}}></div>
+            </Box>
           </Grid>
           <Grid item xs={6}>
-            <FormControlLabel control={<Switch checked={props.preditors[PreditorType.GAUPE]} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setActivePreditors(PreditorType.GAUPE, event.target.checked)} />} label="Gaupe" />
+            <Box display="flex" alignItems={'center'}>
+              <FormControlLabel control={<Switch checked={props.preditors[PreditorType.GAUPE]} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setActivePreditors(PreditorType.GAUPE, event.target.checked)} />} label="Gaupe" />
+              <div className={classes.preditorColor} style={{backgroundColor: PreditoColors[3]}}></div>
+            </Box>  
           </Grid>
           <Grid item xs={6}>
-            <FormControlLabel control={<Switch checked={props.preditors[PreditorType.ULV]} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setActivePreditors(PreditorType.ULV, event.target.checked)} />} label="Ulv" />
+            <Box display="flex" alignItems={'center'}>
+              <FormControlLabel control={<Switch checked={props.preditors[PreditorType.ULV]} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setActivePreditors(PreditorType.ULV, event.target.checked)} />} label="Ulv" />
+              <div className={classes.preditorColor} style={{backgroundColor: PreditoColors[1]}}></div>
+            </Box>
           </Grid>
           <Grid item xs={6}>
-            <FormControlLabel control={<Switch checked={props.preditors[PreditorType.JERV]} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setActivePreditors(PreditorType.JERV, event.target.checked)} />} label="Jerv" />
+            <Box display="flex" alignItems={'center'}>
+              <FormControlLabel control={<Switch checked={props.preditors[PreditorType.JERV]} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setActivePreditors(PreditorType.JERV, event.target.checked)} />} label="Jerv" />
+              <div className={classes.preditorColor} style={{backgroundColor: PreditoColors[4]}}></div>
+            </Box>
           </Grid>
         </Grid>
       : null }
