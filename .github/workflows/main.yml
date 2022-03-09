@@ -1,32 +1,32 @@
-name: Deploy frontend
+# name: Deploy frontend
 
-on:
-  push:
-    branches:
-      - main
+# on:
+#   push:
+#     branches:
+#       - main
 
-jobs:
-  build-and-deploy:
-    runs-on: windows-latest
-    env:
-      CI: false
-    steps:
-      - name: 'Checkout Github Action'
-        uses: actions/checkout@v2
+# jobs:
+#   build-and-deploy:
+#     runs-on: windows-latest
+#     env:
+#       CI: false
+#     steps:
+#       - name: 'Checkout Github Action'
+#         uses: actions/checkout@v2
 
-      - name: Set up Node.js version
-        uses: actions/setup-node@v1
-        with:
-          node-version: "16.x"
+#       - name: Set up Node.js version
+#         uses: actions/setup-node@v1
+#         with:
+#           node-version: "16.x"
 
-      - name: install and build
-        run: cd frontend && npm install && npm run build
+#       - name: install and build
+#         run: cd frontend && npm install && npm run build
 
-      - name: 'Deploy to Azure Web App'
-        uses: azure/webapps-deploy@v2
-        id: deploy-to-webapp
-        with:
-          app-name: 'ntnumaster2022'
-          slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_26A2432975A040BE909156CA1E0167F4 }}
-          package: ./frontend
+#       - name: 'Deploy to Azure Web App'
+#         uses: azure/webapps-deploy@v2
+#         id: deploy-to-webapp
+#         with:
+#           app-name: 'ntnumaster2022'
+#           slot-name: 'Production'
+#           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_26A2432975A040BE909156CA1E0167F4 }}
+#           package: ./frontend
