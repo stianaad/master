@@ -1,31 +1,31 @@
-name: Deploy frontend
+# name: Deploy frontend
 
-on:
-  push:
-    branches:
-      - main
+# on:
+#   push:
+#     branches:
+#       - main
 
-jobs:
-  build-and-deploy:
-    runs-on: windows-latest
-    env:
-      CI: false
-    steps:
-      - name: 'Checkout Github Action'
-        uses: actions/checkout@v2
+# jobs:
+#   build-and-deploy:
+#     runs-on: windows-latest
+#     env:
+#       CI: false
+#     steps:
+#       - name: 'Checkout Github Action'
+#         uses: actions/checkout@v2
 
-      - name: Set up Node.js version
-        uses: actions/setup-node@v1
-        with:
-          node-version: "16.x"
+#       - name: Set up Node.js version
+#         uses: actions/setup-node@v1
+#         with:
+#           node-version: "16.x"
 
-      - name: install and build
-        run: cd frontend && npm install && npm run build
+#       - name: install and build
+#         run: cd frontend && npm install && npm run build
 
-      - name: "Deploy to Azure Web App"
-        id: deploy-to-webapp
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: "ntnumaster2022"
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: "./frontend"
+#       - name: "Deploy to Azure Web App"
+#         id: deploy-to-webapp
+#         uses: azure/webapps-deploy@v2
+#         with:
+#           app-name: "ntnumaster2022"
+#           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+#           package: "./frontend"
