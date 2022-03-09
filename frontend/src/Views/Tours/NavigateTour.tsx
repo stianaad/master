@@ -12,6 +12,7 @@ import { DeadSheepPosition } from "../../Types/Sheep";
 import { animalService } from "../../Services/AnimalService";
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import { responsiveProperty } from "@mui/material/styles/cssUtils";
+import SquareIcon from '@mui/icons-material/Square';
 
 const useStyles = makeStyles({
   root: {
@@ -61,6 +62,9 @@ const useStyles = makeStyles({
   },
   sheepNextPrev: {
     marginBottom: "2vh"
+  },
+  squareColor: {
+    color: "red"
   }
 });
 
@@ -98,6 +102,8 @@ export const NavigateTour = (props: NavigateTourProps) => {
   const [showSheep, setShowSheep] = useState<boolean>(false)
   const [showPDFGenerator, setShowPDFGenerator] = useState<boolean>(false)
   const [dateRange, setDateRange] = useState<{from: Date, to: Date}>(props.dateRange)
+  const bonitetNames = ["Jordbruksareal", "Skog, produktiv", "Skog, impediment", "Snaumark, frisk vegetasjon", "Snaumark, skrinn vegetasjon", "Myr", "Bart fjell og blokkmark", "Bebygd og samferdsel", "Snøisbre", "Ferskvann", "Hav"]
+  const bonitetColors = ["#F1D66A", "#8AC788", "#D1E3B8", "#C4B493", "#ECE3C7", "#9FA1D5", "#C0C0C0", "#DA6C77", "#FFFFFF", "#A3E5FD", "#D9FFFF"]
 
   //When the user click next og previeous week/month
   const changeIndex = (value: number) => {
@@ -297,7 +303,7 @@ export const NavigateTour = (props: NavigateTourProps) => {
         showBonitetButton ? 
         <FormGroup className={classes.switch}>
         <FormControlLabel control={<Switch checked={showBonitet} onChange={(event: React.ChangeEvent<HTMLInputElement>) => setShowBonitet(event.target.checked)} />} label="Bonitet" />
-        {showBonitet ? <Slider
+        {showBonitet ? <div><Slider
           className={classes.sliderBonitet}
           onChange={changeOpacityBonitet}
           size="small"
@@ -307,7 +313,15 @@ export const NavigateTour = (props: NavigateTourProps) => {
           value={props.opacityBonitet}
           aria-label="Small"
           valueLabelDisplay="auto"
-          /> : null}
+          /> 
+          {bonitetNames.map((name: string, index: number) => (
+            <Grid container>
+              <Grid item xs={12}>
+                <Typography style={{ float: "left"}} > <SquareIcon style={{color: bonitetColors[index], verticalAlign: "middle"}} />{name}</Typography>
+              </Grid>
+            </Grid>
+          ))}
+          </div>: null}
       </FormGroup>
       : null
       }
