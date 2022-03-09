@@ -9,7 +9,7 @@ jobs:
   build-and-deploy:
     runs-on: windows-latest
     env:
-      CI: true
+      CI: false
     steps:
       - name: 'Checkout Github Action'
         uses: actions/checkout@v2
