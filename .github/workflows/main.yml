@@ -20,7 +20,7 @@ jobs:
           node-version: "16.x"
 
       - name: install and build
-        run: cd frontend && npm install && npm run build && npm start
+        run: cd frontend && npm install && npm run build
 
       - name: "Deploy to Azure Web App"
         id: deploy-to-webapp
