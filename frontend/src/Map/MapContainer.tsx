@@ -274,8 +274,8 @@ export function MapContainer(props: MapContainerProps) {
 
   //Change the opacity on the bonitet map
   useEffect(() => {
-    if(map && map.overlayMapTypes.Ed.length > 1){
-      map.overlayMapTypes.Ed[1].setOpacity(props.opacityBonitet)
+    if(map && map.overlayMapTypes !== undefined ){
+      map.overlayMapTypes.getAt(1).setOpacity(props.opacityBonitet)
     }
   }, [props.opacityBonitet])
 

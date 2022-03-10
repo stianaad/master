@@ -5,9 +5,8 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using backend.Models;
 using backend.PDF;
-using DinkToPdf;
-using DinkToPdf.Contracts;
 using Microsoft.AspNetCore.Mvc;
+using WkHtmlToPdfDotNet;
 
 namespace backend.Controllers
 {
@@ -16,12 +15,12 @@ namespace backend.Controllers
     public class PDFController : ControllerBase
     {
 
-        private IConverter _converter;
+        //private IConverter _converter;
 
-        public PDFController(IConverter converter)
+        /*public PDFController(IConverter converter)
         {
             _converter = converter;
-        }
+        }*/
 
         public class SheepTourAndDeadSheeps
         {
@@ -33,11 +32,12 @@ namespace backend.Controllers
 
         [HttpPost]
         public async Task<IActionResult> createPDF([FromBody] SheepTourAndDeadSheeps sheepTourAndDead) //[FromBody] List< DeadSheepPositionData > deadSheeps
-        {
+        { 
             sheepTourAndDead.sheeps.ForEach((CombinedSheepTourPositionData value) =>
             {
                 Console.WriteLine(value);
             });
+            var converter = new SynchronizedConverter(new PdfTools());
             var globalSettings = new GlobalSettings
             {
                 ColorMode = ColorMode.Color,
@@ -51,16 +51,14 @@ namespace backend.Controllers
             {
                 PagesCount = true,
                 HtmlContent = TemplatePDF.GetHTMLString(sheepTourAndDead.sheeps, sheepTourAndDead.deadSheeps),
-                WebSettings = { DefaultEncoding = "utf-8", UserStyleSheet = Path.Combine(Directory.GetCurrentDirectory(), "PDF", "pdfstyles.css") },
-                //HeaderSettings = { FontName = "Arial", FontSize = 9, Right = "Page [page] of [toPage]", Line = true },
-                //FooterSettings = { FontName = "Arial", FontSize = 9, Line = true, Center = "Report Footer" }
+                WebSettings = { DefaultEncoding = "utf-8", UserStyleSheet = Path.Combine(Directory.GetCurrentDirectory(), "PDF", "pdfstyles.css") }
             }; 
             var pdf = new HtmlToPdfDocument()
             {
                 GlobalSettings = globalSettings,
                 Objects = { objectSettings }
             };
-            return File(_converter.Convert(pdf), "application/octet-stream", "SimplePdf.pdf");
+            return File(converter.Convert(pdf), "application/octet-stream", "SimplePdf.pdf");
         }
     }
 }

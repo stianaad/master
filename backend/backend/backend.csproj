@@ -18,6 +18,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.13" />
     <PackageReference Include="DinkToPdf" Version="1.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.13" />
+    <PackageReference Include="Haukcode.WkHtmlToPdfDotNet" Version="1.5.71" />
   </ItemGroup>
 
   <ItemGroup>
@@ -29,6 +30,7 @@
     <None Remove="DinkToPdf" />
     <None Remove="PDF\" />
     <None Remove="Microsoft.AspNetCore.Mvc.NewtonsoftJson" />
+    <None Remove="Haukcode.WkHtmlToPdfDotNet" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="authentication\" />
