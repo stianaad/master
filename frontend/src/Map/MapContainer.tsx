@@ -249,10 +249,6 @@ export function MapContainer(props: MapContainerProps) {
       // remember y origin starts at top
       var miny = EXTENT[1] - (y + 1) * tileSize;
       var maxy = EXTENT[1] - y * tileSize;
-      console.log("minx", minx)
-      console.log("miny", miny)
-      console.log("maxx", maxx)
-      console.log("maxy", maxy)
       return [minx, miny, maxx, maxy];
   }
 
