@@ -51,7 +51,7 @@ namespace backend.Controllers
             {
                 PagesCount = true,
                 HtmlContent = TemplatePDF.GetHTMLString(sheepTourAndDead.sheeps, sheepTourAndDead.deadSheeps),
-                WebSettings = { DefaultEncoding = "utf-8", UserStyleSheet = Path.Combine(Directory.GetCurrentDirectory(), "PDF", "pdfstyles.css") }
+                WebSettings = { DefaultEncoding = "utf-8" }//, UserStyleSheet = Path.Combine(Directory.GetCurrentDirectory(), "PDF", "pdfstyles.css") }
             }; 
             var pdf = new HtmlToPdfDocument()
             {
