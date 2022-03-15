@@ -11,11 +11,15 @@ namespace backend.PDF
         public static string GetHTMLString(List<CombinedSheepTourPositionData> combinedSheepTourPositions, List<DeadSheepPositionData> deadSheeps)
         {
             var sb = new StringBuilder();
-
+            sb.Append("<html><head></head><style>");
+            sb.Append("@import url('https://fonts.googleapis.com/css?family=Open+Sans&display=swap');");
+            sb.Append("body{font-family:'Open Sans', sans-serif;}");
+            sb.Append(".header {text-align: center;color: black;padding-bottom: 10px;font-size: 25px;}");
+            sb.Append("table {width: 80%;border-collapse: collapse;}");
+            sb.Append("td, th {border: 1px solid gray;padding: 20px;font-size: 25px;text-align: center;}");
+            sb.Append("table th {background-color: #B4DBFF;color: black;}");
             sb.AppendFormat(@"
-                    <html>
-                    <head>
-                    </head>
+                    </style>
                     <body>
                     <div class='header'><h1>Rapport fra {0} - {1}</h1></div>
                     <table align='center'>
