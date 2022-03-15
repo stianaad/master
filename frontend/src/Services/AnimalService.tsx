@@ -12,6 +12,10 @@ class AnimalService {
     const typesStr = types.map((type) => `types=${type}`)
     return service.get(`/api/tour/preditors?${typesStr.join('&')}&from=${from.toISOString()}&to=${to.toISOString()}`)
   }
+
+  getPreditorRegisteredOnApp(fromDate: Date, toDate: Date){
+    return service.get(`/api/preditor/${fromDate}/${toDate}`)
+  }
 }
 
 export const animalService: AnimalService = new AnimalService()

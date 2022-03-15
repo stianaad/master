@@ -11,7 +11,7 @@ import { mapFlockOfSheep } from "./MapFlockOfSheep";
 import { tourService } from "../Services/TourService";
 import { useAppSelector } from "../hooks";
 import { animalService } from "../Services/AnimalService";
-import { Jerv, PreditoColors, SkadeType } from "../Types/Jerv";
+import { Jerv, PreditoColors, PreditorRegisteredByFarmer, SkadeType } from "../Types/Jerv";
 import { Bonitet } from "../Types/Bonitet";
 import { InformationBoxMap } from "./InformationBox/InformationBoxMap";
 import { cowIcon, crossIcon, deerIcon, dnaIcon, dogIcon, dotsIcon, eyeIcon, footPrint, goatIcon, hairIcon, sheepIcon } from "../Registrations/rovbaseIcons";
@@ -27,7 +27,8 @@ interface MapContainerProps {
   dateRange: {from: Date, to: Date}
   heatmap: boolean,
   opacityBonitet: number,
-  deadSheep: DeadSheepPosition[]
+  deadSheep: DeadSheepPosition[],
+  preditorRegisteredByFarmer: PreditorRegisteredByFarmer[]
 }
 
 export function MapContainer(props: MapContainerProps) {
@@ -53,6 +54,7 @@ export function MapContainer(props: MapContainerProps) {
 
   useEffect(() => {
     fetchJerv()
+    console.log(props.dateRange)
   }, [props.dateRange])
 
 
@@ -68,8 +70,11 @@ export function MapContainer(props: MapContainerProps) {
   const rerenderPreditorMarker = () => {
     detachPreditorMarkers()
     let activePreditors = jervData.filter((pred) => props.preditors[pred.rovdyrArtsID])
+    const preditorRegisteredByFarmer: Jerv[] = props.preditorRegisteredByFarmer.map((pred: PreditorRegisteredByFarmer) => {return { rovdyrArtsID: pred.preditor, longitude: pred.longitude, latitude: pred.latitude, datatype: pred.reportType, skadetypeID: SkadeType.SAU, dato: pred.timeOfObservation, observasjoner: [pred.observationType] } as unknown as Jerv})
     const deadSheeps: Jerv[] = props.deadSheep.filter((s) => props.preditors[s.preditorId] || s.preditorId === 0).map((dSheep) => { return { rovdyrArtsID: dSheep.preditorId, longitude: dSheep.longitude, latitude: dSheep.latitude, datatype: 'Rovviltskade', skadetypeID: SkadeType.SAU, dato: dSheep.timeOfObservation } as unknown as Jerv})
     activePreditors = activePreditors.concat(deadSheeps)
+    activePreditors = activePreditors.concat(preditorRegisteredByFarmer)
+    //console.log(activePreditors)
     renderPreditorMarkers(activePreditors)
   }
 
@@ -96,7 +101,7 @@ export function MapContainer(props: MapContainerProps) {
         return data
       })
       setJervData(jerv)
-      rerenderPreditorMarker()
+      //rerenderPreditorMarker()
     }
   }
 

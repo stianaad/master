@@ -30,6 +30,7 @@ namespace backend.Models
         public List<TourLocationData> Positions { get; set; }
         public List<SheepPositionData> SheepPositions { get; set; }
         public List<DeadSheepPositionData> DeadSheepPositions { get; set; }
+        public List<PreditorTourPosition> PreditorTourPosition { get; set; }
         public DateTime Start { get; set; }
         public string Email { get; set; }
     }
@@ -111,7 +112,23 @@ namespace backend.Models
         public DateTime TimeOfObservation { get; set; }
         public int Size { get; set; }
         public int Color { get; set; }
+        public int IdTour { get; set; }
         public int PreditorId { get; set; }
+        public bool Dead { get; set; }
+        [JsonIgnore]
+        public TourData Tour { get; set; }
+    }
+
+    public class PreditorTourPosition
+    {
+        [Key]
+        public int Id { get; set; }
+        public double Longitude { get; set; }
+        public double Latitude { get; set; }
+        public DateTime TimeOfObservation { get; set; }
+        public int Preditor { get; set; }
+        public string ReportType { get; set; }
+        public int ObservationType { get; set; }
         public int IdTour { get; set; }
         [JsonIgnore]
         public TourData Tour { get; set; }
