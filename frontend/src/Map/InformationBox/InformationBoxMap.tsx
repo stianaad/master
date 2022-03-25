@@ -5,7 +5,7 @@ import { DeadSheepPosition } from "../../Types/Sheep";
 import { colorSheep, sizeSheep } from "../../Constants/DeadSheepConstants";
 import { DeadSheepView } from "./DeadSheepView";
 import { CombinedSheepTourPosition } from "../../Types/Tour";
-import { Jerv } from "../../Types/Jerv";
+import { Preditor } from "../../Types/Jerv";
 import { PreditorView } from "./PreditorView";
 import { useState } from "react";
 import { SheepFlockView } from "./SheepFlockView";
@@ -35,7 +35,7 @@ interface InformationBoxMapProps {
   onClose: () => void,
   deadSheep?: DeadSheepPosition,
   sheepFlock?: CombinedSheepTourPosition,
-  preditor?: Jerv[]
+  preditor?: Preditor[]
 }
 
 export const InformationBoxMap = (props: InformationBoxMapProps) => {

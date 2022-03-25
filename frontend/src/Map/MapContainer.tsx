@@ -11,7 +11,7 @@ import { mapFlockOfSheep } from "./MapFlockOfSheep";
 import { tourService } from "../Services/TourService";
 import { useAppSelector } from "../hooks";
 import { animalService } from "../Services/AnimalService";
-import { Jerv, PreditoColors, SkadeType } from "../Types/Jerv";
+import { Preditor, PreditoColors, SkadeType } from "../Types/Jerv";
 import { Bonitet } from "../Types/Bonitet";
 import { InformationBoxMap } from "./InformationBox/InformationBoxMap";
 import { cowIcon, crossIcon, deerIcon, dnaIcon, dogIcon, dotsIcon, eyeIcon, footPrint, goatIcon, hairIcon, sheepIcon } from "../Registrations/rovbaseIcons";
@@ -34,11 +34,11 @@ export function MapContainer(props: MapContainerProps) {
   const [markerCluster, setMarkerCluster] = useState<MarkerClusterer | null>(null)
   const [sheepPositionCluster, setSheepPositionCluster] = useState<MarkerClusterer | null>(null)
   const [sheepHeatMap, setSheepHeatMap] = useState<any[]>([])
-  const [jervData, setJervData] = useState<Jerv[]>([])
+  const [jervData, setPreditorData] = useState<Preditor[]>([])
   const [southWestCorner, setSouthWestCorner] = useState<LatLong>()
   const [selectedDeadSheep, setSelectedDeadSheep] = useState<DeadSheepPosition>()
   const [selectedSheepTourPosition, setSelectedSheepTourPosition] = useState<CombinedSheepTourPosition>()
-  const [selectedPreditor, setSelectedPreditor] = useState<Jerv[]>()
+  const [selectedPreditor, setSelectedPreditor] = useState<Preditor[]>()
   const [map, setMap] = useState<any>()
   const [maps, setMaps] = useState<any>()
   const [mapProps, setMapProps] = useState<{map: any |null, maps: any | null, loaded: boolean}>({
@@ -47,12 +47,12 @@ export function MapContainer(props: MapContainerProps) {
     loaded: false
   })
   
-  let activeMarker: null | {data: Jerv | CombinedSheepPosition | Cluster, marker: any} = null
+  let activeMarker: null | {data: Preditor | CombinedSheepPosition | Cluster, marker: any} = null
 
   const [openInformationBox, setOpenInformationBox] = useState<boolean>(false)
 
   useEffect(() => {
-    fetchJerv()
+    fetchPreditor()
   }, [props.dateRange])
 
 
@@ -68,12 +68,12 @@ export function MapContainer(props: MapContainerProps) {
   const rerenderPreditorMarker = () => {
     detachPreditorMarkers()
     let activePreditors = jervData.filter((pred) => props.preditors[pred.rovdyrArtsID])
-    const deadSheeps: Jerv[] = props.deadSheep.filter((s) => props.preditors[s.preditorId] || s.preditorId === 0).map((dSheep) => { return { rovdyrArtsID: dSheep.preditorId, longitude: dSheep.longitude, latitude: dSheep.latitude, datatype: 'Rovviltskade', skadetypeID: SkadeType.SAU, dato: dSheep.timeOfObservation } as unknown as Jerv})
+    const deadSheeps: Preditor[] = props.deadSheep.filter((s) => props.preditors[s.preditorId] || s.preditorId === 0).map((dSheep) => { return { rovdyrArtsID: dSheep.preditorId, longitude: dSheep.longitude, latitude: dSheep.latitude, datatype: 'Rovviltskade', skadetypeID: SkadeType.SAU, dato: dSheep.timeOfObservation } as unknown as Preditor})
     activePreditors = activePreditors.concat(deadSheeps)
     renderPreditorMarkers(activePreditors)
   }
 
-  const fetchJerv = async () => {
+  const fetchPreditor = async () => {
     const activePreditors = []
     for (const key in props.preditors) {
       if (props.preditors[key]) {
@@ -82,25 +82,25 @@ export function MapContainer(props: MapContainerProps) {
       }
     }
     if (activePreditors.length === 0) {
-      setJervData([])
+      setPreditorData([])
       return
     }
     const res = await animalService.getAnimalPreditors(props.dateRange.from, props.dateRange.to, activePreditors)
     if(res.data.length > 0) {
       //The point start at index 7 and ends at length - 1
-      const jerv: Jerv[] = await res.data.map((data: Jerv) => {
+      const jerv: Preditor[] = await res.data.map((data: Preditor) => {
         const utmPoint = data.wkt.substring(7, data.wkt.length-1).split(" ")
         const {latitude, longitude} = utm.toLatLon(utmPoint[0], utmPoint[1], 33, "N", undefined, false)
         data.latitude = latitude
         data.longitude = longitude
         return data
       })
-      setJervData(jerv)
-      rerenderPreditorMarker()
+      setPreditorData(jerv)
+      //rerenderPreditorMarker()
     }
   }
 
-  const handlePreditorClicked = (preditor: Jerv, marker: any) => {
+  const handlePreditorClicked = (preditor: Preditor, marker: any) => {
     removeActiveMarker()
     const markerImage = {
       url: `data:image/svg+xml;base64,${getPreditorIcon(preditor, true)}`,
@@ -132,7 +132,7 @@ export function MapContainer(props: MapContainerProps) {
 
     //Add selected markers in cluster to informationbox
     if(cluster !== undefined && cluster.markers) {
-      const tmpPred: Jerv[] = []
+      const tmpPred: Preditor[] = []
       cluster?.markers.forEach((value: any) => {
         tmpPred.push(value.preditor)
       })
@@ -153,7 +153,7 @@ export function MapContainer(props: MapContainerProps) {
       const type = activeMarker.marker.get('type')
       if (type === 'preditor') {
         markerImage = {
-          url: `data:image/svg+xml;base64,${getPreditorIcon(activeMarker.data as Jerv, false)}`,
+          url: `data:image/svg+xml;base64,${getPreditorIcon(activeMarker.data as Preditor, false)}`,
           scaledSize: new google.maps.Size(45, 45),
         }
       } else if (type === 'cluster') {
@@ -172,7 +172,7 @@ export function MapContainer(props: MapContainerProps) {
   const [preditorMarkers, setPreditorMarkers] = useState<any[]>([])
   const [sheepPositionMarkers, setSheepPositionMarkers] = useState<any[]>([])
 
-  const renderPreditorMarkers = (preditors: Jerv[]) => {
+  const renderPreditorMarkers = (preditors: Preditor[]) => {
     const markers = getPreditorMarkers(preditors, mapProps, handlePreditorClicked)
     setPreditorMarkers(markers)
     markerCluster?.clearMarkers()

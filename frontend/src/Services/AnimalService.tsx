@@ -1,9 +1,6 @@
 import service from './Service'
 
 class AnimalService {
-  getJerv() {
-    return service.get("/api/tour/sheep/test")
-  }
 
   getDeadSheep(fromDate: Date, toDate: Date){
     return service.get(`/api/DeadSheep/${fromDate}/${toDate}`)

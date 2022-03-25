@@ -2,7 +2,7 @@ import { Button, Divider, Grid, Typography } from "@mui/material"
 import { makeStyles } from "@mui/styles";
 import { sensitiveHeaders } from "http2";
 import { useEffect, useState } from "react";
-import { Jerv, PreditoColors } from "../../Types/Jerv";
+import { Preditor, PreditoColors } from "../../Types/Jerv";
 import { getPreditorIconPath } from "../MarkerHelper";
 
 const useStyles = makeStyles({
@@ -23,13 +23,13 @@ const useStyles = makeStyles({
 });
 
 interface PreditorViewProps {
-  preditorData: Jerv[],
+  preditorData: Preditor[],
   setHeader: React.Dispatch<React.SetStateAction<string>>
 }
 
 export const PreditorView = (props: PreditorViewProps) => {
   const classes = useStyles()
-  const [currentPreditor, setCurrentPreditor] = useState<Jerv>()
+  const [currentPreditor, setCurrentPreditor] = useState<Preditor>()
   const predName = ["ulv", "bjørn", "gaupe", "jerv"]
   const damagedAnimal = ["sau", "rein", "hund", "geit", "storfe"]
   const [index, setIndex] = useState<number>(0)
@@ -49,7 +49,7 @@ export const PreditorView = (props: PreditorViewProps) => {
     setCurrentPreditor(props.preditorData[newValue])
   }
 
-  const createText = (pred: Jerv, header: boolean) => {
+  const createText = (pred: Preditor, header: boolean) => {
     let informationText = ""
     let headerText = ""
     switch (pred.datatype) {

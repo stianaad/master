@@ -1,12 +1,12 @@
-import { cowIcon, crossIcon, deerIcon, dnaIcon, dogIcon, dotsIcon, eyeIcon, footPrint, goatIcon, hairIcon, sheepIcon } from "../Registrations/rovbaseIcons";
-import { Jerv, PreditoColors, SkadeType } from "../Types/Jerv";
+import { cowIcon, crossIcon, deerIcon, dnaIcon, dogIcon, dotsIcon, eyeIcon, footPrint, goatIcon, hairIcon, poopIcon, sheepIcon } from "../Registrations/rovbaseIcons";
+import { Preditor, PreditoColors, SkadeType } from "../Types/Jerv";
 import { Renderer, Cluster, ClusterStats } from "@googlemaps/markerclusterer";
 import { CombinedSheepPosition } from "../Types/Sheep";
 import { CombinedSheepTourPosition } from "../Types/Tour";
 
 const RED_COLOR = '#D9381E'
 
-export const getPreditorMarkers = (preditors: Jerv[], mapProps: any, markerClicked: (preditor: Jerv, marker: any) => void): any[] => {
+export const getPreditorMarkers = (preditors: Preditor[], mapProps: any, markerClicked: (preditor: Preditor, marker: any) => void): any[] => {
   const markers = []
   if (mapProps.loaded) {
     for (const pred of preditors) {
@@ -20,7 +20,7 @@ export const getPreditorMarkers = (preditors: Jerv[], mapProps: any, markerClick
   return markers
 }
 
-export const createPreditorMarker = (icon: string, longitude: number, latitude: number, maps: any, map: any, pred: Jerv) : any => {
+export const createPreditorMarker = (icon: string, longitude: number, latitude: number, maps: any, map: any, pred: Preditor) : any => {
   const markerImage = {
     url: `data:image/svg+xml;base64,${icon}`,
     scaledSize: new maps.Size(45, 45),
@@ -33,7 +33,7 @@ export const createPreditorMarker = (icon: string, longitude: number, latitude: 
   })
 }
 
-export const getPreditorIconPath = (preditor: Jerv) => {
+export const getPreditorIconPath = (preditor: Preditor) => {
   let icon: any | null = null
   if (preditor.datatype === 'Rovviltobservasjon') {
     if (preditor.observasjoner.length > 0) {
@@ -49,6 +49,10 @@ export const getPreditorIconPath = (preditor: Jerv) => {
             icon = footPrint 
             break;
           
+          case 4:
+            icon = poopIcon 
+            break;
+
           case 8:
             icon = hairIcon
             break;
@@ -100,7 +104,7 @@ export const getPreditorIconPath = (preditor: Jerv) => {
   return icon
 }
 
-export const getPreditorIcon = (preditor: Jerv, active: boolean = false) => {
+export const getPreditorIcon = (preditor: Preditor, active: boolean = false) => {
   const icon = getPreditorIconPath(preditor)
   const color = PreditoColors[preditor.rovdyrArtsID]
   const fillColor = color === 'white' ? 'black' : 'white'

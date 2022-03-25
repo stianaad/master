@@ -1,4 +1,4 @@
-export interface Jerv {
+export interface Preditor {
   artsIDAnalyse: string,
   artsIDPrøve: string,
   datatype: PreditorDataType,
