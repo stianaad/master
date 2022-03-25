@@ -109,7 +109,8 @@ export function SelectTour() {
     <div className={classes.root}>
       <Grid container>
         <Grid item xs={3}>
-          <NavigateTour 
+          <NavigateTour
+          preditorRegisteredByFarmer={preditorRegisteredByFarmer} 
           deadSheeps={deadSheep}
           dateRange={dateRange}
           opacityBonitet={opacityBonitet}

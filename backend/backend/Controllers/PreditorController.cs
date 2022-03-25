@@ -23,8 +23,6 @@ namespace backend.Controllers
         [HttpGet("{fromTime}/{toTime}")]
         public async Task<ActionResult<IEnumerable<PreditorTourPosition>>> GetPreditors(DateTime fromTime, DateTime toTime)
         {
-            Console.WriteLine(fromTime);
-            Console.WriteLine(toTime);
             return await _context.PreditorTourPosition.Where(pred => pred.TimeOfObservation >= fromTime && pred.TimeOfObservation <= toTime).ToListAsync();
             //return await _context.DeadSheepPositions.Where(dead => dead.TimeOfObservation >= fromTime && dead.TimeOfObservation <= toTime).ToListAsync();
         }

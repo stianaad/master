@@ -134,6 +134,12 @@ namespace backend.Models
         public TourData Tour { get; set; }
     }
 
+    public class PreditorPDFEdition
+    {
+        public int Preditor { get; set; }
+        public int NumberOfPreditors { get; set; }
+    }
+
     public class SheepPositionData
     {
         [Key]

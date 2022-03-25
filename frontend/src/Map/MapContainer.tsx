@@ -230,7 +230,7 @@ export function MapContainer(props: MapContainerProps) {
     props.currentSelectedSheepTourPositions.map((sheepTour: CombinedSheepTourPosition) => {
       sheepTour.combinedSheepPositions.map((sheep: CombinedSheepPosition) => {
         sheep.locations.map((loc: LatLong) => {
-          arr.push({lat: loc.latitude, lng: loc.longitude, weight: sheep.totalNumberOfSheep/sheep.locations.length })
+          arr.push({lat: loc.latitude, lng: loc.longitude, weight: sheep.totalNumberOfSheep/sheep.locations.length }) ///sheep.locations.length
         })
       })
     })

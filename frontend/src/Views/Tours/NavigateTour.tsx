@@ -3,7 +3,7 @@ import { makeStyles } from "@mui/styles";
 import { DatePicker, LocalizationProvider } from '@mui/lab'
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { PreditoColors, PreditorType } from "../../Types/Jerv";
+import { PreditoColors, PreditorRegisteredByFarmer, PreditorType } from "../../Types/Jerv";
 import { CombinedSheepTourPosition } from "../../Types/Tour"
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { MenuItem } from "./MenuItem";
@@ -92,7 +92,8 @@ interface NavigateTourProps {
   currentSelectedSheepTourPositions: CombinedSheepTourPosition[],
   deadSheeps: DeadSheepPosition[],
   week: boolean,
-  setWeek: Dispatch<SetStateAction<boolean>>
+  setWeek: Dispatch<SetStateAction<boolean>>,
+  preditorRegisteredByFarmer: PreditorRegisteredByFarmer[]
 }
 
 const THREE_MONTHS = 1000 * 60 * 60 * 24 * 30 * 3
@@ -241,7 +242,7 @@ export const NavigateTour = (props: NavigateTourProps) => {
   const downloadPDF = async () => {
     try{
       const deadSheep = await animalService.getDeadSheep(props.activeCombinedSheepTourPositions[0].tourTime, props.activeCombinedSheepTourPositions[props.activeCombinedSheepTourPositions.length -1].tourTime)
-      const res = await pdfService.getPDF(props.activeCombinedSheepTourPositions, deadSheep.data)
+      const res = await pdfService.getPDF(props.activeCombinedSheepTourPositions, deadSheep.data, props.preditorRegisteredByFarmer)
       const url = window.URL.createObjectURL(new Blob([res.data]));
       const link = document.createElement('a');
       link.href = url;
@@ -336,26 +337,32 @@ export const NavigateTour = (props: NavigateTourProps) => {
         <Grid container className={classes.preditorSwitch}>
           <Grid item xs={6}>
             <Box display="flex" alignItems={'center'}>
-              <FormControlLabel control={<Switch checked={props.preditors[PreditorType.BJORN]} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setActivePreditors(PreditorType.BJORN, event.target.checked)} />} label="Bjørn" />
+            <Switch checked={props.preditors[PreditorType.BJORN]} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setActivePreditors(PreditorType.BJORN, event.target.checked)} />
               <div className={classes.preditorColor} style={{backgroundColor: PreditoColors[2]}}></div>
+              <Typography variant="body1" style={{marginLeft: "0.7vw"}}>Bjørn</Typography>
+              
             </Box>
           </Grid>
           <Grid item xs={6}>
             <Box display="flex" alignItems={'center'}>
-              <FormControlLabel control={<Switch checked={props.preditors[PreditorType.GAUPE]} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setActivePreditors(PreditorType.GAUPE, event.target.checked)} />} label="Gaupe" />
+            <Switch checked={props.preditors[PreditorType.GAUPE]} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setActivePreditors(PreditorType.GAUPE, event.target.checked)} />
               <div className={classes.preditorColor} style={{backgroundColor: PreditoColors[3]}}></div>
+              <Typography variant="body1" style={{marginLeft: "0.7vw"}}>Gaupe</Typography>
             </Box>  
           </Grid>
           <Grid item xs={6}>
             <Box display="flex" alignItems={'center'}>
-              <FormControlLabel control={<Switch checked={props.preditors[PreditorType.ULV]} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setActivePreditors(PreditorType.ULV, event.target.checked)} />} label="Ulv" />
+              
+              <Switch checked={props.preditors[PreditorType.ULV]} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setActivePreditors(PreditorType.ULV, event.target.checked)} />
               <div className={classes.preditorColor} style={{backgroundColor: PreditoColors[1]}}></div>
+              <Typography variant="body1" style={{marginLeft: "0.7vw"}}>Ulv</Typography>
             </Box>
           </Grid>
           <Grid item xs={6}>
             <Box display="flex" alignItems={'center'}>
-              <FormControlLabel control={<Switch checked={props.preditors[PreditorType.JERV]} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setActivePreditors(PreditorType.JERV, event.target.checked)} />} label="Jerv" />
+            <Switch checked={props.preditors[PreditorType.JERV]} onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.setActivePreditors(PreditorType.JERV, event.target.checked)} />
               <div className={classes.preditorColor} style={{backgroundColor: PreditoColors[4]}}></div>
+              <Typography variant="body1" style={{marginLeft: "0.7vw"}}>Jerv</Typography>
             </Box>
           </Grid>
         </Grid>

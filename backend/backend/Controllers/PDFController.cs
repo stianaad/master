@@ -26,6 +26,7 @@ namespace backend.Controllers
         {
             public List<CombinedSheepTourPositionData> sheeps { get; set; }
             public List<DeadSheepPositionData> deadSheeps { get; set; }
+            public List<PreditorTourPosition> preditors { get; set; }
 
 
         }
@@ -33,10 +34,6 @@ namespace backend.Controllers
         [HttpPost]
         public async Task<IActionResult> createPDF([FromBody] SheepTourAndDeadSheeps sheepTourAndDead) //[FromBody] List< DeadSheepPositionData > deadSheeps
         { 
-            sheepTourAndDead.sheeps.ForEach((CombinedSheepTourPositionData value) =>
-            {
-                Console.WriteLine(value);
-            });
             var converter = new SynchronizedConverter(new PdfTools());
             var globalSettings = new GlobalSettings
             {
@@ -50,7 +47,7 @@ namespace backend.Controllers
             var objectSettings = new ObjectSettings
             {
                 PagesCount = true,
-                HtmlContent = TemplatePDF.GetHTMLString(sheepTourAndDead.sheeps, sheepTourAndDead.deadSheeps),
+                HtmlContent = TemplatePDF.GetHTMLString(sheepTourAndDead.sheeps, sheepTourAndDead.deadSheeps, sheepTourAndDead.preditors),
                 WebSettings = { DefaultEncoding = "utf-8" }//, UserStyleSheet = Path.Combine(Directory.GetCurrentDirectory(), "PDF", "pdfstyles.css") }
             }; 
             var pdf = new HtmlToPdfDocument()
