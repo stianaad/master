@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using backend.Models;
 
-namespace backend.Migrations
+namespace backend.Migrations.Sheep
 {
     [DbContext(typeof(SheepContext))]
-    partial class SheepContextModelSnapshot : ModelSnapshot
+    [Migration("20220315110841_addPreditor")]
+    partial class addPreditor
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -41,7 +43,7 @@ namespace backend.Migrations
                     b.Property<double>("Longitude")
                         .HasColumnType("float");
 
-                    b.Property<int>("PreditorId")
+                    b.Property<int>("Preditor")
                         .HasColumnType("int");
 
                     b.Property<int>("Size")
@@ -55,41 +57,6 @@ namespace backend.Migrations
                     b.HasIndex("IdTour");
 
                     b.ToTable("DeadSheepPositions");
-                });
-
-            modelBuilder.Entity("backend.Models.PreditorTourPosition", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("IdTour")
-                        .HasColumnType("int");
-
-                    b.Property<double>("Latitude")
-                        .HasColumnType("float");
-
-                    b.Property<double>("Longitude")
-                        .HasColumnType("float");
-
-                    b.Property<int>("ObservationType")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Preditor")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ReportType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("TimeOfObservation")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IdTour");
-
-                    b.ToTable("PreditorTourPosition");
                 });
 
             modelBuilder.Entity("backend.Models.Sheep", b =>
@@ -221,17 +188,6 @@ namespace backend.Migrations
                     b.Navigation("Tour");
                 });
 
-            modelBuilder.Entity("backend.Models.PreditorTourPosition", b =>
-                {
-                    b.HasOne("backend.Models.TourData", "Tour")
-                        .WithMany("PreditorTourPosition")
-                        .HasForeignKey("IdTour")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Tour");
-                });
-
             modelBuilder.Entity("backend.Models.SheepPositionData", b =>
                 {
                     b.HasOne("backend.Models.TourData", "Tour")
@@ -259,8 +215,6 @@ namespace backend.Migrations
                     b.Navigation("DeadSheepPositions");
 
                     b.Navigation("Positions");
-
-                    b.Navigation("PreditorTourPosition");
 
                     b.Navigation("SheepPositions");
                 });

@@ -39,6 +39,17 @@ interface SearchFilter {
   iD: string
 }
 
+export interface PreditorRegisteredByFarmer {
+    id: number,
+    longitude: number,
+    latitude: number, 
+    timeOfObservation: Date,
+    preditor: PreditorType,
+    reportType: PreditorDataType,
+    observationType: number,
+    idTour: number
+}
+
 type PreditorDataType = "Rovviltobservasjon" | "DodeRovdyr" | "dna" | "Rovviltskade"
 
 export enum SkadeType {

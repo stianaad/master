@@ -11,7 +11,7 @@ import { mapFlockOfSheep } from "./MapFlockOfSheep";
 import { tourService } from "../Services/TourService";
 import { useAppSelector } from "../hooks";
 import { animalService } from "../Services/AnimalService";
-import { Preditor, PreditoColors, SkadeType } from "../Types/Jerv";
+import { Preditor, PreditoColors, PreditorRegisteredByFarmer, SkadeType } from "../Types/Jerv";
 import { Bonitet } from "../Types/Bonitet";
 import { InformationBoxMap } from "./InformationBox/InformationBoxMap";
 import { cowIcon, crossIcon, deerIcon, dnaIcon, dogIcon, dotsIcon, eyeIcon, footPrint, goatIcon, hairIcon, sheepIcon } from "../Registrations/rovbaseIcons";
@@ -27,10 +27,12 @@ interface MapContainerProps {
   dateRange: {from: Date, to: Date}
   heatmap: boolean,
   opacityBonitet: number,
-  deadSheep: DeadSheepPosition[]
+  deadSheep: DeadSheepPosition[],
+  preditorRegisteredByFarmer: PreditorRegisteredByFarmer[]
 }
 
 export function MapContainer(props: MapContainerProps) {
+  const loggedIn = useAppSelector((state: any) => state.loggedIn.value)
   const [markerCluster, setMarkerCluster] = useState<MarkerClusterer | null>(null)
   const [sheepPositionCluster, setSheepPositionCluster] = useState<MarkerClusterer | null>(null)
   const [sheepHeatMap, setSheepHeatMap] = useState<any[]>([])
@@ -69,7 +71,11 @@ export function MapContainer(props: MapContainerProps) {
     detachPreditorMarkers()
     let activePreditors = jervData.filter((pred) => props.preditors[pred.rovdyrArtsID])
     const deadSheeps: Preditor[] = props.deadSheep.filter((s) => props.preditors[s.preditorId] || s.preditorId === 0).map((dSheep) => { return { rovdyrArtsID: dSheep.preditorId, longitude: dSheep.longitude, latitude: dSheep.latitude, datatype: 'Rovviltskade', skadetypeID: SkadeType.SAU, dato: dSheep.timeOfObservation } as unknown as Preditor})
+    const preditorRegisteredByFarmer: Preditor[] = props.preditorRegisteredByFarmer.map((pred: PreditorRegisteredByFarmer) => {return { rovdyrArtsID: pred.preditor, longitude: pred.longitude, latitude: pred.latitude, datatype: pred.reportType, skadetypeID: SkadeType.SAU, dato: pred.timeOfObservation, observasjoner: [pred.observationType] } as unknown as Preditor})
+    //const deadSheeps: Jerv[] = props.deadSheep.filter((s) => props.preditors[s.preditorId] || s.preditorId === 0).map((dSheep) => { return { rovdyrArtsID: dSheep.preditorId, longitude: dSheep.longitude, latitude: dSheep.latitude, datatype: 'Rovviltskade', skadetypeID: SkadeType.SAU, dato: dSheep.timeOfObservation } as unknown as Jerv})
     activePreditors = activePreditors.concat(deadSheeps)
+    activePreditors = activePreditors.concat(preditorRegisteredByFarmer)
+    //console.log(activePreditors)
     renderPreditorMarkers(activePreditors)
   }
 
@@ -85,7 +91,7 @@ export function MapContainer(props: MapContainerProps) {
       setPreditorData([])
       return
     }
-    const res = await animalService.getAnimalPreditors(props.dateRange.from, props.dateRange.to, activePreditors)
+    const res = await animalService.getAnimalPreditors(props.dateRange.from, props.dateRange.to, activePreditors, loggedIn)
     if(res.data.length > 0) {
       //The point start at index 7 and ends at length - 1
       const jerv: Preditor[] = await res.data.map((data: Preditor) => {
@@ -225,7 +231,7 @@ export function MapContainer(props: MapContainerProps) {
     props.currentSelectedSheepTourPositions.map((sheepTour: CombinedSheepTourPosition) => {
       sheepTour.combinedSheepPositions.map((sheep: CombinedSheepPosition) => {
         sheep.locations.map((loc: LatLong) => {
-          arr.push({lat: loc.latitude, lng: loc.longitude, weight: sheep.totalNumberOfSheep/sheep.locations.length })
+          arr.push({lat: loc.latitude, lng: loc.longitude, weight: sheep.totalNumberOfSheep/sheep.locations.length }) ///sheep.locations.length
         })
       })
     })

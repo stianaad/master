@@ -8,7 +8,7 @@ namespace backend.PDF
 {
     public static class TemplatePDF
     {
-        public static string GetHTMLString(List<CombinedSheepTourPositionData> combinedSheepTourPositions, List<DeadSheepPositionData> deadSheeps)
+        public static string GetHTMLString(List<CombinedSheepTourPositionData> combinedSheepTourPositions, List<DeadSheepPositionData> deadSheeps, List<PreditorTourPosition> preditors)
         {
             var sb = new StringBuilder();
             sb.Append("<html><head></head><style>");
@@ -28,7 +28,9 @@ namespace backend.PDF
                             <th>Hvit sau</th>
                             <th>Brun sau</th>
                             <th>Svart sau</th>
-                            <th>Død</th>
+                            <th>Død sau</th>
+                            <th>Skadet sau </th>
+                            <th>Observert rovdyr</th>
                         </tr>", combinedSheepTourPositions[0].tourTime.ToString().Split(" ")[0],
                         combinedSheepTourPositions[combinedSheepTourPositions.Count -1].tourTime.ToString().Split(" ")[0]);
 
@@ -44,17 +46,44 @@ namespace backend.PDF
                     whiteSheep += sheep.NumberOfWhiteSheep;
                     brownSheep += sheep.NumberOfGreySheep;
                 }
-
+                //Find number of dead sheeps to each tour
                 List<DeadSheepPositionData> listWithDeadSheepsMatchingID = deadSheeps.Where(d => d.IdTour == sheeps.IdTour).ToList();
                 List<string> sheepSize = new List<string>() { "lam", "sau" };
                 List<string> sheepColor = new List<string>() { "hvit", "svart", "brun" };
                 string deadSheepString = "";
+                string injuredString = "";
                 if (listWithDeadSheepsMatchingID.Count > 0)
                 {
                     listWithDeadSheepsMatchingID.ForEach((DeadSheepPositionData dead) =>
                     {
-                        deadSheepString += "1 " + sheepColor[dead.Color] + " " + sheepSize[dead.Size]+ "<br/>";
+                        if (dead.Dead)
+                        {
+                            deadSheepString += "1 " + sheepColor[dead.Color] + " " + sheepSize[dead.Size]+ "<br/>";
+                        } else
+                        {
+                           injuredString += "1 " + sheepColor[dead.Color] + " " + sheepSize[dead.Size] + "<br/>";
+                        }
                     });
+                }
+
+                //Find number of observed preditors
+                List<PreditorPDFEdition> preditorPDF = preditors.Where(pred => pred.ReportType == "Rovviltobservasjon" && pred.IdTour == sheeps.IdTour).GroupBy(p => p.Preditor).Select(p => new PreditorPDFEdition()
+                {
+                    Preditor = p.Key,
+                    NumberOfPreditors = p.Count()
+                }).ToList();
+
+                string observedPreditors = "";
+                List<string> preditorType = new List<string>() { "ulv", "bjørn", "gaupe", "jerv" };
+                if ( preditorPDF.Count > 0)
+                {
+                    foreach( var t in preditorPDF)
+                    {
+                        if (t.NumberOfPreditors > 0)
+                        {
+                            observedPreditors += t.NumberOfPreditors + " " + preditorType[t.Preditor-1] + "<br/>";
+                        } 
+                    } 
                 }
 
                 sb.AppendFormat(@"<tr>
@@ -63,7 +92,9 @@ namespace backend.PDF
                                     <td>{2}</td>
                                     <td>{3}</td>
                                     <td>{4}</td>
-                                  </tr>", sheeps.tourTime.ToString().Split(" ")[0], whiteSheep, brownSheep , blackSheep, deadSheepString);
+                                    <td>{5}</td>
+                                    <td>{6}</td>
+                                  </tr>", sheeps.tourTime.ToString().Split(" ")[0], whiteSheep, brownSheep , blackSheep, deadSheepString, injuredString, observedPreditors);
             }
             sb.Append(@"</table>
                       </body>

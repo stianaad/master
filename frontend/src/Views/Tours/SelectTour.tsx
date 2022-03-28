@@ -7,7 +7,7 @@ import { Sidebar } from '../../Map/Sidebar';
 import { animalService } from '../../Services/AnimalService';
 import { tourService } from '../../Services/TourService';
 import { DeadSheepPosition } from '../../Types/Sheep';
-import { PreditorType } from '../../Types/Jerv';
+import { PreditorRegisteredByFarmer, PreditorType } from '../../Types/Jerv';
 import { CombinedSheepTourPosition } from '../../Types/Tour';
 import { NavigateTour } from './NavigateTour';
 
@@ -51,10 +51,11 @@ export function SelectTour() {
   }
   const [opacityBonitet, setOpacityBonitet] = useState<number>(0)
   const [deadSheep, setDeadSheep] = useState<DeadSheepPosition[]>([])
+  const [preditorRegisteredByFarmer, setPreditorRegisteredByFarmer] = useState<PreditorRegisteredByFarmer[]>([])
 
   const fetchTours = async () => {
     if (loggedIn.length > 0) {
-      const res = await tourService.getCombinedSheepTourPositions() //authenticationService.getTours()
+      const res = await tourService.getCombinedSheepTourPositions(loggedIn) //authenticationService.getTours()
       if (res.status === 200) {
         setCombinedSheepTourPositions(res.data)
         const startDate = new Date(res.data[0].tourTime)
@@ -76,22 +77,29 @@ export function SelectTour() {
 
   const fetchDeadSheep = async (fromDate: Date, toDate: Date) => {
     if(loggedIn.length > 0) {
-      const res = await animalService.getDeadSheep(fromDate, toDate)
+      const res = await animalService.getDeadSheep(fromDate, toDate, loggedIn)
       if (res.status === 200) {
         setDeadSheep(res.data)
       }
     }
   }
 
+  const fetchPreditorRegisteredOnApp = async (fromDate: Date, toDate: Date) => {
+    const res = await animalService.getPreditorRegisteredOnApp(fromDate, toDate, loggedIn)
+    setPreditorRegisteredByFarmer(res.data)
+  }
+
   useEffect(() => {
     //If there is only one element selected
-    if(currentSelectedSheepTourPositions.length === 1) {
-      fetchDeadSheep(currentSelectedSheepTourPositions[0].tourTime, currentSelectedSheepTourPositions[0].tourTime)
-    } else if (currentSelectedSheepTourPositions.length > 1) {
-      const maxIndex = currentSelectedSheepTourPositions.length -1
-      fetchDeadSheep(currentSelectedSheepTourPositions[0].tourTime, currentSelectedSheepTourPositions[maxIndex].tourTime)
+    if(activeCombinedSheepTourPositions.length === 1) {
+      fetchDeadSheep(activeCombinedSheepTourPositions[0].tourTime, activeCombinedSheepTourPositions[0].tourTime)
+      fetchPreditorRegisteredOnApp(activeCombinedSheepTourPositions[0].tourTime, activeCombinedSheepTourPositions[0].tourTime)
+    } else if (activeCombinedSheepTourPositions.length > 1) {
+      const maxIndex = activeCombinedSheepTourPositions.length -1
+      fetchDeadSheep(activeCombinedSheepTourPositions[0].tourTime, activeCombinedSheepTourPositions[maxIndex].tourTime)
+      fetchPreditorRegisteredOnApp(activeCombinedSheepTourPositions[0].tourTime, activeCombinedSheepTourPositions[maxIndex].tourTime)
     }
-  }, [currentSelectedSheepTourPositions])
+  }, [activeCombinedSheepTourPositions])
 
   useEffect(() => {
     fetchTours()
@@ -101,7 +109,8 @@ export function SelectTour() {
     <div className={classes.root}>
       <Grid container>
         <Grid item xs={3}>
-          <NavigateTour 
+          <NavigateTour
+          preditorRegisteredByFarmer={preditorRegisteredByFarmer} 
           deadSheeps={deadSheep}
           dateRange={dateRange}
           opacityBonitet={opacityBonitet}
@@ -125,6 +134,7 @@ export function SelectTour() {
         </Grid>
         <Grid item xs={9}>
           <MapContainer
+            preditorRegisteredByFarmer={preditorRegisteredByFarmer}
             dateRange={dateRange}
             deadSheep={deadSheep}
             opacityBonitet={opacityBonitet} 

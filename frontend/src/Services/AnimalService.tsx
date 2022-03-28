@@ -2,12 +2,20 @@ import service from './Service'
 
 class AnimalService {
 
-  getDeadSheep(fromDate: Date, toDate: Date){
+  getDeadSheep(fromDate: Date, toDate: Date, token: string){
     return service.get(`/api/DeadSheep/${fromDate}/${toDate}`)
   }
-  getAnimalPreditors(from: Date, to: Date, types: number[]) {
+  getAnimalPreditors(from: Date, to: Date, types: number[], token: string) {
     const typesStr = types.map((type) => `types=${type}`)
-    return service.get(`/api/tour/preditors?${typesStr.join('&')}&from=${from.toISOString()}&to=${to.toISOString()}`)
+    return service.get(`/api/preditor/rovdata?${typesStr.join('&')}&from=${from.toISOString()}&to=${to.toISOString()}`)
+  }
+
+  getPreditorRegisteredOnApp(fromDate: Date, toDate: Date, token: string){
+    return service.get(`/api/preditor?from=${fromDate.toISOString()}&to=${toDate.toISOString()}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })//service.get(`/api/preditor/${fromDate}/${toDate}`)
   }
 }
 

@@ -32,7 +32,8 @@ namespace backend.Controllers
             _context = context;
             _userManager = userManager;
         }
-
+        
+        [Authorize]
         [HttpGet("preditors")]
         public async Task<ActionResult<string>> GetPreditors( [FromQuery] int[] types, string from, string to)
         {
@@ -76,17 +77,23 @@ namespace backend.Controllers
         }
 
         //GET api/sheep/positions
+        [Authorize]
         [HttpGet("sheep/positions")]
         public async Task<ActionResult<IEnumerable<CombinedSheepTourPositionData>>> GetSheepPositions()
         {
-            List<SheepPositionData> sheepList = await _context.SheepPositions.Include(s => s.Tour).Where(s => s.Tour.Email == "generated@test.com").ToListAsync();
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "Invalid user" });
+            }
+            List<SheepPositionData> sheepList = await _context.SheepPositions.Include(s => s.Tour).Where(s => s.Tour.Email == user.Email).ToListAsync();
             List<CombinedSheepTourPositionData> combined = await MapUtils.FindBigFlock(sheepList);
             List<CombinedSheepTourPositionData> res = await MapUtils.FindClosestFlockOnNextTour(combined);
             return combined;
         }
 
         [Authorize]
-        [HttpGet("location")] 
+        [HttpGet("location")]
         public async Task<ActionResult<IEnumerable<TourData>>> getTourLocations()
         {
             var user = await _userManager.GetUserAsync(User);
