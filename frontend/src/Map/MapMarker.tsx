@@ -6,7 +6,6 @@ const useStyles = makeStyles({
   marker: {
     height: "30px",
     width: "30px",
-    //backgroundColor: "red",
     borderRadius: "50%",
     textAlign: "center",
     marginBottom: "15px",
@@ -30,6 +29,5 @@ export const MapMarker = (props: {lat: number, lng: number, text?: string, backg
       </svg> :
       <Typography variant="h6" className={classes.text}>{props.text}</Typography>
     }
-    {/*<img style={markerStyle} src={Marker} alt="pin" />*/}
   </div>
   };

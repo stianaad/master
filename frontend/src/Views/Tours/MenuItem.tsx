@@ -1,7 +1,6 @@
 import { Grid, Typography } from "@mui/material"
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import { useState } from "react";
 import { makeStyles } from "@mui/styles";
 
 const useStyles = makeStyles({

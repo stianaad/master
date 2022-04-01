@@ -1,20 +1,17 @@
-import { Button, Divider, FormControl, FormControlLabel, FormGroup, Grid, InputLabel, Select, Slider, Switch, TextField, Typography, MenuItem as MuiMenuItem } from "@mui/material"
+import { Button, Divider, FormControlLabel, FormGroup, Grid, Slider, Switch, TextField, Typography } from "@mui/material"
 import { makeStyles } from "@mui/styles";
 import { DatePicker, LocalizationProvider } from '@mui/lab'
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { PreditoColors, PreditorRegisteredByFarmer, PreditorType } from "../../Types/Jerv";
+import { PreditoColors, PreditorRegisteredByFarmer, PreditorType } from "../../Types/Preditor";
 import { CombinedSheepTourPosition } from "../../Types/Tour"
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { MenuItem } from "./MenuItem";
 import { pdfService } from "../../Services/PDFService";
 import { DeadSheepPosition } from "../../Types/Sheep";
 import { animalService } from "../../Services/AnimalService";
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import Box from '@mui/material/Box';
-import { responsiveProperty } from "@mui/material/styles/cssUtils";
 import SquareIcon from '@mui/icons-material/Square';
-import { borderRadius } from "@mui/system";
 import { useAppSelector } from "../../hooks";
 
 const useStyles = makeStyles({
@@ -35,10 +32,6 @@ const useStyles = makeStyles({
   header:{
     paddingTop: "3vh",
     paddingBottom: "3vh"
-  },
-  tourIds: {
-    //overflowY: "auto",
-    //height: "30vh"
   },
   switch: {
     marginLeft: "1vw",
@@ -229,7 +222,6 @@ export const NavigateTour = (props: NavigateTourProps) => {
   const changeOpacityBonitet = (event: Event, newValue: number | number[], activeThumb: number) => {
     if(!Array.isArray(newValue)) {
       props.setOpacityBonitet(newValue)
-      //console.log(newValue)
     }
   }
 
@@ -273,7 +265,6 @@ export const NavigateTour = (props: NavigateTourProps) => {
           }} renderInput={(params) => <TextField {...params} className={classes.dateMargin} />} />
           <DatePicker value={dateRange.to} inputFormat="dd/MM/yyyy" onChange={(date: Date | null) => {
               if (date != null) {
-                //setDateRange({from: dateRange.from, to: date})
                 let interval = date.getTime() - dateRange.from.getTime()
                 if (interval > 0) {
                   interval = Math.min(interval, THREE_MONTHS)
@@ -298,12 +289,7 @@ export const NavigateTour = (props: NavigateTourProps) => {
         </Grid>
         : null
       }
-      {/*
-      
-      <Typography variant="body1" className={classes.download} onClick={downloadPDF}><FileDownloadIcon style={{verticalAlign: "middle"}}  /> Last ned PDF </Typography>
-      */}
       <Divider className={classes.divider} />
-
 
       <MenuItem open={showBonitetButton} setOpen={setShowBonitetButton} header="Bonitet" />
       {
@@ -380,22 +366,6 @@ export const NavigateTour = (props: NavigateTourProps) => {
       </FormGroup>
       
       <Divider className={classes.divider} />
-      {/* <FormControl fullWidth>
-        <InputLabel id="demo-simple-select-label">År</InputLabel>
-        <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          value={getCurrentYear()}
-          label="Age"
-          onChange={handleYearChange}
-        >
-          {
-            getYears().map((year) => (
-              <MuiMenuItem key={year} value={year}>{year.toString()}</MuiMenuItem>
-            ))
-          }
-        </Select>
-    </FormControl> */}
 
       <Grid container>
         <Grid item xs={6}>
@@ -405,16 +375,11 @@ export const NavigateTour = (props: NavigateTourProps) => {
           <Button className={!props.week ? classes.activeWeekOrMonth : classes.notActiveWeekOrMonth} onClick={() => {props.setWeek(false); props.setStartTourIndex(0)}}>Måned</Button>
         </Grid>
       </Grid>
-      <div className={classes.tourIds}>
+      <div>
         {props.activeCombinedSheepTourPositions.map((combinedSheep : CombinedSheepTourPosition, index: number) =>  (
           <p key={index} className={ (props.week && props.startTourIndex === index || props.currentSelectedSheepTourPositions.some((value: CombinedSheepTourPosition) => value.idTour === combinedSheep.idTour)) ? classes.pCurrent : "" }>Tur - {combinedSheep.tourTime}</p>
           ))}
       </div>
-      {/* <div className={classes.tourIds}>
-        {props.combinedSheepTourPositions.map((combinedSheep : CombinedSheepTourPosition, index: number) =>  (
-          <p key={index} className={ combinedSheep.tourTime.toString() >= props.dateRange.from.toISOString() && combinedSheep.tourTime.toString() <= props.dateRange.to.toISOString() ? classes.pCurrent : "" }>{combinedSheep.idTour}</p>
-          ))}
-      </div> */}
 
       <Grid container className={classes.sheepNextPrev}>
         <Grid item xs={6}>

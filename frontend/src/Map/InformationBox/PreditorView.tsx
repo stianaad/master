@@ -2,7 +2,7 @@ import { Button, Divider, Grid, Typography } from "@mui/material"
 import { makeStyles } from "@mui/styles";
 import { sensitiveHeaders } from "http2";
 import { useEffect, useState } from "react";
-import { Preditor, PreditoColors } from "../../Types/Jerv";
+import { Preditor, PreditoColors } from "../../Types/Preditor";
 import { getPreditorIconPath } from "../MarkerHelper";
 
 const useStyles = makeStyles({

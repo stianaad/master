@@ -1,13 +1,12 @@
-import { Grid, Typography } from '@mui/material';
+import { Grid } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { useEffect, useState } from 'react';
 import { useAppSelector } from '../../hooks';
 import { MapContainer } from '../../Map/MapContainer';
-import { Sidebar } from '../../Map/Sidebar';
 import { animalService } from '../../Services/AnimalService';
 import { tourService } from '../../Services/TourService';
 import { DeadSheepPosition } from '../../Types/Sheep';
-import { PreditorRegisteredByFarmer, PreditorType } from '../../Types/Jerv';
+import { PreditorRegisteredByFarmer } from '../../Types/Preditor';
 import { CombinedSheepTourPosition } from '../../Types/Tour';
 import { NavigateTour } from './NavigateTour';
 
@@ -55,7 +54,7 @@ export function SelectTour() {
 
   const fetchTours = async () => {
     if (loggedIn.length > 0) {
-      const res = await tourService.getCombinedSheepTourPositions(loggedIn) //authenticationService.getTours()
+      const res = await tourService.getCombinedSheepTourPositions(loggedIn)
       if (res.status === 200) {
         setCombinedSheepTourPositions(res.data)
         const startDate = new Date(res.data[0].tourTime)
