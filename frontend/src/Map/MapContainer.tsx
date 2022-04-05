@@ -267,7 +267,7 @@ export function MapContainer(props: MapContainerProps) {
   return(
     <div style={{ height: '100vh', width: '100%', position: "relative" }}>
       <GoogleMapReact 
-        bootstrapURLKeys={{key:"AIzaSyB-xQ9kta6HYHD5OtV9SF_ybPAD31Edc0w"}}
+        bootstrapURLKeys={{key:"AIzaSyCLd2UIZIDuo9OF8Bxx0JaCCIUeX6j5jKg"}}
         defaultCenter={{lat: 62.702802875467334, lng: 9.14644192722107}}
         defaultZoom={11}
         yesIWantToUseGoogleMapApiInternals
