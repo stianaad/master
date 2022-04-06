@@ -236,7 +236,7 @@ export const NavigateTour = (props: NavigateTourProps) => {
   const downloadPDF = async () => {
     try{
       const deadSheep = await animalService.getDeadSheep(props.activeCombinedSheepTourPositions[0].tourTime, props.activeCombinedSheepTourPositions[props.activeCombinedSheepTourPositions.length -1].tourTime, loggedIn)
-      const res = await pdfService.getPDF(props.activeCombinedSheepTourPositions, deadSheep.data, props.preditorRegisteredByFarmer)
+      const res = await pdfService.getPDF(props.activeCombinedSheepTourPositions, deadSheep.data, props.preditorRegisteredByFarmer, loggedIn)
       const url = window.URL.createObjectURL(new Blob([res.data]));
       const link = document.createElement('a');
       link.href = url;
