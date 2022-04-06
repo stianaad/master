@@ -3,7 +3,11 @@ import service from './Service'
 class AnimalService {
 
   getDeadSheep(fromDate: Date, toDate: Date, token: string){
-    return service.get(`/api/DeadSheep/${fromDate}/${toDate}`)
+    return service.get(`/api/DeadSheep/${fromDate}/${toDate}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
   }
   getAnimalPreditors(from: Date, to: Date, types: number[], token: string) {
     const typesStr = types.map((type) => `types=${type}`)

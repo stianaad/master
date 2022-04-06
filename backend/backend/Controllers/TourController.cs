@@ -78,7 +78,7 @@ namespace backend.Controllers
 
         //GET api/sheep/positions
         [Authorize]
-        [HttpGet("sheep/positions")]
+        [HttpGet("combined")]
         public async Task<ActionResult<IEnumerable<CombinedSheepTourPositionData>>> GetSheepPositions()
         {
             var user = await _userManager.GetUserAsync(User);
