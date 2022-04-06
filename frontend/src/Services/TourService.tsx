@@ -10,7 +10,7 @@ class TourService{
   }
 
   getCombinedSheepTourPositions(token: string){
-    return Service.get("/api/tour/sheep/positions", { headers: {
+    return Service.get("/api/tour/combined", { headers: {
       Authorization: `Bearer ${token}`
     }});
   }
