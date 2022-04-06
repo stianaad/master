@@ -1,5 +1,5 @@
-import { cowIcon, crossIcon, deerIcon, dnaIcon, dogIcon, dotsIcon, eyeIcon, footPrint, goatIcon, hairIcon, poopIcon, sheepIcon } from "../Registrations/rovbaseIcons";
-import { Preditor, PreditoColors, SkadeType } from "../Types/Jerv";
+import { cowIcon, crossIcon, deerIcon, dnaIcon, dogIcon, dotsIcon, eyeIcon, footPrint, goatIcon, hairIcon, poopIcon, sheepIcon } from "../RovbaseIcon/rovbaseIcons";
+import { Preditor, PreditoColors, SkadeType } from "../Types/Preditor";
 import { Renderer, Cluster, ClusterStats } from "@googlemaps/markerclusterer";
 import { CombinedSheepPosition } from "../Types/Sheep";
 import { CombinedSheepTourPosition } from "../Types/Tour";

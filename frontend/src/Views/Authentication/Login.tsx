@@ -31,7 +31,6 @@ export function Login(props: LoginProps){
   const navigate = useNavigate()
   const classes = useStyles()
   const [user, setUser] = useState<User>({username: "", password: ""})
-  //const count = useAppSelector((state) => state.counter.value)
   const dispatch = useAppDispatch()
 
   const onChangeUser = (event: React.ChangeEvent<HTMLInputElement>, key: "username" | "password") => {

@@ -1,4 +1,4 @@
-import { PreditorType } from "./Jerv";
+import { PreditorType } from "./Preditor";
 
 export interface SheepPosition {
   id: number

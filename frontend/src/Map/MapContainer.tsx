@@ -1,20 +1,12 @@
 import GoogleMapReact, { Heatmap } from "google-map-react";
 import { Cluster, MarkerClusterer } from "@googlemaps/markerclusterer";
-import { Polyline } from './Polyline'
-import { MapMarker } from "./MapMarker";
-import React, { useState, useEffect } from 'react';
-import { authenticationService } from "../Services/AuthenticationService";
-import { CombinedSheepTourPosition, Tour, TourLocation } from "../Types/Tour";
-import { CombinedSheepPosition, SheepPosition, LatLong, DeadSheepPosition } from "../Types/Sheep"
-import { TourMap } from "./TourMap";
-import { mapFlockOfSheep } from "./MapFlockOfSheep";
-import { tourService } from "../Services/TourService";
+import { useState, useEffect } from 'react';
+import { CombinedSheepTourPosition } from "../Types/Tour";
+import { CombinedSheepPosition, LatLong, DeadSheepPosition } from "../Types/Sheep"
 import { useAppSelector } from "../hooks";
 import { animalService } from "../Services/AnimalService";
-import { Preditor, PreditoColors, PreditorRegisteredByFarmer, SkadeType } from "../Types/Jerv";
-import { Bonitet } from "../Types/Bonitet";
+import { Preditor, PreditorRegisteredByFarmer, SkadeType } from "../Types/Preditor";
 import { InformationBoxMap } from "./InformationBox/InformationBoxMap";
-import { cowIcon, crossIcon, deerIcon, dnaIcon, dogIcon, dotsIcon, eyeIcon, footPrint, goatIcon, hairIcon, sheepIcon } from "../Registrations/rovbaseIcons";
 import { ClusterRenderer, getClusterIcon, getPreditorIcon, getPreditorMarkers, getSheepPositioIcon, getSheepPositionMarkers } from "./MarkerHelper";
 let utm = require("utm")
 //import utm from "utm"
@@ -72,10 +64,8 @@ export function MapContainer(props: MapContainerProps) {
     let activePreditors = jervData.filter((pred) => props.preditors[pred.rovdyrArtsID])
     const deadSheeps: Preditor[] = props.deadSheep.filter((s) => props.preditors[s.preditorId] || s.preditorId === 0).map((dSheep) => { return { rovdyrArtsID: dSheep.preditorId, longitude: dSheep.longitude, latitude: dSheep.latitude, datatype: 'Rovviltskade', skadetypeID: SkadeType.SAU, dato: dSheep.timeOfObservation } as unknown as Preditor})
     const preditorRegisteredByFarmer: Preditor[] = props.preditorRegisteredByFarmer.map((pred: PreditorRegisteredByFarmer) => {return { rovdyrArtsID: pred.preditor, longitude: pred.longitude, latitude: pred.latitude, datatype: pred.reportType, skadetypeID: SkadeType.SAU, dato: pred.timeOfObservation, observasjoner: [pred.observationType] } as unknown as Preditor})
-    //const deadSheeps: Jerv[] = props.deadSheep.filter((s) => props.preditors[s.preditorId] || s.preditorId === 0).map((dSheep) => { return { rovdyrArtsID: dSheep.preditorId, longitude: dSheep.longitude, latitude: dSheep.latitude, datatype: 'Rovviltskade', skadetypeID: SkadeType.SAU, dato: dSheep.timeOfObservation } as unknown as Jerv})
     activePreditors = activePreditors.concat(deadSheeps)
     activePreditors = activePreditors.concat(preditorRegisteredByFarmer)
-    //console.log(activePreditors)
     renderPreditorMarkers(activePreditors)
   }
 
@@ -102,7 +92,6 @@ export function MapContainer(props: MapContainerProps) {
         return data
       })
       setPreditorData(jerv)
-      //rerenderPreditorMarker()
     }
   }
 
@@ -142,7 +131,6 @@ export function MapContainer(props: MapContainerProps) {
       cluster?.markers.forEach((value: any) => {
         tmpPred.push(value.preditor)
       })
-      console.log(tmpPred)
       setSelectedDeadSheep(undefined)
       setSelectedSheepTourPosition(undefined)
       setSelectedPreditor(tmpPred)
@@ -205,8 +193,6 @@ export function MapContainer(props: MapContainerProps) {
   const renderSheepPositionMarkers = (tours: CombinedSheepTourPosition[]) => {
     const markers = getSheepPositionMarkers(tours, mapProps, handleClickOnFlock)
     setSheepPositionMarkers(markers)
-    // sheepPositionCluster?.clearMarkers()
-    // sheepPositionCluster?.addMarkers(markers)
   }
 
   const detachSheepPositionMarkers = () => {
@@ -262,13 +248,6 @@ export function MapContainer(props: MapContainerProps) {
     setSouthWestCorner({latitude: c.marginBounds.sw.lat, longitude: c.marginBounds.sw.lng})
   }
 
-  const handleClickOnDeadAnimal = (index: number) => {
-    setSelectedSheepTourPosition(undefined)
-    setSelectedPreditor(undefined)
-    setSelectedDeadSheep(props.deadSheep[index])
-    setOpenInformationBox(true)
-  }
-
   const handleClickOnFlock = (indexTour: number, indexSheep: number) => {
     const newTour: CombinedSheepTourPosition = {...props.currentSelectedSheepTourPositions[indexTour]}
     newTour.combinedSheepPositions = [newTour.combinedSheepPositions[indexSheep]]
@@ -288,7 +267,7 @@ export function MapContainer(props: MapContainerProps) {
   return(
     <div style={{ height: '100vh', width: '100%', position: "relative" }}>
       <GoogleMapReact 
-        bootstrapURLKeys={{key:"AIzaSyB-xQ9kta6HYHD5OtV9SF_ybPAD31Edc0w"}}
+        bootstrapURLKeys={{key:"AIzaSyCLd2UIZIDuo9OF8Bxx0JaCCIUeX6j5jKg"}}
         defaultCenter={{lat: 62.702802875467334, lng: 9.14644192722107}}
         defaultZoom={11}
         yesIWantToUseGoogleMapApiInternals
@@ -333,46 +312,6 @@ export function MapContainer(props: MapContainerProps) {
           map.overlayMapTypes.push(bonitetLayer)
         }}
         >
-        {/*
-        mapProps.loaded ? (
-          props.currentSelectedSheepTourPositions.map((combinedTour: CombinedSheepTourPosition) => (
-            combinedTour.combinedSheepPositions.map((combinedSheep: CombinedSheepPosition, index: number) => (
-              <Polyline
-                key={index}
-                map={mapProps.map}
-                maps={mapProps.maps}
-                path={combinedSheep.locations.map((l: LatLong) =>  {return {lat: l.latitude, lng: l.longitude}})} />
-            ))
-          ))
-           ) : null*/
-        }
-
-        { 
-        // props.currentSelectedSheepTourPositions &&
-        //   props.currentSelectedSheepTourPositions.length > 0 &&
-        //   props.sheepFlock ?
-        //   props.currentSelectedSheepTourPositions.map((combinedTour: CombinedSheepTourPosition, indexCombinedTour: number) => (
-        //     combinedTour.combinedSheepPositions.map((combinedSheep: CombinedSheepPosition, indexCombinedSheep: number) => (
-        //       combinedSheep.locations.map((location: LatLong, index: number) => (
-        //         <MapMarker dead={false} backgroundColor="red" handleClick={(indexTour) => handleClickOnFlock(indexTour, indexCombinedSheep)} index={indexCombinedTour} lat={location.latitude} lng={location.longitude} text={combinedSheep.flockId.toString()} key={index} />
-        //       ))
-        //     ))
-        //   )) : null
-        }
-
-        {
-          // props.sheepFlock ?
-          // props.deadSheep.map((dead: DeadSheepPosition, index: number) => (
-          //   <MapMarker dead={true} backgroundColor="purple" handleClick={handleClickOnDeadAnimal} index={index} lat={dead.latitude} lng={dead.longitude} text={dead.id.toString()} key={index} />
-          // )) : null
-        }
-
-        {/*
-          jervData.length > 0 ? 
-          jervData.map((jerv: Jerv, index: number) => (
-            <MapMarker backgroundColor="blue" index={index} handleClick={handleClickOnDeadAnimal} lat={jerv.latitude} lng={jerv.longitude} text={jerv.artsIDPrøve} key={index} />
-            )) : null*/
-        }
         {
           southWestCorner && openInformationBox ?
           <InformationBoxMap preditor={selectedPreditor} deadSheep={selectedDeadSheep} sheepFlock={selectedSheepTourPosition} lat={southWestCorner.latitude} lng={southWestCorner.longitude} onClose={() => setOpenInformationBox(false)} /> : null

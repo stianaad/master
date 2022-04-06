@@ -1,4 +1,4 @@
-import { PreditorRegisteredByFarmer } from "../Types/Jerv";
+import { PreditorRegisteredByFarmer } from "../Types/Preditor";
 import { DeadSheepPosition } from "../Types/Sheep";
 import { CombinedSheepTourPosition } from "../Types/Tour";
 import Service from "./Service";
