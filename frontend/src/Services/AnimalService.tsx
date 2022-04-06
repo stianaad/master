@@ -15,7 +15,7 @@ class AnimalService {
   }
 
   getPreditorRegisteredOnApp(fromDate: Date, toDate: Date, token: string){
-    return service.get(`/api/preditor?from=${fromDate.toISOString()}&to=${toDate.toISOString()}`, {
+    return service.get(`/api/preditor?from=${fromDate}&to=${toDate}`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
