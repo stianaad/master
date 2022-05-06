@@ -127,6 +127,7 @@ export const NavigateTour = (props: NavigateTourProps) => {
     props.setCurrentSelectedSheepTourPositions(props.activeCombinedSheepTourPositions.slice(tempIndex, tempIndex + 1))
   }
 
+  //Set range og the date
   useEffect(() => {
     setDateRange(props.dateRange)
   }, [props.dateRange])
@@ -224,7 +225,7 @@ export const NavigateTour = (props: NavigateTourProps) => {
       props.setOpacityBonitet(newValue)
     }
   }
-
+  //Change the opacity on bonitet
   useEffect(() => {
     if(showBonitet){
       props.setOpacityBonitet(0.5)

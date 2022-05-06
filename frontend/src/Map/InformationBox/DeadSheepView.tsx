@@ -1,4 +1,4 @@
-import { Divider, Grid, Typography } from "@mui/material"
+import { Grid, Typography } from "@mui/material"
 import { makeStyles } from "@mui/styles";
 import { useEffect } from "react";
 import { colorSheep, sizeSheep } from "../../Constants/DeadSheepConstants";
@@ -23,6 +23,7 @@ interface DeadSheepViewProps {
 export const DeadSheepView = (props: DeadSheepViewProps) => {
   const classes = useStyles()
 
+  //Set header on information box
   useEffect(() => {
     props.setHeader("Død sau")
   }, [])

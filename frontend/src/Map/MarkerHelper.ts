@@ -164,7 +164,6 @@ export const createSheepPositioMarker = (icon: string, longitude: number, latitu
 export const getSheepPositioIcon = (sheep: CombinedSheepPosition ,active: boolean = false) => {
   const path = `<path fill="white" d="${sheepIcon.path}"/>`
   const activeCircle = active ? '<circle fill="purple" cx="32" cy="32" r="32" />' : ''
-  //<text fill="white" stroke="white" x="0" y="0" dominant-baseline="middle" text-anchor="middle">${sheep.totalNumberOfSheep}</text>
   const svg = window.btoa(`
     <svg fill="green" xmlns="http://www.w3.org/2000/svg" width="64" height="64">
       ${activeCircle}
