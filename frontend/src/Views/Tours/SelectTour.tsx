@@ -66,6 +66,7 @@ export function SelectTour() {
     }
   }
 
+  //Filter tours based on time
   useEffect(() => {
     const tours = combinedSheepTourPositions.filter((tour) => tour.tourTime.toString() >= dateRange.from.toISOString() && tour.tourTime.toString() <= dateRange.to.toISOString())
     setActiveCombinedSheepTourPositions(tours)
@@ -88,6 +89,7 @@ export function SelectTour() {
     setPreditorRegisteredByFarmer(res.data)
   }
 
+  //Fetch dead sheep and preditor registered on mobile application
   useEffect(() => {
     //If there is only one element selected
     if(activeCombinedSheepTourPositions.length === 1) {
@@ -100,6 +102,7 @@ export function SelectTour() {
     }
   }, [activeCombinedSheepTourPositions])
 
+  //Get all tours
   useEffect(() => {
     fetchTours()
   }, [])

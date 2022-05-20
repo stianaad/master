@@ -9,7 +9,6 @@ import { Preditor, PreditorRegisteredByFarmer, SkadeType } from "../Types/Predit
 import { InformationBoxMap } from "./InformationBox/InformationBoxMap";
 import { ClusterRenderer, getClusterIcon, getPreditorIcon, getPreditorMarkers, getSheepPositioIcon, getSheepPositionMarkers } from "./MarkerHelper";
 let utm = require("utm")
-//import utm from "utm"
 
 interface MapContainerProps {
   currentSelectedSheepTourPositions: CombinedSheepTourPosition[]
@@ -44,17 +43,17 @@ export function MapContainer(props: MapContainerProps) {
   let activeMarker: null | {data: Preditor | CombinedSheepPosition | Cluster, marker: any} = null
 
   const [openInformationBox, setOpenInformationBox] = useState<boolean>(false)
-
+  //Get preditors
   useEffect(() => {
     fetchPreditor()
   }, [props.dateRange])
 
-
+  //Render preditor marker
   useEffect(() => {
     rerenderPreditorMarker()
   }, [mapProps.loaded, props.preditors, props.deadSheep, jervData])
 
-
+  //Render sheep marker
   useEffect(() => {
     rerenderSheepPositions()
   }, [mapProps.loaded, props.currentSelectedSheepTourPositions, props.sheepFlock])
