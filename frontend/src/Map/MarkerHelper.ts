@@ -150,11 +150,6 @@ export const createSheepPositioMarker = (icon: string, longitude: number, latitu
   }
   return new maps.Marker({
     position: { lat: latitude, lng: longitude },
-    label: {
-      text: String(sheep.totalNumberOfSheep),
-      color: "rgba(255,255,255,0.9)",
-      fontSize: "12px",
-    },
     map: map,
     icon: markerImage,
     sheep: sheep
@@ -162,14 +157,17 @@ export const createSheepPositioMarker = (icon: string, longitude: number, latitu
 }
 
 export const getSheepPositioIcon = (sheep: CombinedSheepPosition ,active: boolean = false) => {
-  const path = `<path fill="white" d="${sheepIcon.path}"/>`
+  const path = `<path fill="black" d="${sheepIcon.path}"/>`
   const activeCircle = active ? '<circle fill="purple" cx="32" cy="32" r="32" />' : ''
   //<text fill="white" stroke="white" x="0" y="0" dominant-baseline="middle" text-anchor="middle">${sheep.totalNumberOfSheep}</text>
+  //<text fill="black" stroke="black" x="48" y="12" dominant-baseline="middle" text-anchor="middle">${sheep.totalNumberOfSheep}</text>
+  //<circle fill="white" cx="48" cy="12" r="12"/>
+  //<circle cx="32" cy="32" r="24.2" />
   const svg = window.btoa(`
-    <svg fill="green" xmlns="http://www.w3.org/2000/svg" width="64" height="64">
+    <svg fill="black" xmlns="http://www.w3.org/2000/svg" width="64" height="64">
       ${activeCircle}
-      <path fill="white" d="M32 8.6c12.9 0 23.4 10.5 23.4 23.4S44.9 55.4 32 55.4 8.6 44.9 8.6 32 19.1 8.6 32 8.6M32 7C18.2 7 7 18.2 7 32s11.2 25 25 25 25-11.2 25-25S45.8 7 32 7z"></path>
-      <circle cx="32" cy="32" r="24.2" />
+      <path fill="black" d="M32 8.6c12.9 0 23.4 10.5 23.4 23.4S44.9 55.4 32 55.4 8.6 44.9 8.6 32 19.1 8.6 32 8.6M32 7C18.2 7 7 18.2 7 32s11.2 25 25 25 25-11.2 25-25S45.8 7 32 7z"></path>
+      <circle cx="32" cy="32" r="24.2" stroke="black" stroke-width="10" fill="white" />
       <circle fill="white" cx="48" cy="12" r="12"/>
       <text fill="black" stroke="black" x="48" y="12" dominant-baseline="middle" text-anchor="middle">${sheep.totalNumberOfSheep}</text>
       ${path}
